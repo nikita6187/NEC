@@ -1,0 +1,1 @@
+# Fabric API for Query contract
