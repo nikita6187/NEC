@@ -11,16 +11,16 @@ bash create-artifacts.sh
 cd ../
 
 # Start docker compose
-# NOTE: difference in versions, sometine need: docker compose up -d
+# NOTE: difference in versions, sometimes needs: docker compose up -d
 docker-compose up -d
 
 # Create channel
-sleep 10
+sleep 20
 cd ../
 bash ./createChannel.sh
 
 # Wait and check that all peers have joined, assuming for now 10 seconds
-sleep 10
+sleep 30
 
 echo "=========================================== CHECKING THAT ALL PEERS HAVE JOINED =========================="
 docker ps
