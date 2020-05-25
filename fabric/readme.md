@@ -4,7 +4,7 @@ Initial hyperledger fabric setup for team NEC
 
 # Quick Development Usage
 
-To setup the network and deploy chaincode:
+To setup the network and deploy chaincode using a quick and dirty script:
 ```
 bash start_network.sh <PATH TO SMART CONTRACT> <NAME OF SMART CONTRACT>
 ```
