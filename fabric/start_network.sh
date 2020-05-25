@@ -1,4 +1,6 @@
 
+# USAGE EXAMPLE: bash start_network.sh ./artifacts/src/github.com/fabcar/javascript fabcar
+# Then end: bash end_network.sh
 
 # NOTE: make sure that the Hyperledger Fabric binaries are in the PATH env var
 
@@ -29,5 +31,6 @@ echo "=========================================== END CHECKING THAT ALL PEERS HA
 # Deploy chaincode
 # NOTE: check if rights are correctly set
 sleep 10
-./deployChaincode.sh
+
+./deployChaincode.sh $1 $2
 
