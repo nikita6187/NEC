@@ -36,19 +36,22 @@ setGlobalsForPeer0Org3() {
 }
 
 presetup() {
-    echo Vendoring Go dependencies ...
-    pushd ./artifacts/src/github.com/fabcar/go
-    GO111MODULE=on go mod vendor
-    popd
-    echo Finished vendoring Go dependencies
+    
+    
+    # TODO: update if needed
+    #echo Vendoring Go dependencies ...
+    #pushd ./artifacts/src/github.com/fabcar/go
+    #GO111MODULE=on go mod vendor
+    #popd
+    echo Finished vendoring dependencies
 }
 # presetup
 
 CHANNEL_NAME="mychannel"
-CC_RUNTIME_LANGUAGE="golang"
+CC_RUNTIME_LANGUAGE="node"  # as we're using javascript
 VERSION="1"
-CC_SRC_PATH="./artifacts/src/github.com/fabcar/go"
-CC_NAME="fabcar"
+CC_SRC_PATH="$1"  #./artifacts/src/github.com/fabcar/go
+CC_NAME="$2"  # fabcar
 
 packageChaincode() {
     rm -rf ${CC_NAME}.tar.gz

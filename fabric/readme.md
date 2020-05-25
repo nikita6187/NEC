@@ -2,7 +2,25 @@
 Fork of https://github.com/adhavpavan/BasicNetwork-2.0
 Initial hyperledger fabric setup for team NEC
 
-# Basic setup
+# Quick Development Usage
+
+To setup the network and deploy chaincode using a quick and dirty script:
+```
+bash start_network.sh <PATH TO SMART CONTRACT> <NAME OF SMART CONTRACT>
+```
+Example with fabcar:
+```
+bash start_network.sh ./artifacts/src/github.com/fabcar/javascript fabcar
+```
+
+To shutdown the network (WARNING: this stops and removes all docker containers):
+```
+bash end_network.sh
+
+```
+
+
+# Basic Manual Setup
 
 1. Create cryptomaterial
 ```
@@ -25,5 +43,12 @@ peer channel list
 ```
 6. Deploy chaincode
 ```
-./deployChaincode.sh
+./deployChaincode.sh ./artifacts/src/github.com/fabcar/javascript fabcar
 ```
+# Deploying Chaincode
+
+Usage:
+```
+./deployChaincode.sh <PATH TO SMART CONTRACT> <NAME OF SMART CONTRACT>
+```
+
