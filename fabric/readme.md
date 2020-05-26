@@ -15,7 +15,7 @@ bash start_network.sh ./artifacts/src/github.com/fabcar/javascript fabcar
 
 To shutdown the network (WARNING: this stops and removes all docker containers):
 ```
-bash end_network.sh
+bash stop_network.sh
 
 ```
 
