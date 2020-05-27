@@ -163,7 +163,7 @@ commitChaincodeDefination() {
         --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ORG1_CA \
         --peerAddresses localhost:8051 --tlsRootCertFiles $PEER0_ORG2_CA \
         --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG3_CA \
-        --version ${VERSION} --sequence ${VERSION} --init-required
+        --version ${VERSION} --sequence ${VERSION} #--init-required
 
 }
 
@@ -179,15 +179,15 @@ queryCommitted() {
 
 chaincodeInvokeInit() {
     setGlobalsForPeer0Org1
-    peer chaincode invoke -o localhost:7050 \
-        --ordererTLSHostnameOverride orderer.example.com \
-        --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA \
-        -C $CHANNEL_NAME -n ${CC_NAME} \
-        --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ORG1_CA \
-        --peerAddresses localhost:8051 --tlsRootCertFiles $PEER0_ORG2_CA \
-        --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG3_CA \
-        --isInit -c '{"Args":[]}'
-
+    # peer chaincode invoke -o localhost:7050 \
+    #     --ordererTLSHostnameOverride orderer.example.com \
+    #     --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA \
+    #     -C $CHANNEL_NAME -n ${CC_NAME} \
+    #     --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ORG1_CA \
+    #     --peerAddresses localhost:8051 --tlsRootCertFiles $PEER0_ORG2_CA \
+    #     --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG3_CA \
+    #     --isInit -c '{"Args":[]}'
+    
 }
 
 # chaincodeInvokeInit
@@ -214,15 +214,15 @@ chaincodeInvoke() {
     #     -c '{"function": "CreateCar","Args":["Car-ABCDEEE", "Audi", "R8", "Red", "Pavan"]}'
 
     ## Change car owner
-    peer chaincode invoke -o localhost:7050 \
-        --ordererTLSHostnameOverride orderer.example.com \
-        --tls $CORE_PEER_TLS_ENABLED \
-        --cafile $ORDERER_CA \
-        -C $CHANNEL_NAME -n ${CC_NAME} \
-        --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ORG1_CA \
-        --peerAddresses localhost:8051 --tlsRootCertFiles $PEER0_ORG2_CA \
-        --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG3_CA \
-        -c '{"function": "initLedger","Args":[]}'
+    # peer chaincode invoke -o localhost:7050 \
+    #     --ordererTLSHostnameOverride orderer.example.com \
+    #     --tls $CORE_PEER_TLS_ENABLED \
+    #     --cafile $ORDERER_CA \
+    #     -C $CHANNEL_NAME -n ${CC_NAME} \
+    #     --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ORG1_CA \
+    #     --peerAddresses localhost:8051 --tlsRootCertFiles $PEER0_ORG2_CA \
+    #     --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG3_CA \
+    #     -c '{"function": "initLedger","Args":[]}'
 }
 
 # chaincodeInvoke
@@ -234,7 +234,7 @@ chaincodeQuery() {
     # peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"Args":["queryAllCars"]}'
 
     # Query Car by Id
-    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "queryCar","Args":["CAR0"]}'
+    # peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "queryCar","Args":["CAR0"]}'
     #'{"Args":["GetSampleData","Key1"]}'
 }
 

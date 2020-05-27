@@ -1,0 +1,17 @@
+{
+    "name": "common",
+    "version": "1.0.0",
+    "description": "",
+    "main": "",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1"
+    },
+    "author": "Kunstmaan",
+    "license": "MIT",
+    "dependencies": {
+        "@kunstmaan/hyperledger-fabric-node-chaincode-utils": "^0.4.0",
+        "fabric-shim": "1.2.0",
+        "joi": "^13.1.2",
+        "lodash": "^4.17.5"
+    }
+}
