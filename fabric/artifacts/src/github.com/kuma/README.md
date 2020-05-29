@@ -1,3 +1,5 @@
+# Original repo: https://github.com/Kunstmaan/hyperledger-fabric-kuma-token-example
+
 # Kuma token chaincode
 
 This project exists out of two chaincodes written in Node.js, which is supported since Hyperledger Fabric 1.1.0:
