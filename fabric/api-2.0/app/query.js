@@ -12,7 +12,7 @@ const query = async (channelName, chaincodeName, args, fcn, username, org_name) 
     try {
 
         // load the network configuration
-        const ccpPath = path.resolve(__dirname, '..', 'config', 'connection-org1.json');
+        const ccpPath = path.resolve(__dirname, '..', 'config', 'connection-org1.yaml');
         const ccpJSON = fs.readFileSync(ccpPath, 'utf8')
         const ccp = JSON.parse(ccpJSON);
 

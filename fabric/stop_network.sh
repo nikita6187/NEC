@@ -5,10 +5,7 @@ pushd ./artifacts
 docker-compose down
 popd
 
-# Remove some old files
+# Step 2: TODO Remove other files
 # TODO: update this
 #rm -rf channel-artifacts/* log.txt
 # rm channel-artifacts/mychannel.block log.txt
-
-# TODO: add more parameters from networkDown
-

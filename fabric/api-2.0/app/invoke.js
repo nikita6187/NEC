@@ -13,7 +13,7 @@ const invokeTransaction = async (channelName, chaincodeName, fcn, args, username
         logger.debug(util.format('\n============ invoke transaction on channel %s ============\n', channelName));
 
         // load the network configuration
-        const ccpPath = path.resolve(__dirname, '..', 'config', 'connection-org1.json');
+        const ccpPath = path.resolve(__dirname, '..', 'config', 'connection-org1.yaml');
         const ccpJSON = fs.readFileSync(ccpPath, 'utf8')
         const ccp = JSON.parse(ccpJSON);
 
