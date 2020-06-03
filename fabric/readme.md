@@ -2,23 +2,64 @@
 Fork of https://github.com/adhavpavan/BasicNetwork-2.0
 Initial hyperledger fabric setup for team NEC
 
-# Quick Development Usage
+# Quick Usage
 
-To setup the network and deploy chaincode using a quick and dirty script:
+To setup network first run. This generetates the cryptomaterial (genesis blocks, certificates), needs to only be run once:
 ```
-bash start_network.sh <PATH TO SMART CONTRACT> <NAME OF SMART CONTRACT>
-```
-Example with fabcar:
-```
-bash start_network.sh ./artifacts/src/github.com/fabcar/javascript fabcar
+./bash setup_network.sh
 ```
 
-To shutdown the network (WARNING: this stops and removes all docker containers):
+To start network (create docker containers, join channels run):
 ```
-bash stop_network.sh
-
+./start_network.sh
 ```
 
+To deploy a contract run:
+```
+./deployChaincode.sh ./artifacts/src/github.com/fabcar/javascript fabcar
+```
+
+To shutdown the network:
+```
+./stop_network.sh
+```
+
+# Api Set-up
+
+First run ./setup.sh. Then from 
+```
+artifacts/channel/crypto-config/peerOrganizations/org1.example.com/msp/tlscacerts
+``` 
+copy the certificate file and place it in 
+```
+api-2.0/config/connection-org1.yaml
+
+peers:
+  peer0.org1.example.com:
+    tlsCACerts:
+      pem: |
+      *** Certificate goes here ***
+```
+then copy
+```
+artifacts/channel/crypto-config/peerOrganizations/org1.example.com/tlsca
+```
+to
+```
+api-2.0/config/connection-org1.yaml
+
+certificateAuthorities:
+  ca.org1.example.com:
+    tlsCACerts:
+      pem: |
+      *** Certificate goes here ***
+```
+
+Repeat the same for other peers if you plan to use them. You generally only need to use one peer. 
+Start API with
+```
+npm run start
+```
 
 # Basic Manual Setup
 
