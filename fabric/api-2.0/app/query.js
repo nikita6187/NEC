@@ -4,17 +4,17 @@ const path = require("path")
 const log4js = require('log4js');
 const logger = log4js.getLogger('BasicNetwork');
 const util = require('util')
-
+const yaml = require('js-yaml')
 
 const helper = require('./helper')
 const query = async (channelName, chaincodeName, args, fcn, username, org_name) => {
 
     try {
-
+        logger.debug(util.format('\n============ Query on channel %s for %s============\n', channelName, org_name));
         // load the network configuration
-        const ccpPath = path.resolve(__dirname, '..', 'config', 'connection-org1.yaml');
-        const ccpJSON = fs.readFileSync(ccpPath, 'utf8')
-        const ccp = JSON.parse(ccpJSON);
+        const ccpPath = path.resolve(__dirname, '..', 'config', 'connection-org3.yaml');
+        const ccpYaml = fs.readFileSync(ccpPath, 'utf8')
+        const ccp = yaml.load(ccpYaml);
 
         // Create a new file system based wallet for managing identities.
         const walletPath = path.join(process.cwd(), 'wallet');
