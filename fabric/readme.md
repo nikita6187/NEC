@@ -58,7 +58,22 @@ certificateAuthorities:
 Repeat the same for other peers if you plan to use them. You generally only need to use one peer. 
 Start API with
 ```
+cd fabric/api-2.0
 npm run start
+```
+
+# Known issues
+```
+"tool x" is not recognised as a bash command
+```
+Add hyperledger Fabric binaries to the class path
+
+```
+Script is not executable
+```
+Set script as executable in your file system
+```
+chmod +x filename.sh
 ```
 
 # Basic Manual Setup
