@@ -1,5 +1,6 @@
 # Logs
 logs
+log.txt
 *.log
 npm-debug.log*
 yarn-debug.log*
@@ -110,6 +111,7 @@ artifacts/channel/mychannel.tx
 artifacts/channel/genesis.block
 artifacts/channel/Org1MSPanchors.tx
 artifacts/channel/Org2MSPanchors.tx
+artifacts/channel/Org3MSPanchors.tx
 artifacts/channel/crypto-config
 fabric-client-kv-org1
 /package-lock.json

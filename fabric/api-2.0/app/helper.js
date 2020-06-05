@@ -4,13 +4,14 @@ var { Gateway, Wallets } = require('fabric-network');
 const path = require('path');
 const FabricCAServices = require('fabric-ca-client');
 const fs = require('fs');
+const yaml = require('js-yaml')
 
 const util = require('util');
 
 
-const ccpPath = path.resolve(__dirname, '..', 'config', 'connection-org1.json');
-const ccpJSON = fs.readFileSync(ccpPath, 'utf8')
-const ccp = JSON.parse(ccpJSON);
+const ccpPath = path.resolve(__dirname, '..', 'config', 'connection-org1.yaml');
+const ccpYaml = fs.readFileSync(ccpPath, 'utf8')
+const ccp = yaml.load(ccpYaml);
 
 
 const getRegisteredUser = async (username, userOrg, isJson) => {
