@@ -2,6 +2,13 @@
 
 const { Contract } = require('fabric-contract-api');
 
+// Some constants
+const num_majority = 1;
+const mo_id = "Org1";
+const dc_id = "Org2";
+const oo_id = "Org3";
+
+
 class QueryContract extends Contract {
     
 
@@ -28,12 +35,6 @@ class QueryContract extends Contract {
         // Counter for ids
         let init = 2
         await ctx.stub.putState('counter', Buffer.from(init.toString()));  // Hacky solution
-
-        // Some constants
-        var num_majority = 1;
-        var mo_id = "Org1";
-        var dc_id = "Org2";
-        var oo_id = "Org3";
             
 
         console.info('============= END : Initialize Ledger ===========');
