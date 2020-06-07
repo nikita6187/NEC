@@ -9,6 +9,7 @@ const FabricCAServices = require('fabric-ca-client');
 const client = require('fabric-client')
 const fs = require('fs');
 const path = require('path');
+const YAML = require('yaml');
 
 async function main() {
     try {
@@ -17,8 +18,8 @@ async function main() {
         console.log('Setting up for org id: ' + org_id);
 
         // load the network configuration
-        const ccpPath = path.resolve(__dirname, '..', '..', 'fabric', 'api-2.0', 'config', 'connection-org' + org_id + '.json');
-        const ccp = JSON.parse(fs.readFileSync(ccpPath, 'utf8'));
+        const ccpPath = path.resolve(__dirname, '..', '..', 'fabric', 'api-2.0', 'config', 'connection-org' + org_id + '.yaml');
+        const ccp = YAML.parse(fs.readFileSync(ccpPath, 'utf8'));
 
         // Create a new CA client for interacting with the CA.
         // TODO: see if it is correct for Org3, as it has a different path

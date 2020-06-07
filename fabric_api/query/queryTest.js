@@ -2,7 +2,7 @@
 const { Gateway, Wallets } = require('fabric-network');
 const fs = require('fs');
 const path = require('path');
-
+const YAML = require('yaml');
 
 
 async function main() {
@@ -17,8 +17,8 @@ async function main() {
 
 
         // load the network configuration
-        const ccpPath = path.resolve(__dirname, '..', '..', 'fabric', 'api-2.0', 'config', 'connection-org' + org_id + '.json');
-        let ccp = JSON.parse(fs.readFileSync(ccpPath, 'utf8'));
+        const ccpPath = path.resolve(__dirname, '..', '..', 'fabric', 'api-2.0', 'config', 'connection-org' + org_id + '.yaml');
+        let ccp = YAML.parse(fs.readFileSync(ccpPath, 'utf8'));
 
         // Create a new file system based wallet for managing identities.
         const walletPath = path.join(process.cwd(), 'wallet'+org_id);

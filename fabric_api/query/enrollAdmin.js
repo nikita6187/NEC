@@ -8,6 +8,8 @@ const FabricCAServices = require('fabric-ca-client');
 const { Wallets } = require('fabric-network');
 const fs = require('fs');
 const path = require('path');
+const YAML = require('yaml');
+
 
 async function main() {
     try {
@@ -19,8 +21,9 @@ async function main() {
 
         // /home/nikita/TUMunich/DLT4PI/NEC/NEC/fabric/api-2.0/config
 
-        const ccpPath = path.resolve(__dirname, '..', '..', 'fabric', 'api-2.0', 'config', 'connection-org' + org_id + '.json');
-        const ccp = JSON.parse(fs.readFileSync(ccpPath, 'utf8'));
+        const ccpPath = path.resolve(__dirname, '..', '..', 'fabric', 'api-2.0', 'config', 'connection-org' + org_id + '.yaml');
+        const ccp = YAML.parse(fs.readFileSync(ccpPath, 'utf8'));
+        
 
         // Create a new CA client for interacting with the CA.
         const caInfo = ccp.certificateAuthorities['ca.org' + org_id + '.example.com'];

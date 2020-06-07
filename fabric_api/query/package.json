@@ -17,7 +17,8 @@
     "dependencies": {
         "fabric-ca-client": "^2.1.0",
         "fabric-client": "^1.4.8",
-        "fabric-network": "^2.1.0"
+        "fabric-network": "^2.1.0",
+        "yaml": "^1.10.0"
     },
     "devDependencies": {
         "chai": "^4.2.0",
