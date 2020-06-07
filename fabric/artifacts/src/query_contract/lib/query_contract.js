@@ -5,9 +5,10 @@ const ClientIdentity = require('fabric-shim').ClientIdentity;
 
 // Some constants
 const num_majority = 1;
-const mo_id = "Org1";
-const dc_id = "Org2";
-const oo_id = "Org3";
+const mo_id = "org1";
+const dc_id = "org2";
+const oo_id = "org3"; 
+//const oo_id = "org1"; // UNCOMMENT FOR TESTING IF BUGS ARISE WITH ORG3
 
 
 class QueryContract extends Contract {
@@ -81,6 +82,7 @@ class QueryContract extends Contract {
 
 
     async approveQuery(ctx, query_id, approved){
+        // Note, approved should be 1 (=true) or 0 (=false)
 
         let cid = new ClientIdentity(ctx.stub);
 
@@ -96,6 +98,8 @@ class QueryContract extends Contract {
             }
             
             const query = JSON.parse(queryAsBytes.toString());
+            
+            // TODO: add conversion to boolean
 
             // We add vote
             if(approved == true){
