@@ -8,5 +8,5 @@
 
 const query_contract = require('./lib/query_contract');
 
-module.exports.query_contract = query_contract;
-module.exports.contracts = [ query_contract ];
+module.exports.query_contract = QueryContract;
+module.exports.contracts = [ QueryContract ];
