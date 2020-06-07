@@ -1,7 +1,7 @@
 {
-    "name": "query_contract",
+    "name": "aggregated_answer_contract",
     "version": "1.0.0",
-    "description": "query_contract contract implemented in JavaScript",
+    "description": "aggregated_answer_contract contract implemented in JavaScript",
     "main": "index.js",
     "engines": {
         "node": ">=8",

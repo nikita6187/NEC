@@ -6,7 +6,7 @@
 
 'use strict';
 
-const QueryContract = require('./lib/query_contract');
+const AggAnswerContract = require('./lib/aggregated_answer_contract');
 
-module.exports.query_contract = QueryContract;
-module.exports.contracts = [ QueryContract ];
+module.exports.query_contract = AggAnswerContract;
+module.exports.contracts = [ AggAnswerContract ];

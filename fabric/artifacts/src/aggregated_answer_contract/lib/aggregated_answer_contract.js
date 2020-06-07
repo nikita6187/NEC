@@ -16,25 +16,19 @@ class AggAnswerContract extends Contract {
 
     async initLedger(ctx) {
         console.info('============= START : Initialize Ledger ===========');
-        
-        // TODO: new demo
 
         // demo
         const queries = [
             {
-                query_id: 'q1',
-                query_as_text: 'ALL',
-                num_approve: 0,
-                num_disapprove: 0,
-                min_users: 2,
-                stage: 1,
-                num_majority: 1,
-                max_budget: 10,
-                wallet_id: 'w1',
+                answer_id: 'a1',
+                query_id: 'q1', 
+                dc_wallet: 'wallet1',
+                encr_answer_text: 'blablabla',
+                user_wallet_list: [{'wallet': 'wallet2', 'amount': 10}],
             },
         ];
 
-        await ctx.stub.putState('q1', Buffer.from(JSON.stringify(queries[0])));
+        await ctx.stub.putState('a1', Buffer.from(JSON.stringify(queries[0])));
 
         // Counter for ids
         let init = 2
@@ -60,8 +54,8 @@ class AggAnswerContract extends Contract {
     async createAnswer(ctx, encr_answer_text, dc_wallet, query_id, user_wallet_list) {
         console.info('============= START : Create Answer ===========');
         
-        // TODO: convert use_wallet_list appropriatly
-        
+        // convert use_wallet_list appropriatly
+        user_wallet_list = JSON.parse(user_wallet_list);  // TODO: check if appropriate
         
         const rID1 = await ctx.stub.getState('counter');
         let rID = rID1.toString();
@@ -72,6 +66,7 @@ class AggAnswerContract extends Contract {
         const answer = {
             answer_id: answer_id,
             query_id: query_id, 
+            dc_wallet: dc_wallet,
             encr_answer_text: encr_answer_text,
             user_wallet_list: user_wallet_list,
         };
