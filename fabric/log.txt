@@ -1,2 +1,2 @@
 Installed chaincodes on peer:
-Package ID: kuma_1:3620ef270a1af446a8126ee865b41f57c309789f8d9072bd123c82f49136b273, Label: kuma_1
+Package ID: fabcar_1:2d70fa7de2979f19843e386f8509fe857c60dcacb760210583cad24fa7923df3, Label: fabcar_1
