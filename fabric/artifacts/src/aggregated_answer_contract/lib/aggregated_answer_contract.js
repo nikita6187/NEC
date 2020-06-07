@@ -40,7 +40,7 @@ class AggAnswerContract extends Contract {
 
     async getAnswer(ctx, answer_id) {
 
-        const answerAsBytes = await ctx.stub.getState(query_id); // get the query from chaincode state
+        const answerAsBytes = await ctx.stub.getState(answer_id); // get the query from chaincode state
         if (!answerAsBytes || answerAsBytes.length === 0) {
             throw new Error(`${answer_id} does not exist`);
         }
