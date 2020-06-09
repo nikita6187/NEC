@@ -16,8 +16,10 @@ To start network (create docker containers, join channels run):
 
 To deploy a contract run:
 ```
-./deployChaincode.sh ./artifacts/src/github.com/fabcar/javascript fabcar
+./deployChaincode.sh ./artifacts/src/github.com/fabcar/javascript fabcar 1 initLedger []
 ```
+
+Where the first argument is the path to the chaincode, the second is the chaincode name, third is version. Finally the 4th and 5th are optinal and execute a function (literal name) with the following arguments (JSON array) 
 
 To shutdown the network:
 ```
