@@ -41,7 +41,7 @@ CC_SRC_PATH="$1"  #./artifacts/src/github.com/fabcar/go
 CC_NAME="$2"  # fabcar
 CC_VERSION="$3" # 1
 CC_FUNCTION=$4 # function
-CC_ARGUMENTS=$5 []
+CC_ARGUMENTS=$5 # []
 
 # install chaincode dependencies
 presetup() {
