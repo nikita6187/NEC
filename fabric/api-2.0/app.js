@@ -11,10 +11,34 @@ const jwt = require('jsonwebtoken');
 const bearerToken = require('express-bearer-token');
 const cors = require('cors');
 const constants = require('./config/constants.json')
+var fs = require("fs");
+const Path = require('path');
+
 
 const host = process.env.HOST || constants.host;
-const port = process.env.PORT || constants.port;
 
+//use CLI specified port if needed
+let port;
+if(!Number.isNaN(process.argv[2])){
+    port = Number.parseInt(process.argv[2])
+} else {
+    port = process.env.PORT || constants.port;
+}
+
+
+const deleteFolderRecursive = function(path) {
+    if (fs.existsSync(path)) {
+      fs.readdirSync(path).forEach((file, index) => {
+        const curPath = Path.join(path, file);
+        if (fs.lstatSync(curPath).isDirectory()) { // recurse
+          deleteFolderRecursive(curPath);
+        } else { // delete file
+          fs.unlinkSync(curPath);
+        }
+      });
+      fs.rmdirSync(path);
+    }
+  };
 
 const helper = require('./app/helper')
 const invoke = require('./app/invoke')
@@ -65,8 +89,11 @@ logger.info('****************** SERVER STARTED ************************');
 logger.info('***************  http://%s:%s  ******************', host, port);
 server.timeout = 240000;
 
-// TODO: delete old wallet folders
-// TODO: add changeable port parameter
+// delete old wallet folders if "clean" flag in command line arguments
+if(process.argv.includes('clean')){
+    deleteFolderRecursive('wallet');
+}
+
 
 function getErrorMessage(field) {
     var response = {
@@ -217,3 +244,10 @@ app.get('/channels/:channelName/chaincodes/:chaincodeName', async function (req,
         res.send(response_payload)
     }
 });
+
+
+
+// usage:
+// npm run start <PORT NUMBER (default 4000)> clean <cleans up prev files>
+
+

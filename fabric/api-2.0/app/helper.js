@@ -8,20 +8,19 @@ const yaml = require('js-yaml')
 
 const util = require('util');
 
-
-
+let ccp;
 
 
 const getRegisteredUser = async (username, userOrg, isJson) => {
 
     console.log(JSON.stringify(Wallets));
 
-    userOrgUpper = userOrg;
+    const userOrgUpper = userOrg;
     userOrg = userOrg.toLowerCase();
 
     const ccpPath = path.resolve(__dirname, '..', 'config', 'connection-' + userOrg + '.yaml');
     const ccpYaml = fs.readFileSync(ccpPath, 'utf8')
-    let ccp = yaml.load(ccpYaml);
+    ccp = yaml.load(ccpYaml);
 
     // Create a new CA client for interacting with the CA.
     const caURL = ccp.certificateAuthorities['ca.' + userOrg + '.example.com'].url;
@@ -45,7 +44,7 @@ const getRegisteredUser = async (username, userOrg, isJson) => {
     let adminIdentity = await wallet.get('admin');
     if (!adminIdentity) {
         console.log('An identity for the admin user "admin" does not exist in the wallet');
-        await enrollAdmin(org);
+        await enrollAdmin(userOrg, userOrgUpper);
         adminIdentity = await wallet.get('admin');
         console.log("Admin Enrolled Successfully")
     }
@@ -87,7 +86,7 @@ const enrollAdmin = async (org, orgUpper) => {
     try {
 
         const caInfo = ccp.certificateAuthorities['ca.' + org +'.example.com'];
-        const caTLSCACerts = caInfo.tlsCACerts.pem;  // TODO: change this
+        const caTLSCACerts = caInfo.tlsCACerts.pem; 
         const ca = new FabricCAServices(caInfo.url, { trustedRoots: caTLSCACerts, verify: false }, caInfo.caName);
 
         // Create a new file system based wallet for managing identities.
