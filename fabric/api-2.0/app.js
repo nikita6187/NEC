@@ -19,7 +19,7 @@ const port = process.env.PORT || constants.port;
 const helper = require('./app/helper')
 const invoke = require('./app/invoke')
 const query = require('./app/query')
-
+logger.level = "debug"
 app.options('*', cors());
 app.use(cors());
 app.use(bodyParser.json());
