@@ -17,12 +17,13 @@ def main():
     json_users = {"username": username, "orgName": org_str}
     r = requests.post(url_users, data=json_users)
     token = r.json()['token']
-
+    r.close()
     # Then invoke/query chaincode and function
     if sys.argv[4] == "req":
         # Query
         headers = {"Authorization": "Bearer " + token}
-        params = {"args": sys.argv[7:],
+        args = list(sys.argv[7:])
+        params = {"args": args,
                   "peer": "peer0.org" + sys.argv[3] + ".example.com",
                   "fcn": sys.argv[6]}
         url_req = "http://localhost:" + sys.argv[1] + "/channels/mychannel/chaincodes/" + sys.argv[5]

@@ -38,10 +38,17 @@ python3 generate_certificates.py 3
 Assuming the network is running, execute the following command.
 ```
 cd fabric/api-2.0
-npm run start
+npm run start 4000 clean
+```
+Note, the last two parameters can be left out (defaults to no cleaning of old files and port 40000).
+
+Then in another terminal, use the `quicktest_api.py` script to try out various commands from the command line (Note: it needs the `requests` pip package).
+Usage:
+```
+python3 quicktest_api.py <port> <username> 1|2|3(org id) req|post <chaincode> <function_name> <function params>...
 ```
 
-Try out fabcar methods.
+Examples:
 ```
 python3 quicktest_api.py 4000 nikita 1 req fabcar queryAllCars []
 python3 quicktest_api.py 4000 nikita 1 post fabcar createCar "CAR14" "Tesla" "F1-Reloaded" "White" "nikitaorg2"

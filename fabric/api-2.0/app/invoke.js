@@ -7,6 +7,15 @@ const util = require('util')
 const yaml = require('js-yaml')
 
 
+function IsJsonString(str) {
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false;
+    }
+    return true;
+}
+
 const helper = require('./helper')
 
 const invokeTransaction = async (channelName, chaincodeName, fcn, args, username, org_name) => {
@@ -55,9 +64,15 @@ const invokeTransaction = async (channelName, chaincodeName, fcn, args, username
         let result = await contract.submitTransaction(fcn, ...args);  // TODO: check
 
         await gateway.disconnect();
-
+        
+        // first check if json, else parse as string
         logger.debug(result.toString());
-        result = JSON.parse(result.toString());
+        if(IsJsonString(result.toString())){
+            result = JSON.parse(result.toString());
+        } else{
+            result = result.toString();
+        }
+
         let message = result;
 
         let response = {

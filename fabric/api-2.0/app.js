@@ -223,10 +223,15 @@ app.get('/channels/:channelName/chaincodes/:chaincodeName', async function (req,
             res.json(getErrorMessage('\'args\''));
             return;
         }
-        console.log('args==========', args);
-        args = args.replace(/'/g, '"');
-        args = JSON.parse(args);
-        logger.debug(args);
+        //console.log('args==========', args);
+        //console.log(args)
+        //args = args.replace(/'/g, '"');
+        //console.log(args)
+        //args = JSON.parse(args);
+        //logger.debug(args);
+        if(!Array.isArray(args)){
+            args = [args];
+        }
 
         let message = await query.query(channelName, chaincodeName, args, fcn, req.username, req.orgname);
 

@@ -7,7 +7,12 @@ const util = require('util')
 const yaml = require('js-yaml')
 
 const helper = require('./helper')
+
+
+
 const query = async (channelName, chaincodeName, args, fcn, username, org_name) => {
+
+    console.log("HERE 1");
 
     try {
         logger.debug(util.format('\n============ Query on channel %s for %s============\n', channelName, org_name));
@@ -46,11 +51,18 @@ const query = async (channelName, chaincodeName, args, fcn, username, org_name) 
         // Get the contract from the network.
         const contract = network.getContract(chaincodeName);
 
-        let result = await contract.evaluateTransaction(fcn, ...args); // TODO: check
+        let result = await contract.evaluateTransaction(fcn, ...args);
+
         console.log(`Transaction has been evaluated, result is: ${result.toString()}`);
-        result = JSON.parse(result.toString());
-        return result
+
+        result = result.toString();
+        let response = {
+            result: result
+        };
+
+        return response
     } catch (error) {
+        console.log("HERE 4");
         console.error(`Failed to evaluate transaction: ${error}`);
         return error.message
 
