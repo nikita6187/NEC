@@ -37,7 +37,7 @@ const getRegisteredUser = async (username, userOrg, isJson) => {
     }
 
     // Check to see if we've already enrolled the admin user.
-    const adminIdentity = await wallet.get('admin');
+    let adminIdentity = await wallet.get('admin');
     if (!adminIdentity) {
         console.log('An identity for the admin user "admin" does not exist in the wallet');
         await enrollAdmin();

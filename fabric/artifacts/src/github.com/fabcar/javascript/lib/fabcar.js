@@ -103,6 +103,7 @@ class FabCar extends Contract {
 
         await ctx.stub.putState(carNumber, Buffer.from(JSON.stringify(car)));
         console.info('============= END : Create Car ===========');
+        return car;
     }
 
     async queryAllCars(ctx) {
@@ -136,6 +137,7 @@ class FabCar extends Contract {
 
         await ctx.stub.putState(carNumber, Buffer.from(JSON.stringify(car)));
         console.info('============= END : changeCarOwner ===========');
+        return car;
     }
 
 }

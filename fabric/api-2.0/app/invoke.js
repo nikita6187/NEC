@@ -4,6 +4,7 @@ const path = require("path")
 const log4js = require('log4js');
 const logger = log4js.getLogger('BasicNetwork');
 const util = require('util')
+const yaml = require('js-yaml')
 
 
 const helper = require('./helper')
@@ -14,8 +15,8 @@ const invokeTransaction = async (channelName, chaincodeName, fcn, args, username
 
         // load the network configuration
         const ccpPath = path.resolve(__dirname, '..', 'config', 'connection-org1.yaml');
-        const ccpJSON = fs.readFileSync(ccpPath, 'utf8')
-        const ccp = JSON.parse(ccpJSON);
+        const ccpYaml = fs.readFileSync(ccpPath, 'utf8')
+        const ccp = yaml.load(ccpYaml);
 
         // Create a new file system based wallet for managing identities.
         const walletPath = path.join(process.cwd(), 'wallet');
@@ -53,7 +54,7 @@ const invokeTransaction = async (channelName, chaincodeName, fcn, args, username
         if (fcn === "createCar") {
             result = await contract.submitTransaction(fcn, args[0], args[1], args[2], args[3], args[4]);
             message = `Successfully added the car asset with key ${args[0]}`
-
+            logger.debug(message)
         } else if (fcn === "changeCarOwner") {
             result = await contract.submitTransaction(fcn, args[0], args[1]);
             message = `Successfully changed car owner with key ${args[0]}`
@@ -63,8 +64,9 @@ const invokeTransaction = async (channelName, chaincodeName, fcn, args, username
 
         await gateway.disconnect();
 
+        logger.debug(result.toString());
         result = JSON.parse(result.toString());
-
+        
         let response = {
             message: message,
             result

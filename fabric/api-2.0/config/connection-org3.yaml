@@ -45,7 +45,7 @@ certificateAuthorities:
     caName: ca.org3.example.com
     tlsCACerts:
       pem: |
-        ----BEGIN CERTIFICATE-----
+        -----BEGIN CERTIFICATE-----
         MIICWDCCAf6gAwIBAgIRAMFfVN/kni/DIpJYfLxiJ/AwCgYIKoZIzj0EAwIwdjEL
         MAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBG
         cmFuY2lzY28xGTAXBgNVBAoTEG9yZzMuZXhhbXBsZS5jb20xHzAdBgNVBAMTFnRs
