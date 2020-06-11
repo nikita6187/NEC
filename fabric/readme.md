@@ -41,6 +41,13 @@ cd fabric/api-2.0
 npm run start
 ```
 
+Try out fabcar methods.
+```
+python3 quicktest_api.py 4000 nikita 1 req fabcar queryAllCars []
+python3 quicktest_api.py 4000 nikita 1 post fabcar createCar "CAR14" "Tesla" "F1-Reloaded" "White" "nikitaorg2"
+```
+
+
 # Known issues
 ```
 "tool x" is not recognised as a bash command
