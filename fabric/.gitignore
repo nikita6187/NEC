@@ -127,7 +127,7 @@ crypto/fabric-client-kv-org1
 fabcar.tar.gz
 artifacts/src/github.com/fabcar_contract_api/go/vendor
 artifacts/src/github.com/fabcar_contract_api/go/go.sum
-api-2.0/wallet
+api-2.0/wallet*
 api-2.0/config
 
 api-1.4/crypto/org1

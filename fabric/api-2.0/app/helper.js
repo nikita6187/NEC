@@ -18,6 +18,7 @@ const getRegisteredUser = async (username, userOrg, isJson) => {
     const userOrgUpper = userOrg;
     userOrg = userOrg.toLowerCase();
 
+
     const ccpPath = path.resolve(__dirname, '..', 'config', 'connection-' + userOrg + '.yaml');
     const ccpYaml = fs.readFileSync(ccpPath, 'utf8')
     ccp = yaml.load(ccpYaml);
@@ -26,7 +27,7 @@ const getRegisteredUser = async (username, userOrg, isJson) => {
     const caURL = ccp.certificateAuthorities['ca.' + userOrg + '.example.com'].url;
     const ca = new FabricCAServices(caURL);
 
-    const walletPath = path.join(process.cwd(), 'wallet');
+    const walletPath = path.join(process.cwd(), 'wallet-' + userOrg);
     const wallet = await Wallets.newFileSystemWallet(walletPath);
     console.log(`Wallet path: ${walletPath}`);
 
@@ -90,7 +91,7 @@ const enrollAdmin = async (org, orgUpper) => {
         const ca = new FabricCAServices(caInfo.url, { trustedRoots: caTLSCACerts, verify: false }, caInfo.caName);
 
         // Create a new file system based wallet for managing identities.
-        const walletPath = path.join(process.cwd(), 'wallet');
+        const walletPath = path.join(process.cwd(), 'wallet-' + org);
         const wallet = await Wallets.newFileSystemWallet(walletPath);
         console.log(`Wallet path: ${walletPath}`);
 

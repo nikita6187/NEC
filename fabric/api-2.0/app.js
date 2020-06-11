@@ -19,7 +19,7 @@ const host = process.env.HOST || constants.host;
 
 //use CLI specified port if needed
 let port;
-if(!Number.isNaN(process.argv[2])){
+if(!isNaN(parseFloat(process.argv[2])) && isFinite(process.argv[2])){
     port = Number.parseInt(process.argv[2])
 } else {
     port = process.env.PORT || constants.port;
@@ -91,7 +91,9 @@ server.timeout = 240000;
 
 // delete old wallet folders if "clean" flag in command line arguments
 if(process.argv.includes('clean')){
-    deleteFolderRecursive('wallet');
+    deleteFolderRecursive('wallet-org1');
+    deleteFolderRecursive('wallet-org2');
+    deleteFolderRecursive('wallet-org3');
 }
 
 
