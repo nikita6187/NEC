@@ -1,5 +1,14 @@
 # Fabric API for Query contract
 
+```
+cd NEC/fabric/
+```
+
+Optionally:
+```
+bash ./setup_network.sh
+```
+
 To init network:
 ```
 bash start_network.sh
