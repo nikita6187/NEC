@@ -9,17 +9,22 @@ const yaml = require('js-yaml')
 const util = require('util');
 
 
-const ccpPath = path.resolve(__dirname, '..', 'config', 'connection-org1.yaml');
-const ccpYaml = fs.readFileSync(ccpPath, 'utf8')
-const ccp = yaml.load(ccpYaml);
+
 
 
 const getRegisteredUser = async (username, userOrg, isJson) => {
 
-    console.log(JSON.stringify(Wallets))
+    console.log(JSON.stringify(Wallets));
+
+    userOrgUpper = userOrg;
+    userOrg = userOrg.toLowerCase();
+
+    const ccpPath = path.resolve(__dirname, '..', 'config', 'connection-' + userOrg + '.yaml');
+    const ccpYaml = fs.readFileSync(ccpPath, 'utf8')
+    let ccp = yaml.load(ccpYaml);
 
     // Create a new CA client for interacting with the CA.
-    const caURL = ccp.certificateAuthorities['ca.org1.example.com'].url;
+    const caURL = ccp.certificateAuthorities['ca.' + userOrg + '.example.com'].url;
     const ca = new FabricCAServices(caURL);
 
     const walletPath = path.join(process.cwd(), 'wallet');
@@ -40,7 +45,7 @@ const getRegisteredUser = async (username, userOrg, isJson) => {
     let adminIdentity = await wallet.get('admin');
     if (!adminIdentity) {
         console.log('An identity for the admin user "admin" does not exist in the wallet');
-        await enrollAdmin();
+        await enrollAdmin(org);
         adminIdentity = await wallet.get('admin');
         console.log("Admin Enrolled Successfully")
     }
@@ -50,7 +55,7 @@ const getRegisteredUser = async (username, userOrg, isJson) => {
     const adminUser = await provider.getUserContext(adminIdentity, 'admin');
 
     // Register the user, enroll the user, and import the new identity into the wallet.
-    const secret = await ca.register({ affiliation: 'org1.department1', enrollmentID: username, role: 'client' }, adminUser);
+    const secret = await ca.register({ affiliation: userOrg + '.department1', enrollmentID: username, role: 'client' }, adminUser);
     // const secret = await ca.register({ affiliation: 'org1.department1', enrollmentID: username, role: 'client', attrs: [{ name: 'role', value: 'approver', ecert: true }] }, adminUser);
 
     const enrollment = await ca.enroll({ enrollmentID: username, enrollmentSecret: secret });
@@ -60,7 +65,7 @@ const getRegisteredUser = async (username, userOrg, isJson) => {
             certificate: enrollment.certificate,
             privateKey: enrollment.key.toBytes(),
         },
-        mspId: 'Org1MSP',
+        mspId: userOrgUpper + 'MSP',
         type: 'X.509',
     };
 
@@ -75,13 +80,13 @@ const getRegisteredUser = async (username, userOrg, isJson) => {
 }
 
 
-const enrollAdmin = async () => {
+const enrollAdmin = async (org, orgUpper) => {
 
     console.log('calling enroll Admin method')
 
     try {
 
-        const caInfo = ccp.certificateAuthorities['ca.org1.example.com'];
+        const caInfo = ccp.certificateAuthorities['ca.' + org +'.example.com'];
         const caTLSCACerts = caInfo.tlsCACerts.pem;  // TODO: change this
         const ca = new FabricCAServices(caInfo.url, { trustedRoots: caTLSCACerts, verify: false }, caInfo.caName);
 
@@ -104,7 +109,7 @@ const enrollAdmin = async () => {
                 certificate: enrollment.certificate,
                 privateKey: enrollment.key.toBytes(),
             },
-            mspId: 'Org1MSP',
+            mspId: orgUpper + 'MSP',
             type: 'X.509',
         };
         await wallet.put('admin', x509Identity);

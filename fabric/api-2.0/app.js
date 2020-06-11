@@ -65,6 +65,9 @@ logger.info('****************** SERVER STARTED ************************');
 logger.info('***************  http://%s:%s  ******************', host, port);
 server.timeout = 240000;
 
+// TODO: delete old wallet folders
+// TODO: add changeable port parameter
+
 function getErrorMessage(field) {
     var response = {
         success: false,
