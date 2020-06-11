@@ -82,7 +82,7 @@ const enrollAdmin = async () => {
     try {
 
         const caInfo = ccp.certificateAuthorities['ca.org1.example.com'];
-        const caTLSCACerts = caInfo.tlsCACerts.pem;
+        const caTLSCACerts = caInfo.tlsCACerts.pem;  // TODO: change this
         const ca = new FabricCAServices(caInfo.url, { trustedRoots: caTLSCACerts, verify: false }, caInfo.caName);
 
         // Create a new file system based wallet for managing identities.
