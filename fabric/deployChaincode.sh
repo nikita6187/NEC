@@ -194,32 +194,25 @@ chaincodeInvoke() {
 }
 # chaincodeInvoke
 
+
 # Run this function if you add any new dependency in chaincode
 # presetup
 
-# packageChaincode
-# installChaincode
-# queryInstalled
-# approveForMyOrg1
-# checkCommitReadyness
-# approveForMyOrg2
-# checkCommitReadyness
-# approveForMyOrg3
-# checkCommitReadyness
-# commitChaincodeDefination
-# queryCommitted
-# chaincodeInvokeInit
+packageChaincode
+installChaincode
+queryInstalled
+approveForMyOrg1
+checkCommitReadyness
+approveForMyOrg2
+checkCommitReadyness
+approveForMyOrg3
+checkCommitReadyness
+commitChaincodeDefination
+queryCommitted
+chaincodeInvokeInit
+sleep 10  # To make sure that the init is completed before
 chaincodeInvoke
 
-# # Disabled as it is hardcoded to work with FabCar
-# chaincodeQuery() {
-#     setGlobalsForPeer0Org1
 
-#     # Query all cars
-#     peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"Args":["queryAllCars"]}'
+# USAGE: bash ./deployChaincode.sh <PATH_TO_CC_SRC> <CC_NAME> <CC_VERSION> <INIT_FUNCTION> <INIT_FUNCTION_ARGS>
 
-#     # Query Car by Id
-#     # peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"function": "queryCar","Args":["CAR0"]}'
-#     # '{"Args":["GetSampleData","Key1"]}'
-# }
-# # chaincodeQuery
