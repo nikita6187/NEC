@@ -14,6 +14,7 @@ python3 generate_certificates.py 2
 python3 generate_certificates.py 3
 ```
 
+Then:
 ```
 cd fabric/api-2.0
 npm run start 4000 clean
