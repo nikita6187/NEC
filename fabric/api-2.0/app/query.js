@@ -7,17 +7,25 @@ const util = require('util')
 const yaml = require('js-yaml')
 
 const helper = require('./helper')
+
+
+
 const query = async (channelName, chaincodeName, args, fcn, username, org_name) => {
+
+    console.log("HERE 1");
 
     try {
         logger.debug(util.format('\n============ Query on channel %s for %s============\n', channelName, org_name));
+        
+        const org_name_lower = org_name.toLowerCase();
+
         // load the network configuration
-        const ccpPath = path.resolve(__dirname, '..', 'config', 'connection-org3.yaml');
+        const ccpPath = path.resolve(__dirname, '..', 'config', 'connection-' + org_name_lower + '.yaml');
         const ccpYaml = fs.readFileSync(ccpPath, 'utf8')
         const ccp = yaml.load(ccpYaml);
 
         // Create a new file system based wallet for managing identities.
-        const walletPath = path.join(process.cwd(), 'wallet');
+        const walletPath = path.join(process.cwd(), 'wallet-' + org_name_lower);
         const wallet = await Wallets.newFileSystemWallet(walletPath);
         console.log(`Wallet path: ${walletPath}`);
 
@@ -43,11 +51,18 @@ const query = async (channelName, chaincodeName, args, fcn, username, org_name) 
         // Get the contract from the network.
         const contract = network.getContract(chaincodeName);
 
-        let result = await contract.evaluateTransaction(fcn, args[0]);
+        let result = await contract.evaluateTransaction(fcn, ...args);
+
         console.log(`Transaction has been evaluated, result is: ${result.toString()}`);
-        result = JSON.parse(result.toString());
-        return result
+
+        result = result.toString();
+        let response = {
+            result: result
+        };
+
+        return response
     } catch (error) {
+        console.log("HERE 4");
         console.error(`Failed to evaluate transaction: ${error}`);
         return error.message
 

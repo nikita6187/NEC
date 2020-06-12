@@ -6,7 +6,7 @@ Initial hyperledger fabric setup for team NEC
 
 To setup network first run. This generetates the cryptomaterial (genesis blocks, certificates), needs to only be run once:
 ```
-./bash setup_network.sh
+bash ./setup_network.sh
 ```
 
 To start network (create docker containers, join channels run):
@@ -28,41 +28,32 @@ To shutdown the network:
 
 # Api Set-up
 
-First run ./setup.sh. Then from 
+First make sure that `setup_network.sh` was run before. Then manage all certs with the following python scripts.
 ```
-artifacts/channel/crypto-config/peerOrganizations/org1.example.com/msp/tlscacerts
-``` 
-copy the certificate file and place it in 
-```
-api-2.0/config/connection-org1.yaml
-
-peers:
-  peer0.org1.example.com:
-    tlsCACerts:
-      pem: |
-      *** Certificate goes here ***
-```
-then copy
-```
-artifacts/channel/crypto-config/peerOrganizations/org1.example.com/tlsca
-```
-to
-```
-api-2.0/config/connection-org1.yaml
-
-certificateAuthorities:
-  ca.org1.example.com:
-    tlsCACerts:
-      pem: |
-      *** Certificate goes here ***
+python3 generate_certificates.py 1
+python3 generate_certificates.py 2
+python3 generate_certificates.py 3
 ```
 
-Repeat the same for other peers if you plan to use them. You generally only need to use one peer. 
-Start API with
+Assuming the network is running, execute the following command.
 ```
 cd fabric/api-2.0
-npm run start
+npm run start 4000 clean
 ```
+Note, the last two parameters can be left out (defaults to no cleaning of old files and port 40000).
+
+Then in another terminal, use the `quicktest_api.py` script to try out various commands from the command line (Note: it needs the `requests` pip package).
+Usage:
+```
+python3 quicktest_api.py <port> <username> 1|2|3(org id) req|post <chaincode> <function_name> <function params>...
+```
+
+Examples:
+```
+python3 quicktest_api.py 4000 nikita 1 req fabcar queryAllCars []
+python3 quicktest_api.py 4000 nikita 1 post fabcar createCar "CAR14" "Tesla" "F1-Reloaded" "White" "nikitaorg2"
+```
+
 
 # Known issues
 ```
