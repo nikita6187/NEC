@@ -1,0 +1,15 @@
+{
+  "name": "coin_contract",
+  "version": "1.0.0",
+  "description": "Coin contract implementation",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "fabric-contract-api": "^2.1.2",
+    "fabric-shim": "^2.1.2"
+  }
+}
