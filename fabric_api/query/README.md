@@ -1,21 +1,38 @@
 # Fabric API for Query contract
 
-First create folders `wallet1` - `wallet3`.
+```
+cd NEC/fabric/
+```
+
+Optionally:
+```
+bash ./setup_network.sh
+```
 
 To init network:
 ```
-bash start_network.sh ./artifacts/src/query_contract/ query_contract
-node enrollAdmin.js 1
-node enrollAdmin.js 2
-node enrollAdmin.js 3
-node registerUser.js 1
-node registerUser.js 2
-node registerUser.js 3
+bash start_network.sh
+bash ./deployChaincode.sh ./artifacts/src/query_contract/ query_contract 1 initLedger []
+
 ```
-Then use the testing files.
+
+Optionally:
 ```
-node queryTest.js 1 createQuery "query text 2" 2 40 some_wallet3
-node queryTest.js 1 approveQuery q2 1
-node queryTest.js 1 getQuery q2
-node queryTest.js 2 setQueryStage q2 3
+python3 generate_certificates.py 1
+python3 generate_certificates.py 2
+python3 generate_certificates.py 3
+```
+
+Then:
+```
+cd fabric/api-2.0
+npm run start 4000 clean
+```
+
+Then in new terminal window.
+```
+python3 quicktest_api.py 4000 nikita3 2 post query_contract createQuery query_test_text 1 40 wallet3
+python3 quicktest_api.py 4000 nikita20 2 req query_contract getQuery q1
+python3 quicktest_api.py 4000 nikita27j 3 req query_contract approveQuery 1 (doesn't work yet due to org3.department1 bug)
+python3 quicktest_api.py 4000 nikita899 1 post query_contract setQueryStage q1 1
 ```

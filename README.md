@@ -3,16 +3,18 @@ Our blockchain practical for the NEC challenge
 
 
 ## Network Setup
-All network code located in `./fabric/`. See readme there for setup.
+All network code located in `/fabric/`. See readme there for setup.
 
-TODO: a single script to run and shut down network
 
 ## Smart Contracts
-- Located in basic network `./fabric/artifacts/src/`
+- Located in basic network `/fabric/artifacts/src/`
 - JS for smart contracts
-- Coin smart contract and Query smart contract
+- Coin smart contract, Query smart contract & Aggregated Answer smart contract
 
 ## APIs to HF network
-- Location in this repo in `./fabric_api/`
-- Node for APIs
-- See readme there for details
+- Readme examples in `/fabric_api/`
+- Node server for API
+- Located in `/fabric/api-2.0`
+- `HTTP GET` applies a query on the blockchain
+- `HTTP POST` applied an invoke on the blockchain
+- Example to run and interact with QueryContract in `/fabric_api/query`
