@@ -5,7 +5,6 @@ const ClientIdentity = require('fabric-shim').ClientIdentity;
 
 // Some constants
 const num_majority = 1;
-var
 const mo_id = "org1";
 const dc_id = "org2";
 const oo_id = "org3"; 
@@ -171,7 +170,7 @@ class QueryContract extends Contract {
             if (query_stages[newStage] == "failed") {
                 query.fail_message = fail_message;
             }
-
+            var
             // Set stage
             query.stage = newStage;
             
