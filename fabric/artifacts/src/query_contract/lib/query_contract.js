@@ -5,11 +5,19 @@ const ClientIdentity = require('fabric-shim').ClientIdentity;
 
 // Some constants
 const num_majority = 1;
+var
 const mo_id = "org1";
 const dc_id = "org2";
 const oo_id = "org3"; 
 //const oo_id = "org1"; // UNCOMMENT FOR TESTING IF BUGS ARISE WITH ORG3
-
+var query_stages = {
+    1: "awaiting_approval",
+    2: "approved",
+    3: "checking_users",
+    4: "serving_data",
+    5: "served",
+    6: "failed"
+};
 
 class QueryContract extends Contract {
     
@@ -17,7 +25,7 @@ class QueryContract extends Contract {
     async initLedger(ctx) {
         console.info('============= START : Initialize Ledger ===========');
         
-        // demo
+    // demo
         const queries = [
             {
                 query_id: 'q1',
@@ -29,6 +37,7 @@ class QueryContract extends Contract {
                 num_majority: 1,
                 max_budget: 10,
                 wallet_id: 'w1',
+                fail_message: '',
             },
         ];
 
@@ -73,6 +82,7 @@ class QueryContract extends Contract {
             num_majority: num_majority,
             max_budget: max_budget,
             wallet_id: wallet_id,
+            fail_message: '',
         };
         
         await ctx.stub.putState(query_id, Buffer.from(JSON.stringify(query)));
@@ -92,7 +102,7 @@ class QueryContract extends Contract {
             // TODO: add reason field for approved = false
             
             // Get query
-            const queryAsBytes = await ctx.stub.getState(query_id); // get the car from chaincode state
+            const queryAsBytes = await ctx.stub.getState(query_id); 
             if (!queryAsBytes || queryAsBytes.length === 0) {
                 throw new Error(`${query_id} does not exist`);
             }
@@ -123,20 +133,27 @@ class QueryContract extends Contract {
     }
 
 
-    async setQueryStage(ctx, query_id, stage){
+    async setQueryStage(ctx, query_id, stage, fail_message = ""){
+        // 1. Awaiting approval (directly once the query is created by DC)
+        // 2. Approved (after a majority of approvals but before min user check by MO)
+        // 3. Checking users (by MO)
+        // 4. Serving data (users send data to aggregator) i.e. enough users
+        // 5. Served (agg answer on the blockchain; considered archived)
+        // 6. Failed
 
-        // Stage 1 = New query looking for approval
-        // Stage 2 = Approved query, waiting for response of min users
-        // Stage 3 = Min users reached, waiting for data transfer
-        // Stage 4 = Archived
-        // Stage 5 = Error
+        let newStage = parseInt(stage);
+        let no_stages = Object.getOwnPropertyNames(query_stages).length;
+
+        if (newStage < 1 || newStage > no_stages) {
+            throw new Error('Stage number invalid!');
+        }
 
         let cid = new ClientIdentity(ctx.stub);
 
         if(cid.assertAttributeValue('hf.Affiliation', mo_id + '.department1')){
             
             // Get query
-            const queryAsBytes = await ctx.stub.getState(query_id); // get the car from chaincode state
+            const queryAsBytes = await ctx.stub.getState(query_id); 
             if (!queryAsBytes || queryAsBytes.length === 0) {
                 throw new Error(`${query_id} does not exist`);
             }
@@ -150,8 +167,13 @@ class QueryContract extends Contract {
             
             // TODO: do checks for later stages
 
+            // For fail state, add Fail message to the query
+            if (query_stages[newStage] == "failed") {
+                query.fail_message = fail_message;
+            }
+
             // Set stage
-            query.stage = stage;
+            query.stage = newStage;
             
             // Put it back
             await ctx.stub.putState(query.query_id, Buffer.from(JSON.stringify(query)));
