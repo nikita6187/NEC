@@ -10,12 +10,12 @@ const dc_id = "org2";
 const oo_id = "org3"; 
 //const oo_id = "org1"; // UNCOMMENT FOR TESTING IF BUGS ARISE WITH ORG3
 var query_stages = {
+    0: "failed",
     1: "awaiting_approval",
     2: "approved",
     3: "checking_users",
     4: "serving_data",
-    5: "served",
-    6: "failed"
+    5: "served"
 };
 
 class QueryContract extends Contract {
@@ -132,18 +132,19 @@ class QueryContract extends Contract {
     }
 
 
-    async setQueryStage(ctx, query_id, stage, fail_message = ""){
+    async setQueryStage(ctx, query_id, stage, fail_message){
         // 1. Awaiting approval (directly once the query is created by DC)
         // 2. Approved (after a majority of approvals but before min user check by MO)
         // 3. Checking users (by MO)
         // 4. Serving data (users send data to aggregator) i.e. enough users
         // 5. Served (agg answer on the blockchain; considered archived)
-        // 6. Failed
+        // 0. Failed
 
         let newStage = parseInt(stage);
         let no_stages = Object.getOwnPropertyNames(query_stages).length;
 
-        if (newStage < 1 || newStage > no_stages) {
+        // Check newStage value is in the valid range
+        if (newStage < 0 || newStage >= no_stages) {
             throw new Error('Stage number invalid!');
         }
 
@@ -160,9 +161,9 @@ class QueryContract extends Contract {
             const query = JSON.parse(queryAsBytes.toString());
 
             // Basic double checks
-            if(query.stage >= 2 && query.num_approve < query.num_majority){
-                throw new Error('Not enough approvals for stage 2 or later!');
-            }
+            // if(query_stages && query.num_approve < query.num_majority){
+            //     throw new Error('Not enough approvals for stage 2 or later!');
+            // }
             
             // TODO: do checks for later stages
 
