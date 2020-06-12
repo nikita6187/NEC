@@ -170,7 +170,7 @@ class QueryContract extends Contract {
             if (query_stages[newStage] == "failed") {
                 query.fail_message = fail_message;
             }
-            var
+    
             // Set stage
             query.stage = newStage;
             
