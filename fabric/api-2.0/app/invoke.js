@@ -4,7 +4,17 @@ const path = require("path")
 const log4js = require('log4js');
 const logger = log4js.getLogger('BasicNetwork');
 const util = require('util')
+const yaml = require('js-yaml')
 
+
+function IsJsonString(str) {
+    try {
+        JSON.parse(str);
+    } catch (e) {
+        return false;
+    }
+    return true;
+}
 
 const helper = require('./helper')
 
@@ -12,13 +22,16 @@ const invokeTransaction = async (channelName, chaincodeName, fcn, args, username
     try {
         logger.debug(util.format('\n============ invoke transaction on channel %s ============\n', channelName));
 
+        const org_name_lower = org_name.toLowerCase();
+
+
         // load the network configuration
-        const ccpPath = path.resolve(__dirname, '..', 'config', 'connection-org1.yaml');
-        const ccpJSON = fs.readFileSync(ccpPath, 'utf8')
-        const ccp = JSON.parse(ccpJSON);
+        const ccpPath = path.resolve(__dirname, '..', 'config', 'connection-' + org_name_lower + '.yaml');
+        const ccpYaml = fs.readFileSync(ccpPath, 'utf8')
+        const ccp = yaml.load(ccpYaml);
 
         // Create a new file system based wallet for managing identities.
-        const walletPath = path.join(process.cwd(), 'wallet');
+        const walletPath = path.join(process.cwd(), 'wallet-' + org_name_lower);
         const wallet = await Wallets.newFileSystemWallet(walletPath);
         console.log(`Wallet path: ${walletPath}`);
 
@@ -48,22 +61,19 @@ const invokeTransaction = async (channelName, chaincodeName, fcn, args, username
         const network = await gateway.getNetwork(channelName);
         const contract = network.getContract(chaincodeName);
 
-        let result
-        let message;
-        if (fcn === "createCar") {
-            result = await contract.submitTransaction(fcn, args[0], args[1], args[2], args[3], args[4]);
-            message = `Successfully added the car asset with key ${args[0]}`
-
-        } else if (fcn === "changeCarOwner") {
-            result = await contract.submitTransaction(fcn, args[0], args[1]);
-            message = `Successfully changed car owner with key ${args[0]}`
-        } else {
-            return `Invocation require either createCar or changeCarOwner as function but got ${fcn}`
-        }
+        let result = await contract.submitTransaction(fcn, ...args);  // TODO: check
 
         await gateway.disconnect();
+        
+        // first check if json, else parse as string
+        logger.debug(result.toString());
+        if(IsJsonString(result.toString())){
+            result = JSON.parse(result.toString());
+        } else{
+            result = result.toString();
+        }
 
-        result = JSON.parse(result.toString());
+        let message = result;
 
         let response = {
             message: message,

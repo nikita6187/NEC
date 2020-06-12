@@ -11,15 +11,39 @@ const jwt = require('jsonwebtoken');
 const bearerToken = require('express-bearer-token');
 const cors = require('cors');
 const constants = require('./config/constants.json')
+var fs = require("fs");
+const Path = require('path');
+
 
 const host = process.env.HOST || constants.host;
-const port = process.env.PORT || constants.port;
 
+//use CLI specified port if needed
+let port;
+if(!isNaN(parseFloat(process.argv[2])) && isFinite(process.argv[2])){
+    port = Number.parseInt(process.argv[2])
+} else {
+    port = process.env.PORT || constants.port;
+}
+
+
+const deleteFolderRecursive = function(path) {
+    if (fs.existsSync(path)) {
+      fs.readdirSync(path).forEach((file, index) => {
+        const curPath = Path.join(path, file);
+        if (fs.lstatSync(curPath).isDirectory()) { // recurse
+          deleteFolderRecursive(curPath);
+        } else { // delete file
+          fs.unlinkSync(curPath);
+        }
+      });
+      fs.rmdirSync(path);
+    }
+  };
 
 const helper = require('./app/helper')
 const invoke = require('./app/invoke')
 const query = require('./app/query')
-
+logger.level = "debug"
 app.options('*', cors());
 app.use(cors());
 app.use(bodyParser.json());
@@ -64,6 +88,14 @@ var server = http.createServer(app).listen(port, function () { console.log(`Serv
 logger.info('****************** SERVER STARTED ************************');
 logger.info('***************  http://%s:%s  ******************', host, port);
 server.timeout = 240000;
+
+// delete old wallet folders if "clean" flag in command line arguments
+if(process.argv.includes('clean')){
+    deleteFolderRecursive('wallet-org1');
+    deleteFolderRecursive('wallet-org2');
+    deleteFolderRecursive('wallet-org3');
+}
+
 
 function getErrorMessage(field) {
     var response = {
@@ -191,10 +223,15 @@ app.get('/channels/:channelName/chaincodes/:chaincodeName', async function (req,
             res.json(getErrorMessage('\'args\''));
             return;
         }
-        console.log('args==========', args);
-        args = args.replace(/'/g, '"');
-        args = JSON.parse(args);
-        logger.debug(args);
+        //console.log('args==========', args);
+        //console.log(args)
+        //args = args.replace(/'/g, '"');
+        //console.log(args)
+        //args = JSON.parse(args);
+        //logger.debug(args);
+        if(!Array.isArray(args)){
+            args = [args];
+        }
 
         let message = await query.query(channelName, chaincodeName, args, fcn, req.username, req.orgname);
 
@@ -214,3 +251,10 @@ app.get('/channels/:channelName/chaincodes/:chaincodeName', async function (req,
         res.send(response_payload)
     }
 });
+
+
+
+// usage:
+// npm run start <PORT NUMBER (default 4000)> clean <cleans up prev files>
+
+

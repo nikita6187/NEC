@@ -1,2 +1,2 @@
 Installed chaincodes on peer:
-Package ID: kuma_1:3620ef270a1af446a8126ee865b41f57c309789f8d9072bd123c82f49136b273, Label: kuma_1
+Package ID: query_contract_1:cb657b9f50709f1e53d34acd87cb663b6e3153a8fdbca5dca1157722b494733f, Label: query_contract_1

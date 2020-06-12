@@ -2,23 +2,72 @@
 Fork of https://github.com/adhavpavan/BasicNetwork-2.0
 Initial hyperledger fabric setup for team NEC
 
-# Quick Development Usage
+# Quick Usage
 
-To setup the network and deploy chaincode using a quick and dirty script:
+To setup network first run. This generetates the cryptomaterial (genesis blocks, certificates), needs to only be run once:
 ```
-bash start_network.sh <PATH TO SMART CONTRACT> <NAME OF SMART CONTRACT>
-```
-Example with fabcar:
-```
-bash start_network.sh ./artifacts/src/github.com/fabcar/javascript fabcar
+bash ./setup_network.sh
 ```
 
-To shutdown the network (WARNING: this stops and removes all docker containers):
+To start network (create docker containers, join channels run):
 ```
-bash stop_network.sh
+./start_network.sh
+```
+
+To deploy a contract run:
+```
+./deployChaincode.sh ./artifacts/src/github.com/fabcar/javascript fabcar 1 initLedger []
+```
+
+Where the first argument is the path to the chaincode, the second is the chaincode name, third is version. Finally the 4th and 5th are optinal and execute a function (literal name) with the following arguments (JSON array) 
+
+To shutdown the network:
+```
+./stop_network.sh
+```
+
+# Api Set-up
+
+First make sure that `setup_network.sh` was run before. Then manage all certs with the following python scripts.
+```
+python3 generate_certificates.py 1
+python3 generate_certificates.py 2
+python3 generate_certificates.py 3
+```
+
+Assuming the network is running, execute the following command.
+```
+cd fabric/api-2.0
+npm run start 4000 clean
+```
+Note, the last two parameters can be left out (defaults to no cleaning of old files and port 40000).
+
+Then in another terminal, use the `quicktest_api.py` script to try out various commands from the command line (Note: it needs the `requests` pip package).
+Usage:
+```
+python3 quicktest_api.py <port> <username> 1|2|3(org id) req|post <chaincode> <function_name> <function params>...
+```
+
+Examples:
+```
+python3 quicktest_api.py 4000 nikita 1 req fabcar queryAllCars []
+python3 quicktest_api.py 4000 nikita 1 post fabcar createCar "CAR14" "Tesla" "F1-Reloaded" "White" "nikitaorg2"
+```
+
+
+# Known issues
+```
+"tool x" is not recognised as a bash command
+```
+Add hyperledger Fabric binaries to the class path
 
 ```
-
+Script is not executable
+```
+Set script as executable in your file system
+```
+chmod +x filename.sh
+```
 
 # Basic Manual Setup
 
