@@ -59,8 +59,8 @@ class AggAnswerContract extends Contract {
         if(cid.assertAttributeValue('hf.Affiliation', oo_id + '.department1')){
 
             // convert use_wallet_list appropriatly
-            user_wallet_list = JSON.parse(user_wallet_list);  // TODO: check if appropriate
-            
+           // user_wallet_list = JSON.parse(user_wallet_list);  // TODO: check if appropriate
+            console.log(user_wallet_list);
             const rID1 = await ctx.stub.getState('counter');
             let rID = rID1.toString();
             await ctx.stub.putState('counter', Buffer.from((parseInt(rID) + 1).toString()));  // Increase counter for uniqueness
@@ -81,7 +81,7 @@ class AggAnswerContract extends Contract {
 
             // set served stage (nr 5) for query
             // TODO: check if works
-            const args = ["setQueryStage", query_id, 5];
+            const args = ["setQueryStage", query_id, "5", ""];
             await ctx.stub.invokeChaincode(cc_query_name, args, channel_name);
 
             await ctx.stub.putState(answer_id, Buffer.from(JSON.stringify(answer)));

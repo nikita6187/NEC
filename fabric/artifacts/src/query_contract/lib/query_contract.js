@@ -9,13 +9,20 @@ const mo_id = "org1";
 const dc_id = "org2";
 const oo_id = "org3"; 
 //const oo_id = "org1"; // UNCOMMENT FOR TESTING IF BUGS ARISE WITH ORG3
+
+// 1. Awaiting approval (directly once the query is created by DC)
+// 2. Approved (after a majority of approvals but before min user check by MO)
+// 3. Checking users (by MO)
+// 4. Serving data (users send data to aggregator) i.e. enough users
+// 5. Served (agg answer on the blockchain; considered archived)
+// 0. failed (various reasons for query failure - reason stored in "fail_message" field in Query)
 var query_stages = {
-    0: "failed",
-    1: "awaiting_approval",
-    2: "approved",
-    3: "checking_users",
-    4: "serving_data",
-    5: "served"
+    0: "FAILED",
+    1: "AWAITING_APPROVAL",
+    2: "APPROVED",
+    3: "CHECKING_USERS",
+    4: "SERVING_DATA",
+    5: "SERVED"
 };
 
 class QueryContract extends Contract {
@@ -133,12 +140,6 @@ class QueryContract extends Contract {
 
 
     async setQueryStage(ctx, query_id, stage, fail_message){
-        // 1. Awaiting approval (directly once the query is created by DC)
-        // 2. Approved (after a majority of approvals but before min user check by MO)
-        // 3. Checking users (by MO)
-        // 4. Serving data (users send data to aggregator) i.e. enough users
-        // 5. Served (agg answer on the blockchain; considered archived)
-        // 0. Failed
 
         let newStage = parseInt(stage);
         let no_stages = Object.getOwnPropertyNames(query_stages).length;
@@ -160,17 +161,19 @@ class QueryContract extends Contract {
             
             const query = JSON.parse(queryAsBytes.toString());
 
-            // Basic double checks
-            // if(query_stages && query.num_approve < query.num_majority){
-            //     throw new Error('Not enough approvals for stage 2 or later!');
-            // }
-            
-            // TODO: do checks for later stages
+            // Checks that verify if the change of the query state is valid
 
-            // For fail state, add Fail message to the query
-            if (query_stages[newStage] == "failed") {
+            // If the query doesn't have approval majority, throw error if trying to change state to "approved"
+            if(query_stages[newStage] == "APPROVED" && query.num_approve < query.num_majority){
+                throw new Error('Not enough approvals in order to change Query stage to APPROVED!');
+            }
+
+            // For FAILED state, add fail_message to the query
+            if (query_stages[newStage] == "FAILED") {
                 query.fail_message = fail_message;
             }
+
+            // TODO: do checks for later stages
     
             // Set stage
             query.stage = newStage;
@@ -178,7 +181,6 @@ class QueryContract extends Contract {
             // Put it back
             await ctx.stub.putState(query.query_id, Buffer.from(JSON.stringify(query)));
             
-
         }  else {
             throw new Error('Not Managing Organization credentials!');
         }
