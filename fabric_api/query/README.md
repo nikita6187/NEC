@@ -33,6 +33,6 @@ Then in new terminal window.
 ```
 python3 quicktest_api.py 4000 nikita3 2 post query_contract createQuery query_test_text 1 40 wallet3
 python3 quicktest_api.py 4000 nikita20 2 req query_contract getQuery q1
-python3 quicktest_api.py 4000 nikita27j 3 req query_contract approveQuery 1 (doesn't work yet due to org3.department1 bug)
+python3 quicktest_api.py 4000 nikita27j 3 req query_contract approveQuery 1 test_text (doesn't work yet due to org3.department1 bug)
 python3 quicktest_api.py 4000 nikita899 1 post query_contract setQueryStage q1 1
 ```
