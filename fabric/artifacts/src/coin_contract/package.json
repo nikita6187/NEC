@@ -4,12 +4,14 @@
   "description": "Coin contract implementation",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "fabric-chaincode-node start"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "fabric-contract-api": "^2.1.2",
-    "fabric-shim": "^2.1.2"
+    "fabric-shim": "^2.1.2",
+    "utils": "^0.3.1"
   }
 }

@@ -1,10 +1,69 @@
 const { Contract } = require('fabric-contract-api');
 
-export default class QueryContract extends Contract {
+class CoinContract extends Contract {
     // initiliazes contract ledger
     async initLedger(ctx) {
-    
+        // console.info('============= START : Initialize Ledger ===========');
+        console.info(ctx);
+        // console.info('============= END : Initialize Ledger ===========');
     }
+
+    /**
+     * @param {Stub} stub
+     */
+    async retrieveOrCreateMyWallet(ctx) {
+        // const myWallet = await UserWallet.queryCurrentUserWallet(ctx);
+
+        // if (myWallet) {
+        //     return myWallet;
+        // }
+
+        return new UserWallet({
+            address: ctx.uuid(CONSTANTS.PREFIXES.WALLET),
+            publicKeyHash: txHelper.getCreatorPublicKey(),
+            amount: 1000 // add an inital amount of 1000 tokens
+        }).save(txHelper);
+    }
+
+    /**
+     * @param {Stub} stub
+     * @param {TransactionHelper} txHelper
+     * @param {String} address
+     */
+    // async retrieveWallet(stub, txHelper, address) {
+    //     const schema = Joi.object().keys({
+    //         address: Joi.string().required().walletId()
+    //     });
+
+    //     try {
+    //         await schema.validate({
+    //             address
+    //         });
+    //     } catch (error) {
+    //         throw new ChaincodeError(ERRORS.VALIDATION, {
+    //             'message': error.message,
+    //             'details': error.details
+    //         });
+    //     }
+
+    //     return AbstractWallet.queryWalletByAddress(txHelper, address);
+    // }
+
+    /**
+     * @param {Stub} stub
+     * @param {String} chaincodeName
+     * @param {Array} chaincodeFunctions (optional)
+     */
+    // async createContractWallet(ctx, chaincodeName, chaincodeFunctions) {
+    //     // TODO: Perform argument verification
+
+    //     return new ContractWallet({
+    //         chaincodeName,
+    //         chaincodeFunctions,
+    //         address: ctx.uuid(CONSTANTS.PREFIXES.WALLET),
+    //         amount: 0
+    //     }).save(ctx);
+    // }
 
     /**
      * @param {Stub} ctx
@@ -13,76 +72,62 @@ export default class QueryContract extends Contract {
      * @param {String} fromAddress (optional) the address of the wallet that should send the coins.
      *                 If undefined, will be set to the caller's wallet
      */
-    async transfer(ctx, amount, toAddress, fromAddress = undefined) {
-        const schema = Joi.object().keys({
-            amount: Joi.number().required().positive(),
-            toAddress: Joi.string().required().walletId(),
-            fromAddress: Joi.string().optional().walletId()
-        });
+    // async transfer(ctx, amount, toAddress, fromAddress = undefined) {
+    //     // TODO: validate arguments
 
-        try {
-            await schema.validate({
-                amount, toAddress, fromAddress
-            });
-        } catch (error) {
-            throw new ChaincodeError(ERRORS.VALIDATION, {
-                'message': error.message,
-                'details': error.details
-            });
-        }
+    //     let fromWallet;
+    //     if (fromAddress) {
+    //         fromWallet = await AbstractWallet.queryWalletByAddress(ctx, fromAddress);
 
-        let fromWallet;
-        if (fromAddress) {
-            fromWallet = await AbstractWallet.queryWalletByAddress(txHelper, fromAddress);
+    //         if (!fromWallet) {
 
-            if (!fromWallet) {
+    //             throw new ChaincodeError(ERRORS.UNKNWON_WALLET, {
+    //                 'address': fromAddress
+    //             });
+    //         }
+    //     } else {
+    //         fromWallet = await this.retrieveOrCreateMyWallet(ctx, txHelper);
+    //     }
 
-                throw new ChaincodeError(ERRORS.UNKNWON_WALLET, {
-                    'address': fromAddress
-                });
-            }
-        } else {
-            fromWallet = await this.retrieveOrCreateMyWallet(stub, txHelper);
-        }
+    //     const toWallet = await AbstractWallet.queryWalletByAddress(ctx, toAddress);
 
-        const toWallet = await AbstractWallet.queryWalletByAddress(txHelper, toAddress);
+    //     if (!toWallet) {
 
-        if (!toWallet) {
+    //         throw new ChaincodeError(ERRORS.UNKNOWN_ENTITY, {
+    //             'address': toAddress
+    //         });
+    //     }
 
-            throw new ChaincodeError(ERRORS.UNKNOWN_ENTITY, {
-                'address': toAddress
-            });
-        }
+    //     if (!fromWallet.txCreatorHasPermissions(ctx)) {
 
-        if (!fromWallet.txCreatorHasPermissions(txHelper)) {
+    //         throw new ChaincodeError(ERRORS.NOT_PERMITTED, {
+    //             'address': fromWallet.address
+    //         });
+    //     }
 
-            throw new ChaincodeError(ERRORS.NOT_PERMITTED, {
-                'address': fromWallet.address
-            });
-        }
+    //     if (!fromWallet.canSpendAmount(amount)) {
 
-        if (!fromWallet.canSpendAmount(amount)) {
+    //         throw new ChaincodeError(ERRORS.INSUFFICIENT_FUNDS, {
+    //             'address': fromWallet.address
+    //         });
+    //     }
 
-            throw new ChaincodeError(ERRORS.INSUFFICIENT_FUNDS, {
-                'address': fromWallet.address
-            });
-        }
+    //     fromWallet.addAmount(-amount);
+    //     toWallet.addAmount(amount);
 
-        fromWallet.addAmount(-amount);
-        toWallet.addAmount(amount);
+    //     this.logger.info(`Transfering ${amount} from ${fromWallet.address} to ${toAddress.address}`);
 
-        this.logger.info(`Transfering ${amount} from ${fromWallet.address} to ${toAddress.address}`);
+    //     return Promise.all([
+    //         fromWallet.save(ctx),
+    //         toWallet.save(ctx)
+    //     ]).then(([from, to]) => {
 
-        return Promise.all([
-            fromWallet.save(txHelper),
-            toWallet.save(txHelper)
-        ]).then(([from, to]) => {
-
-            return {
-                'from': from,
-                'to': to
-            };
-        });
-    }
-
+    //         return {
+    //             'from': from,
+    //             'to': to
+    //         };
+    //     });
+    // }
 }
+
+modul

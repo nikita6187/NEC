@@ -1,9 +1,4 @@
-const {ChaincodeError, utils} = require('@kunstmaan/hyperledger-fabric-node-chaincode-utils');
-
 const AbstractWallet = require('./AbstractWallet');
-
-const CONSTANTS = require('./../common/constants');
-const ERRORS = require('./../common/constants/errors');
 
 const logger = utils.logger.getLogger('models/UserWallet');
 

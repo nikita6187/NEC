@@ -1,14 +1,31 @@
-const {ChaincodeError, utils} = require('@kunstmaan/hyperledger-fabric-node-chaincode-utils');
-
-const CONSTANTS = require('./../common/constants');
-const ERRORS = require('./../common/constants/errors');
-
 const logger = utils.logger.getLogger('models/AbstractWallet');
+
+const CHAINCODES = {
+    'KUMA_TOKEN': 'kuma-token',
+    'MULTISIG': 'multisig'
+};
+
+const PREFIXES = {
+    'WALLET': 'WAL',
+    'MULTISIG': 'MULTI',
+    'MULTISIG_REQUEST': 'MULTIREQ'
+};
+
+const WALLET_TYPES = {
+    'ABSTRACT': 'ABSTRACT',
+    'USER': 'USER',
+    'CONTRACT': 'CONTRACT'
+};
+
+const WALLET_TYPE_CLASSNAME_MAPPING = {
+    [WALLET_TYPES.USER]: 'UserWallet',
+    [WALLET_TYPES.CONTRACT]: 'ContractWallet'
+};
 
 class AbstractWallet {
 
-    static async queryWalletByAddress(txHelper, address) {
-        const dbData = await txHelper.getStateAsObject(address);
+    static async queryWalletByAddress(ctx, address) {
+        const dbData = await txHelper.getState(address);
 
         return mapDBDataToObject(dbData);
     }
@@ -77,13 +94,6 @@ class AbstractWallet {
 module.exports = AbstractWallet;
 
 function mapDBDataToObject(dbData) {
-    if (!Object.keys(CONSTANTS.WALLET_TYPE_CLASSNAME_MAPPING).includes(dbData.type)) {
-
-        throw new ChaincodeError(ERRORS.TYPE_ERROR, {
-            'type': dbData.type
-        });
-    }
-
     const className = CONSTANTS.WALLET_TYPE_CLASSNAME_MAPPING[dbData.type];
     const Class = require(`./${className}`);
 
