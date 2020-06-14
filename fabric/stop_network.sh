@@ -2,7 +2,7 @@
 
 # Step 1: docker-compose down network
 pushd ./artifacts
-docker-compose down
+docker-compose down -v
 popd
 
 # Step 2: TODO Remove other files
