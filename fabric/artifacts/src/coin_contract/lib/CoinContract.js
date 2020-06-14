@@ -1,15 +1,18 @@
 const { Contract } = require('fabric-contract-api');
+const Wallet = require('./models/Wallet');
 
 class CoinContract extends Contract {
     // initiliazes contract ledger
     async initLedger(ctx) {
-        // console.info('============= START : Initialize Ledger ===========');
-        console.info(ctx);
-        // console.info('============= END : Initialize Ledger ===========');
+        console.info('============= START : Initialize Ledger ===========');
+        
+        console.log(await this.retrieveOrCreateMyWallet(ctx));
+
+        console.info('============= END : Initialize Ledger ===========');
     }
 
     /**
-     * @param {Stub} stub
+     * @param {ctx} context
      */
     async retrieveOrCreateMyWallet(ctx) {
         // const myWallet = await UserWallet.queryCurrentUserWallet(ctx);
@@ -18,36 +21,18 @@ class CoinContract extends Contract {
         //     return myWallet;
         // }
 
-        return new UserWallet({
-            address: ctx.uuid(CONSTANTS.PREFIXES.WALLET),
-            publicKeyHash: txHelper.getCreatorPublicKey(),
-            amount: 1000 // add an inital amount of 1000 tokens
-        }).save(txHelper);
+        return new Wallet(ctx.stub.getTxID(), 
+            ctx.stub.getCreator(), 
+            1000).save(ctx);
     }
 
     /**
-     * @param {Stub} stub
-     * @param {TransactionHelper} txHelper
+     * @param {ctx} context
      * @param {String} address
      */
-    // async retrieveWallet(stub, txHelper, address) {
-    //     const schema = Joi.object().keys({
-    //         address: Joi.string().required().walletId()
-    //     });
-
-    //     try {
-    //         await schema.validate({
-    //             address
-    //         });
-    //     } catch (error) {
-    //         throw new ChaincodeError(ERRORS.VALIDATION, {
-    //             'message': error.message,
-    //             'details': error.details
-    //         });
-    //     }
-
-    //     return AbstractWallet.queryWalletByAddress(txHelper, address);
-    // }
+    async retrieveWallet(address) {
+        return Wallet.queryWalletByAddress(ctx, address);
+    }
 
     /**
      * @param {Stub} stub
@@ -130,4 +115,4 @@ class CoinContract extends Contract {
     // }
 }
 
-modul
+module.exports = CoinContract;
