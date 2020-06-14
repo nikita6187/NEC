@@ -54,6 +54,23 @@ python3 quicktest_api.py 4000 nikita 1 req fabcar queryAllCars []
 python3 quicktest_api.py 4000 nikita 1 post fabcar createCar "CAR14" "Tesla" "F1-Reloaded" "White" "nikitaorg2"
 ```
 
+# Blockchain explorer set-up
+
+First make sure that `setup_network.sh` was run before.
+
+```
+cd fabric
+python3 copy_crypto-config.py
+cd blockchainExplorer
+docker-compose up -d
+```
+
+Now you have to go into your browser and type: localhost:8080
+When you are done, execute this:
+```
+cd fabric/blockchainExplorer
+docker-compose down
+```
 
 # Known issues
 ```
