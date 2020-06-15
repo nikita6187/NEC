@@ -1,5 +1,6 @@
 import flask
 from flask import request, jsonify
+import requests
 
 
 # Flask config
@@ -41,6 +42,21 @@ class TemplateLogic(object):
 logic = TemplateLogic()
 
 
+# Helper code
+
+# Super hacky fire and forget HTTP calls
+def fire_and_forget(to_get, url, data, headers, params):
+    try:
+        if to_get:
+            # Get request
+            requests.get(url, params=params, headers=headers, timeout=0.0000000001)
+        else:
+            # Post request
+            requests.post(url, headers=headers, data=data, timeout=0.0000000001)
+    except requests.exceptions.ReadTimeout:
+        pass
+
+
 # Endpoint management
 
 @app.route('/get_value/', methods=['GET'])
@@ -51,6 +67,7 @@ def get_value():
 @app.route('/set_value/', methods=['POST'])
 def set_value():
     try:
+        # If you need to do other HTTP calls, use fire_and_forget
         body = request.get_json(force=True)
         new_val = body['new_val']
         print("New value: " + str(new_val))

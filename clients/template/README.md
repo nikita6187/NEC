@@ -6,4 +6,5 @@ other and HF.
 ### Needed libraries
 ```
 flask
+requests
 ```
