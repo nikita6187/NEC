@@ -26,29 +26,28 @@ class Wallet {
     }
 
     static async queryWalletByAddress(ctx, address) {
-        const dbData = await ctx.stub.getState(address);
+        const dbDataAsBytes = await ctx.stub.getState(address);
+        const wallet = JSON.parse(dbDataAsBytes.toString());
 
-        return dbData;
-
-        //return mapDBDataToObject(dbData);
+        return wallet;
     }
 
-    // static async queryWallets(txHelper, type, query) {
-    //     const allResults = await txHelper.getQueryResultAsList({
-    //         'selector': {
-    //             '$and': [
-    //                 {
-    //                     'type': type
-    //                 },
-    //                 query
-    //             ]
-    //         }
-    //     });
+    static async queryWallets(txHelper, type, query) {
+        const allResults = await txHelper.getQueryResultAsList({
+            'selector': {
+                '$and': [
+                    {
+                        'type': type
+                    },
+                    query
+                ]
+            }
+        });
 
-    //     logger.debug(`Query Result ${allResults}`);
+        logger.debug(`Query Result ${allResults}`);
 
-    //     return allResults.map((result) => result.record).map(mapDBDataToObject);
-    // }
+        return allResults.map((result) => result.record).map(mapDBDataToObject);
+    }
 
     // get properties() {
 
@@ -91,18 +90,3 @@ class Wallet {
 }
 
 module.exports = Wallet;
-
-// function mapDBDataToObject(dbData) {
-//     const className = CONSTANTS.WALLET_TYPE_CLASSNAME_MAPPING[dbData.type];
-//     const Class = require(`./${className}`);
-
-//     const instance = new Class({
-//         address: dbData.address,
-//         amount: dbData.amount,
-//         type: dbData.type
-//     });
-
-//     instance.properties = dbData.properties || {};
-
-//     return instance;
-// }
