@@ -19,27 +19,10 @@ addr_agg = "localhost:11900"
 
 
 # HF connection config
-add_hf_api = "localhost:4000"
+addr_hf_api = "localhost:4000"
+hf_token = None
+org_id = 1  # TODO: change this appropriatly
 # See /fabric/api-2.0/quicktest_api.py for example how to contact HF API via python
-
-
-# Logic class
-class TemplateLogic(object):
-
-    def __init__(self):
-        self.internal_var = None
-
-    def set_var(self, new_value):
-        # Do some processing or whatever
-        self.internal_var = new_value
-
-    def get_var(self):
-        # Do some processing or whatever
-        return self.internal_var
-
-
-# Logic instance
-logic = TemplateLogic()
 
 
 # Helper code
@@ -64,6 +47,36 @@ def fire_and_forget(to_get, url, data=[], headers=[], params=[]):
     else:
         pool.apply_async(requests.post, (url,), {'data': data, 'headers': headers},
                          callback=on_success, error_callback=on_error)
+
+
+def register_hf_api_token():
+    url_users = addr_hf_api + "/users"
+    org_str = "Org" + str(org_id)
+    username = "default_user"
+    json_users = {"username": username, "orgName": org_str}
+    r = requests.post(url_users, data=json_users)
+    token = r.json()['token']
+    r.close()
+    return token
+
+
+# Logic class
+class TemplateLogic(object):
+
+    def __init__(self):
+        self.internal_var = None
+
+    def set_var(self, new_value):
+        # Do some processing or whatever
+        self.internal_var = new_value
+
+    def get_var(self):
+        # Do some processing or whatever
+        return self.internal_var
+
+
+# Logic instance
+logic = TemplateLogic()
 
 
 # Endpoint management
@@ -102,5 +115,6 @@ def page_not_found(e):
 
 
 if __name__ == '__main__':
+    hf_token = register_hf_api_token()  # TODO: test
     app.run(port=local_port)
 
