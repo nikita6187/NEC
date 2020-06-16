@@ -30,8 +30,10 @@ class CoinContract extends Contract {
      * @param {ctx} context
      * @param {String} address
      */
-    async retrieveWallet(address) {
-        return Wallet.queryWalletByAddress(ctx, address);
+    async retrieveWallet(ctx, address) {
+        const wallet = await Wallet.queryWalletByAddress(ctx, address);
+        
+        return wallet;
     }
 
     /**
