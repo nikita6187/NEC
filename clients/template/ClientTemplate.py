@@ -1,6 +1,7 @@
 import flask
 from flask import request, jsonify
 import requests
+from multiprocessing.dummy import Pool
 
 
 # Flask config
@@ -12,7 +13,6 @@ local_port = 12000
 addr_oo = "localhost:11500"
 addr_mo_server = "localhost:11600"
 addr_mo_user_api = "localhost:11620"
-addr_mo_dc_api = "localhost:11640"
 addr_dc = "localhost:11700"
 addr_user = "localhost:11800"
 addr_agg = "localhost:11900"
@@ -43,18 +43,27 @@ logic = TemplateLogic()
 
 
 # Helper code
+pool = Pool(10)
 
-# Super hacky fire and forget HTTP calls
-def fire_and_forget(to_get, url, data, headers, params):
-    try:
-        if to_get:
-            # Get request
-            requests.get(url, params=params, headers=headers, timeout=0.0000000001)
+
+def fire_and_forget(to_get, url, data=[], headers=[], params=[]):
+    # Example: fire_and_forget(True, "https://www.google.com/")
+
+    def on_success(r):
+        if r.status_code == 200:
+            print(f'Call succeed: {r}')
         else:
-            # Post request
-            requests.post(url, headers=headers, data=data, timeout=0.0000000001)
-    except requests.exceptions.ReadTimeout:
-        pass
+            print(f'Call failed: {r}')
+
+    def on_error(ex: Exception):
+        print(f'Requests failed: {ex}')
+
+    if to_get:
+        pool.apply_async(requests.get, (url,), {'params': params, 'headers': headers},
+                         callback=on_success, error_callback=on_error)
+    else:
+        pool.apply_async(requests.post, (url,), {'data': data, 'headers': headers},
+                         callback=on_success, error_callback=on_error)
 
 
 # Endpoint management
