@@ -1,1 +1,0 @@
-# Fabric API for Coin Contract
