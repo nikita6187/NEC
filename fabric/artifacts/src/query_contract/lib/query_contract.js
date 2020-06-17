@@ -10,6 +10,20 @@ const dc_id = "org2";
 const oo_id = "org3"; 
 //const oo_id = "org1"; // UNCOMMENT FOR TESTING IF BUGS ARISE WITH ORG3
 
+// 1. Awaiting approval (directly once the query is created by DC)
+// 2. Approved (after a majority of approvals but before min user check by MO)
+// 3. Checking users (by MO)
+// 4. Serving data (users send data to aggregator) i.e. enough users
+// 5. Served (agg answer on the blockchain; considered archived)
+// 0. failed (various reasons for query failure - reason stored in "fail_message" field in Query)
+var query_stages = {
+    0: "FAILED",
+    1: "AWAITING_APPROVAL",
+    2: "APPROVED",
+    3: "CHECKING_USERS",
+    4: "SERVING_DATA",
+    5: "SERVED"
+};
 
 class QueryContract extends Contract {
     
@@ -17,7 +31,7 @@ class QueryContract extends Contract {
     async initLedger(ctx) {
         console.info('============= START : Initialize Ledger ===========');
         
-        // demo
+    // demo
         const queries = [
             {
                 query_id: 'q1',
@@ -29,6 +43,7 @@ class QueryContract extends Contract {
                 num_majority: 1,
                 max_budget: 10,
                 wallet_id: 'w1',
+                fail_message: '',
             },
         ];
 
@@ -73,6 +88,7 @@ class QueryContract extends Contract {
             num_majority: num_majority,
             max_budget: max_budget,
             wallet_id: wallet_id,
+            fail_message: '',
         };
         
         await ctx.stub.putState(query_id, Buffer.from(JSON.stringify(query)));
@@ -92,7 +108,7 @@ class QueryContract extends Contract {
             // TODO: add reason field for approved = false
             
             // Get query
-            const queryAsBytes = await ctx.stub.getState(query_id); // get the car from chaincode state
+            const queryAsBytes = await ctx.stub.getState(query_id); 
             if (!queryAsBytes || queryAsBytes.length === 0) {
                 throw new Error(`${query_id} does not exist`);
             }
@@ -123,40 +139,48 @@ class QueryContract extends Contract {
     }
 
 
-    async setQueryStage(ctx, query_id, stage){
+    async setQueryStage(ctx, query_id, stage, fail_message){
 
-        // Stage 1 = New query looking for approval
-        // Stage 2 = Approved query, waiting for response of min users
-        // Stage 3 = Min users reached, waiting for data transfer
-        // Stage 4 = Archived
-        // Stage 5 = Error
+        let newStage = parseInt(stage);
+        let no_stages = Object.getOwnPropertyNames(query_stages).length;
+
+        // Check newStage value is in the valid range
+        if (newStage < 0 || newStage >= no_stages) {
+            throw new Error('Stage number invalid!');
+        }
 
         let cid = new ClientIdentity(ctx.stub);
 
         if(cid.assertAttributeValue('hf.Affiliation', mo_id + '.department1')){
             
             // Get query
-            const queryAsBytes = await ctx.stub.getState(query_id); // get the car from chaincode state
+            const queryAsBytes = await ctx.stub.getState(query_id); 
             if (!queryAsBytes || queryAsBytes.length === 0) {
                 throw new Error(`${query_id} does not exist`);
             }
             
             const query = JSON.parse(queryAsBytes.toString());
 
-            // Basic double checks
-            if(query.stage >= 2 && query.num_approve < query.num_majority){
-                throw new Error('Not enough approvals for stage 2 or later!');
-            }
-            
-            // TODO: do checks for later stages
+            // Checks that verify if the change of the query state is valid
 
+            // If the query doesn't have approval majority, throw error if trying to change state to "approved"
+            if(query_stages[newStage] == "APPROVED" && query.num_approve < query.num_majority){
+                throw new Error('Not enough approvals in order to change Query stage to APPROVED!');
+            }
+
+            // For FAILED state, add fail_message to the query
+            if (query_stages[newStage] == "FAILED") {
+                query.fail_message = fail_message;
+            }
+
+            // TODO: do checks for later stages
+    
             // Set stage
-            query.stage = stage;
+            query.stage = newStage;
             
             // Put it back
             await ctx.stub.putState(query.query_id, Buffer.from(JSON.stringify(query)));
             
-
         }  else {
             throw new Error('Not Managing Organization credentials!');
         }
