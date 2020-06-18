@@ -21,8 +21,7 @@ addr_agg = "http://localhost:11900"
 
 # HF connection config
 addr_hf_api = "http://localhost:4000"
-org_id = str(1)  # TODO: needs to be changed to
-# See /fabric/api-2.0/quicktest_api.py for example how to contact HF API via python
+org_id = str(1)  # TODO: needs to be changed to 3
 
 
 # Helper code
@@ -214,7 +213,7 @@ def page_not_found(e):
 
 
 if __name__ == '__main__':
-    hf_token = register_hf_api_token()  # TODO: test
+    hf_token = register_hf_api_token()
     logic.hf_api_token = hf_token
     app.run(port=local_port)
 

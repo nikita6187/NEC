@@ -2,28 +2,29 @@ import flask
 from flask import request, jsonify
 import requests
 from multiprocessing.dummy import Pool
+import random
+from cryptography.fernet import Fernet
+import json
 
 
 # Flask config
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
-local_port = 12000
+local_port = 11900
 
 # Other client URL config
-addr_oo = "localhost:11500"
-addr_mo_server = "localhost:11600"
-addr_mo_user_api = "localhost:11620"
-addr_dc = "localhost:11700"
-addr_user = "localhost:11800"
-addr_agg = "localhost:11900"
+addr_oo = "http://localhost:11500"
+addr_mo_server = "http://localhost:11600"
+addr_mo_user_api = "http://localhost:11620"
+addr_dc = "http://localhost:11700"
+addr_user = "http://localhost:11800"
+addr_agg = "http://localhost:11900"
 
 
 # HF connection config
-addr_hf_api = "localhost:4000"
-hf_token = None
-org_id = str(1)  # TODO: change this appropriatly
-# See /fabric/api-2.0/quicktest_api.py for example how to contact HF API via python
-
+addr_hf_api = "http://localhost:4000"
+org_id = str(1)  # TODO: needs to be changed to 3
+agg_answer_name = "agg_answer"
 
 # Helper code
 pool = Pool(10)
@@ -64,7 +65,7 @@ def register_hf_api_token():
     # NOTE: not tested fully
     url_users = addr_hf_api + "/users"
     org_str = "Org" + str(org_id)
-    username = "default_user"
+    username = "default_user_agg"
     json_users = {"username": username, "orgName": org_str}
     r = requests.post(url_users, data=json_users)
     token = r.json()['token']
@@ -122,39 +123,112 @@ def invoke_async_function(function, args):
 
 
 # Logic class
-class TemplateLogic(object):
+class AggregatorLogic(object):
 
     def __init__(self):
-        self.internal_var = None
+        self.hf_api_token = None  # str - String of HF API token
+        self.query_data_dic = {}  # {query_id : [str]} - Dict, each key being query_id and value being list of user data
+        self.query_wallet_dic = {}  # {query_id: [str]} - Dict , each key being query_id and value being list of user wallets
+        self.queries = {}  # {query_id: {query}} - Dict containing query_id and query
+        self.query_private_keys = {}  # {query_id: str} - query_id and corresponding private key
+        self.query_encr_data = {}  # {query_id: str} - query_id and corresponding encrypted data
 
-    def set_var(self, new_value):
-        # Do some processing or whatever
-        self.internal_var = new_value
+    def add_user_data(self, data, user_wallet_id, query_id):
+        # check if query already exists
+        if query_id not in self.queries:
+            self.query_data_dic[query_id] = []
+            self.query_wallet_dic[query_id] = []
+            # get data from HF and add to self.queries
+            self.queries[query_id] = hf_get(self.hf_api_token, "query_contract", "getQuery", [query_id])['result']
+            self.queries[query_id] = json.loads(self.queries[query_id]['result'])
+            # TODO: add check for errors here
 
-    def get_var(self):
-        # Do some processing or whatever
-        return self.internal_var
+        # check if already data there
+        if user_wallet_id in self.query_wallet_dic[query_id]:
+            return
+
+        # add in data
+        self.query_wallet_dic[query_id].append(user_wallet_id)
+        self.query_data_dic[query_id].append(data)
+
+    def aggregate_data(self, query_id):
+        # Here we can insert some proper aggregation
+        # Currently, we assume 1 user, i.e. 1 result and one
+        return random.uniform(0.5, 1.5), [(self.query_wallet_dic[query_id][0], self.queries[query_id]['max_budget'])]
+
+    def encrypt_data(self, raw_data, query_id):
+        priv_key = Fernet.generate_key()
+        cipher_suite = Fernet(priv_key)
+        encrypted_data = cipher_suite.encrypt(str.encode(str(raw_data)))
+        encrypted_data = str(encrypted_data)
+        # To decrypt, run: data = cipher_suite.decrypt(encrypted_data)
+        self.query_private_keys[query_id] = priv_key
+        self.query_encr_data[query_id] = encrypted_data
+        return priv_key, encrypted_data
+
+    def send_priv_key_to_mo_dc(self, priv_key, query_id, ans_id):
+        # TODO: this needs to be tested
+        # First MO
+        url_mo = addr_mo_server + "/receiveAggAnswer"
+        json_data = {"query_id": query_id, "key": priv_key}
+        r = requests.post(url_mo, data=json_data)
+        print(r.json())
+        r.close()
+
+        # Next DC
+        url_dc = addr_dc + "/receiveAggAnswer"
+        json_data = {"query_id": query_id, "key": priv_key}
+        r = requests.post(url_dc, data=json_data)
+        print(r.json())
+        r.close()
 
 
 # Logic instance
-logic = TemplateLogic()
+logic = AggregatorLogic()
 
 
 # Endpoint management
 
-@app.route('/get_value/', methods=['GET'])
+@app.route('/putAggDataOnBlockchain/', methods=['GET'])
 def get_value():
-    return jsonify(internal_var=logic.get_var())
+    # TODO: add try and except
+
+    query_id = request.args.get("query_id")
+
+    # aggregate data
+    agg_data, user_compensation = logic.aggregate_data(query_id)
+
+    # encrypt data
+    priv_key, encr_data = logic.encrypt_data(agg_data, query_id)
+
+    # put data on blockchain
+    hf_res = hf_invoke(logic.hf_api_token, agg_answer_name, "createAnswer", [encr_data,
+                                                                             logic.queries[query_id]['wallet_id'],
+                                                                             query_id, user_compensation])
+    ans_id = hf_res['result']['message']
+    # TODO: add checks for HF result
+
+    # TODO: send private keys to MO and DC
+    logic.send_priv_key_to_mo_dc(priv_key=priv_key, query_id=query_id, ans_id=ans_id)
+
+    print("Agg: aggregated answer, put on BC and sent priv keys. Ans id: " + str(ans_id))
+
+    return jsonify(answerID=ans_id)
 
 
-@app.route('/set_value/', methods=['POST'])
-def set_value():
+@app.route('/receiveData/', methods=['POST'])
+def receive_data():
     try:
-        # If you need to do other HTTP calls, use fire_and_forget
         body = request.get_json(force=True)
-        new_val = body['new_val']
-        print("New value: " + str(new_val))
-        logic.set_var(new_val)
+
+        data = body['data']
+        user_wallet_id = body['userWalletID']
+        query_id = body["query_id"]
+        logic.add_user_data(data=data, user_wallet_id=user_wallet_id, query_id=query_id)
+
+        print("Agg: Added new data from: " + str(user_wallet_id) + " with data: " + str(data) + " for query: " +
+              str(query_id))
+
         return jsonify(success=True)
     except Exception as e:
         return jsonify(error=str(e))
@@ -176,6 +250,7 @@ def page_not_found(e):
 
 
 if __name__ == '__main__':
-    hf_token = register_hf_api_token()  # TODO: test
+    hf_token = register_hf_api_token()
+    logic.hf_api_token = hf_token
     app.run(port=local_port)
 

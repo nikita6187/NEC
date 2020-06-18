@@ -45,3 +45,42 @@ Response will be, if succesful:
   "success": true
 }
 ```
+
+## Usage AggregatorClient:
+
+Notes:
+- To decrypt the data, run `data = cipher_suite.decrypt(encrypted_data)`, see encrypt_data method
+
+2 API functions
+
+POST: http://127.0.0.1:11900/receiveData/
+- This is to post data by the user to the aggregator
+
+Body:
+```
+{
+    "data": "blablalala",
+    "userWalletID": "wallet3",
+    "query_id": "q1"
+}
+```
+Returns if everything goes well:
+```
+{
+  "success": true
+}
+```
+
+
+GET: http://127.0.0.1:11900/putAggDataOnBlockchain/
+- This is to aggregate data, encrypt, put on blockchain and send private keys to MO + DC
+In params, set for example:
+```
+query_id: q1
+```
+Return, should be something (not tested yet):
+```
+{
+    "answerID": "a2"
+}
+```
