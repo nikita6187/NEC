@@ -17,4 +17,4 @@ All network code located in `/fabric/`. See readme there for setup.
 - Located in `/fabric/api-2.0`
 - `HTTP GET` applies a query on the blockchain
 - `HTTP POST` applied an invoke on the blockchain
-- Example to run and interact with QueryContract in `/fabric_api/query`
+- Example to run and interact with QueryContract in `/docs_fabric_api/query`
