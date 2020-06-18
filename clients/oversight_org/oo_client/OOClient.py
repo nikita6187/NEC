@@ -7,21 +7,20 @@ from multiprocessing.dummy import Pool
 # Flask config
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
-local_port = 12000
+local_port = 11500
 
 # Other client URL config
-addr_oo = "localhost:11500"
-addr_mo_server = "localhost:11600"
-addr_mo_user_api = "localhost:11620"
-addr_dc = "localhost:11700"
-addr_user = "localhost:11800"
-addr_agg = "localhost:11900"
+addr_oo = "http://localhost:11500"
+addr_mo_server = "http://localhost:11600"
+addr_mo_user_api = "http://localhost:11620"
+addr_dc = "http://localhost:11700"
+addr_user = "http://localhost:11800"
+addr_agg = "http://localhost:11900"
 
 
 # HF connection config
-addr_hf_api = "localhost:4000"
-hf_token = None
-org_id = str(1)  # TODO: change this appropriatly
+addr_hf_api = "http://localhost:4000"
+org_id = str(1)  # TODO: needs to be changed to
 # See /fabric/api-2.0/quicktest_api.py for example how to contact HF API via python
 
 
@@ -163,12 +162,18 @@ logic = OOClientLogic()
 
 @app.route('/getNewQuery/', methods=['GET'])
 def get_new_query():
-    all_queries = hf_get(logic.hf_api_token, "query_contract", "getAllQueries", [""])
-    for query in all_queries:
-        if logic.check_if_query_new(query["query_id"]):
-            print("OOClient: new query: " + str(query["query_id"]))
-            logic.add_to_unprocessed(query_id=query["query_id"])
-    return jsonify(unprocessed_queries=logic.query_ids_unprocessed)
+    try:
+        all_queries_raw = hf_get(logic.hf_api_token, "query_contract", "getAllQueries", [" "])
+        all_queries = [query_s['Record'] for query_s in all_queries_raw['result']['result']]
+
+        for query in all_queries:
+            if logic.check_if_query_new(query["query_id"]):
+                print("OOClient: new query: " + str(query["query_id"]))
+                logic.add_to_unprocessed(query_id=query["query_id"])
+        return jsonify(unprocessed_queries=logic.query_ids_unprocessed)
+
+    except Exception as e:
+        return jsonify(error=str(e))
 
 
 @app.route('/processQuery/', methods=['POST'])
