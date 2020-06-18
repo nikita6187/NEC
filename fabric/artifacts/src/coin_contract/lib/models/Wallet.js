@@ -4,34 +4,36 @@ const walletPrefix = "WAL";
 
 class Wallet {
 
-    constructor(address, creator, amount) {
-        this.address = address;
-        this.creator = creator;
+    constructor(id, orgMSP, amount) {
+        this.id = id;
+        this.orgMSP = orgMSP;
         this.amount = amount;
     }
 
-    static async queryWalletByAddress(ctx, address) {
-        const dbDataAsBytes = await ctx.stub.getState(address);
+    static async queryWalletByID(ctx, id) {
+        const dbDataAsBytes = await ctx.stub.getState(id);
         const wallet = JSON.parse(dbDataAsBytes.toString());
 
         return wallet;
     }
 
-    static async queryWallets(txHelper, type, query) {
-        const allResults = await txHelper.getQueryResultAsList({
-            'selector': {
-                '$and': [
-                    {
-                        'type': type
-                    },
-                    query
-                ]
+    static async queryWallets(ctx, startID, endID) {
+        const startKey = walletPrefix + startID;
+        const endKey = walletPrefix + endID;
+        const allResults = [];
+        for await (const {key, value} of ctx.stub.getStateByRange(startKey, endKey)) {
+            const strValue = Buffer.from(value).toString('utf8');
+            let record;
+            try {
+                record = JSON.parse(strValue);
+            } catch (err) {
+                console.log(err);
+                record = strValue;
             }
-        });
-
-        logger.debug(`Query Result ${allResults}`);
-
-        return allResults.map((result) => result.record).map(mapDBDataToObject);
+            allResults.push({ Key: key, Record: record });
+        }
+        console.info(allResults);
+        return JSON.stringify(allResults);
     }
 
     // get properties() {
@@ -43,33 +45,46 @@ class Wallet {
     //     // ABSTRACT doesn't have properties, do nothing
     // }
 
-    // addAmount(amount) {
-    //     this.amount += amount;
+    addAmount(amount) {
+        this.amount += amount;
 
-    //     return this;
-    // }
+        return this;
+    }
 
-    // canSpendAmount(amount) {
+    canSpendAmount(amount) {
+        return this.amount - amount >= 0;
+    }
 
-    //     return this.amount - amount >= 0;
-    // }
-
-    // txCreatorHasPermissions() {
-
-    //     return false;
-    // }
+    txOrgHasPermission(txOrg) {
+        return txOrg === this.orgMSP;
+    }
 
     async save(ctx) {
         const walletToString = JSON.stringify({
-            'address': walletPrefix + this.address,
+            'id': walletPrefix + this.id,
             'amount': this.amount,
-            'creator': this.creator});
+            'orgMSP': this.orgMSP});
 
-        await ctx.stub.putState(walletPrefix + this.address, 
+        await ctx.stub.putState(walletPrefix + this.id, 
             Buffer.from(walletToString)
         );
 
         return walletToString;
+    }
+
+    static toClass(json) {
+        if(!json.id) {
+            throw Error(`id field is missing from wallet ${json}`);
+        }
+        if(!json.amount) {
+            throw Error(`amount field is missing from wallet ${json}`);
+        }
+        if(!json.orgMSP) {
+            throw Error(`orgMSP field is missing from wallet ${json}`);
+        }
+        let id = json.id.split(walletPrefix)[1];
+
+        return new Wallet(id, json.orgMSP, json.amount);
     }
 
 }

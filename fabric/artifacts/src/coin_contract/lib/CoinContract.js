@@ -1,4 +1,6 @@
 const { Contract } = require('fabric-contract-api');
+const ClientIdentity = require('fabric-shim').ClientIdentity;
+
 const Wallet = require('./models/Wallet');
 const UUID = require('./commons/UUID');
 
@@ -24,83 +26,93 @@ class CoinContract extends Contract {
      */
     async createWallet(ctx) {
         const id = await this.uuid.incrementCounter(ctx);
-        return new Wallet(id, ctx.ClientIdentity, 1000)
+
+        let cid = new ClientIdentity(ctx.stub);
+
+        return new Wallet(id, cid.getMSPID(), 1000)
              .save(ctx);
     }
 
     /**
      * @param {ctx} context
-     * @param {String} address
+     * @param {String} id id of wallet to retrieve
      */
-    async retrieveWallet(ctx, address) {
-        const wallet = await Wallet.queryWalletByAddress(ctx, address);
+    async retrieveWallet(ctx, id) {
+        const wallet = await Wallet.queryWalletByID(ctx, id);
+        return wallet;
+    }
 
+    /**
+     * @param {ctx} context
+     * @param {String} startID (inclusive)
+     * @param {String} endID (exclusive)
+     */
+    async retrieveWallets(ctx, startID, endID) {
+        const wallet = await Wallet.queryWallets(ctx, startID, endID);
         return wallet;
     }
 
     /**
      * @param {Stub} ctx
-     * @param {Float} amount the coins to transfer from wallet id fromAddress to wallet id toAddress
-     * @param {String} toAddress the address of the wallet that should receive the coins
-     * @param {String} fromAddress (optional) the address of the wallet that should send the coins.
-     *                 If undefined, will be set to the caller's wallet
+     * @param {Float} amount amount of coins to transfer, must be a String to avoid Go problems
+     * @param {String} toid the id of the wallet that should receive the coins
+     * @param {String} fromid the id of the wallet that should send the coins.
      */
-    // async transfer(ctx, amount, toAddress, fromAddress = undefined) {
-    //     // TODO: validate arguments
+    async transfer(ctx, amount, toID, fromID) {
+        amount = parseInt(amount);
+        if(amount <= 0) {
+            throw new Error(`amount(${amount}) must be > 0`);
+        }
+        
+        // Get fromWallet
+        let fromWallet;
+        if (fromID) {
+            fromWallet = await Wallet.queryWalletByID(ctx, fromID);
+            fromWallet = Wallet.toClass(fromWallet);
 
-    //     let fromWallet;
-    //     if (fromAddress) {
-    //         fromWallet = await AbstractWallet.queryWalletByAddress(ctx, fromAddress);
+            if (!fromWallet) {
+                throw new Error(`${fromID} does not exist`);
+            }
+        } else {
+            throw new Error(`fromID is undefined`);
+        }
 
-    //         if (!fromWallet) {
+        let toWallet;
+        if (toID) {
+            toWallet = await Wallet.queryWalletByID(ctx, toID);
+            toWallet = Wallet.toClass(toWallet);
 
-    //             throw new ChaincodeError(ERRORS.UNKNWON_WALLET, {
-    //                 'address': fromAddress
-    //             });
-    //         }
-    //     } else {
-    //         fromWallet = await this.retrieveOrCreateMyWallet(ctx, txHelper);
-    //     }
+            if (!toWallet) {
+                throw new Error(`${toID} does not exist`);
+            }
+        } else {
+            throw new Error(`toID is undefined`);
+        }
 
-    //     const toWallet = await AbstractWallet.queryWalletByAddress(ctx, toAddress);
+        let cid = new ClientIdentity(ctx.stub);
+        if (!fromWallet.txOrgHasPermission(cid.getMSPID())) {
+            throw new Error(`${cid.getMSPID()} does not own ${fromID}`);
+        }
 
-    //     if (!toWallet) {
+        if (!fromWallet.canSpendAmount(amount)) {
+            throw new Error(`${fromID} does not have enough amount. Required: ${amount}, Available:${fromWallet.amount}`);
+        }
 
-    //         throw new ChaincodeError(ERRORS.UNKNOWN_ENTITY, {
-    //             'address': toAddress
-    //         });
-    //     }
+        fromWallet.addAmount(-amount);
+        toWallet.addAmount(amount);
 
-    //     if (!fromWallet.txCreatorHasPermissions(ctx)) {
+        console.info(`Transfering ${amount} from ${fromWallet.id} to ${toWallet.id}`);
 
-    //         throw new ChaincodeError(ERRORS.NOT_PERMITTED, {
-    //             'address': fromWallet.address
-    //         });
-    //     }
-
-    //     if (!fromWallet.canSpendAmount(amount)) {
-
-    //         throw new ChaincodeError(ERRORS.INSUFFICIENT_FUNDS, {
-    //             'address': fromWallet.address
-    //         });
-    //     }
-
-    //     fromWallet.addAmount(-amount);
-    //     toWallet.addAmount(amount);
-
-    //     this.logger.info(`Transfering ${amount} from ${fromWallet.address} to ${toAddress.address}`);
-
-    //     return Promise.all([
-    //         fromWallet.save(ctx),
-    //         toWallet.save(ctx)
-    //     ]).then(([from, to]) => {
-
-    //         return {
-    //             'from': from,
-    //             'to': to
-    //         };
-    //     });
-    // }
+        return Promise.all([
+            fromWallet.save(ctx),
+            toWallet.save(ctx)
+        ]).then(([from, to]) => {
+            return {
+                'from': from,
+                'to': to
+            };
+        });
+    }
 }
 
 module.exports = CoinContract;
