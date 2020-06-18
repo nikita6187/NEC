@@ -37,3 +37,10 @@ python3 quicktest_api.py 4000 nikita27j 3 req query_contract approveQuery 1 test
 python3 quicktest_api.py 4000 nikita899 1 post query_contract setQueryStage q1 1
 python3 quicktest_api.py 4000 nikita20 2 req query_contract getAllQueries " "
 ```
+
+
+### Return type of getAllQueries
+Example:
+```
+{'result': {'result': '[{"Key":"q1","Record":{"fail_message":"","max_budget":10,"min_users":2,"num_approve":0,"num_disapprove":0,"num_majority":1,"query_as_text":"ALL","query_id":"q1","stage":1,"wallet_id":"w1"}},{"Key":"q2","Record":{"fail_message":"","max_budget":"40","min_users":"1","num_approve":0,"num_disapprove":0,"num_majority":1,"query_as_text":"query_test_text","query_id":"q2","stage":1,"wallet_id":"wallet3"}}]'}, 'error': None, 'errorData': None}
+```
