@@ -1,21 +1,6 @@
 // const logger = utils.logger.getLogger('models/AbstractWallet');
 
-const CHAINCODES = {
-    'KUMA_TOKEN': 'kuma-token',
-    'MULTISIG': 'multisig'
-};
-
-const PREFIXES = {
-    'WALLET': 'WAL',
-    'MULTISIG': 'MULTI',
-    'MULTISIG_REQUEST': 'MULTIREQ'
-};
-
-const WALLET_TYPES = {
-    'ABSTRACT': 'ABSTRACT',
-    'USER': 'USER',
-    'CONTRACT': 'CONTRACT'
-};
+const walletPrefix = "WAL";
 
 class Wallet {
 
@@ -76,11 +61,11 @@ class Wallet {
 
     async save(ctx) {
         const walletToString = JSON.stringify({
-            'address': this.address,
+            'address': walletPrefix + this.address,
             'amount': this.amount,
             'creator': this.creator});
 
-        await ctx.stub.putState(this.address, 
+        await ctx.stub.putState(walletPrefix + this.address, 
             Buffer.from(walletToString)
         );
 

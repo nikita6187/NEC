@@ -1,12 +1,20 @@
 const { Contract } = require('fabric-contract-api');
 const Wallet = require('./models/Wallet');
+const UUID = require('./commons/UUID');
+
+const counterKey = "counter"
 
 class CoinContract extends Contract {
-    // initiliazes contract ledger
+    /** Initializes CoinContract
+     * 
+     * @param {ctx} ctx 
+     */
     async initLedger(ctx) {
         console.info('============= START : Initialize Ledger ===========');
-        
-        console.log(await this.retrieveOrCreateMyWallet(ctx));
+
+        this.uuid = new UUID(counterKey, 0)
+        await this.uuid.init(ctx);
+        console.info(`Counter initialized with ${0}`)
 
         console.info('============= END : Initialize Ledger ===========');
     }
@@ -14,16 +22,10 @@ class CoinContract extends Contract {
     /**
      * @param {ctx} context
      */
-    async retrieveOrCreateMyWallet(ctx) {
-        // const myWallet = await UserWallet.queryCurrentUserWallet(ctx);
-
-        // if (myWallet) {
-        //     return myWallet;
-        // }
-
-        return new Wallet(ctx.stub.getTxID(), 
-            ctx.stub.getCreator(), 
-            1000).save(ctx);
+    async createWallet(ctx) {
+        const id = await this.uuid.incrementCounter(ctx);
+        return new Wallet(id, ctx.ClientIdentity, 1000)
+             .save(ctx);
     }
 
     /**
@@ -32,25 +34,9 @@ class CoinContract extends Contract {
      */
     async retrieveWallet(ctx, address) {
         const wallet = await Wallet.queryWalletByAddress(ctx, address);
-        
+
         return wallet;
     }
-
-    /**
-     * @param {Stub} stub
-     * @param {String} chaincodeName
-     * @param {Array} chaincodeFunctions (optional)
-     */
-    // async createContractWallet(ctx, chaincodeName, chaincodeFunctions) {
-    //     // TODO: Perform argument verification
-
-    //     return new ContractWallet({
-    //         chaincodeName,
-    //         chaincodeFunctions,
-    //         address: ctx.uuid(CONSTANTS.PREFIXES.WALLET),
-    //         amount: 0
-    //     }).save(ctx);
-    // }
 
     /**
      * @param {Stub} ctx
