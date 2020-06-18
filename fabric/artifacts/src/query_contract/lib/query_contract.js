@@ -68,6 +68,26 @@ class QueryContract extends Contract {
         return queryAsBytes.toString();
     }
 
+    async getAllQueries(ctx) {
+        const startKey = 'q1';
+        const endKey = 'q999';
+        const allResults = [];
+        for await (const {key, value} of ctx.stub.getStateByRange(startKey, endKey)) {
+            const strValue = Buffer.from(value).toString('utf8');
+            let record;
+            try {
+                record = JSON.parse(strValue);
+            } catch (err) {
+                console.log(err);
+                record = strValue;
+            }
+            allResults.push({ Key: key, Record: record });
+        }
+        console.info(allResults);
+        return JSON.stringify(allResults);
+    }
+
+
     async createQuery(ctx, query_text, min_users, max_budget, wallet_id) {
         console.info('============= START : Create Query ===========');
         
