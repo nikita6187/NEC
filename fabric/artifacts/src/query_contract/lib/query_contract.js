@@ -7,7 +7,7 @@ const ClientIdentity = require('fabric-shim').ClientIdentity;
 const num_majority = 1;
 const mo_id = "org1";
 const dc_id = "org2";
-const oo_id = "org3"; 
+const oo_id = "org3";
 //const oo_id = "org1"; // UNCOMMENT FOR TESTING IF BUGS ARISE WITH ORG3
 
 // 1. Awaiting approval (directly once the query is created by DC)

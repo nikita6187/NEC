@@ -144,10 +144,10 @@ class OOClientLogic(object):
     def process_query_manual(self, query_id, response):
         if response:
             if query_id not in self.query_ids_approved:
-                self.query_ids_approved.append(response)
+                self.query_ids_approved.append(query_id)
         else:
             if query_id not in self.query_ids_disapproved:
-                self.query_ids_disapproved.append(response)
+                self.query_ids_disapproved.append(query_id)
 
 
 # Logic instance
@@ -181,13 +181,17 @@ def process_query():
         query_id = body['query_id']
         response = bool(body['response'])
 
-        print("OOClient: add for query: " + str(query_id) + "new response: " + str(response))
+        print("OOClient: add for query: " + str(query_id) + " new response: " + str(response))
+
+        # Invoke on blockchain
+        hf_res = hf_invoke(logic.hf_api_token, "query_contract", "approveQuery", [query_id, str(1 if response else 0)])
+
+        if isinstance(hf_res['result'], str):
+            # check that result is good
+            raise Exception("HF Response not normal: " + str(hf_res))
 
         # Process query in local logic
         logic.process_query_manual(query_id, response)
-
-        # Invoke on blockchain
-        hf_invoke(logic.hf_api_token, "query_contract", "approveQuery", [str(1 if response else 0)])
 
         return jsonify(success=True)
     except Exception as e:
