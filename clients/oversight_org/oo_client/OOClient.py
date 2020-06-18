@@ -2,6 +2,7 @@ import flask
 from flask import request, jsonify
 import requests
 from multiprocessing.dummy import Pool
+import json
 
 
 # Flask config
@@ -125,17 +126,12 @@ class OOClientLogic(object):
 
     def __init__(self):
         self.hf_api_token = None  # str - String of HF API token
-        self.query_ids_already_seen = []  # [str] - Query ids that have already been seen, to see which queries are new
         self.query_ids_unprocessed = []  # [str] - query ids of queries that need to be approved/disapproved
         self.query_ids_approved = []  # [str] query ids of approved
         self.query_ids_disapproved = []  # [str] query ids of disapproved
 
-    def add_new_seen_query(self, query_id):
-        if query_id not in self.query_ids_already_seen:
-            self.query_ids_already_seen.append(query_id)
-
     def check_if_query_new(self, query_id):
-        return query_id in self.query_ids_already_seen
+        return query_id not in self.query_ids_approved and query_id not in self.query_ids_disapproved
 
     def check_if_approve_query(self, query_data):
         # This method can be expanded for better automated processing
@@ -164,14 +160,15 @@ logic = OOClientLogic()
 def get_new_query():
     try:
         all_queries_raw = hf_get(logic.hf_api_token, "query_contract", "getAllQueries", [" "])
-        all_queries = [query_s['Record'] for query_s in all_queries_raw['result']['result']]
+        all_queries = [query_s['Record'] for query_s in json.loads(all_queries_raw['result']['result'])]
 
+        ret = []
         for query in all_queries:
             if logic.check_if_query_new(query["query_id"]):
                 print("OOClient: new query: " + str(query["query_id"]))
                 logic.add_to_unprocessed(query_id=query["query_id"])
-        return jsonify(unprocessed_queries=logic.query_ids_unprocessed)
-
+                ret.append(query)
+        return jsonify(unprocessed_queries=ret)
     except Exception as e:
         return jsonify(error=str(e))
 
