@@ -3,7 +3,6 @@ import flask
 from flask import request, jsonify
 import requests
 from multiprocessing.dummy import Pool
-import uuid
 
 
 # Flask config
@@ -124,10 +123,12 @@ def invoke_async_function(function, args):
 
 # Coin Reward class
 class CoinReward:
-    id_counter = 1
+    id_counter = 0
     def __init__(self, cost, details):
-        id
-        self.id = uuid.uuid4()
+        self.id_counter += 1
+        self.id = "r" + self.id_counter
+        self.cost = cost
+        self.details = details
 
 # Logic class
 class MoClientLogic(object):
@@ -141,17 +142,42 @@ class MoClientLogic(object):
         self.query_participants_map = {}
         # Maps KEY: QueryId - VALUE: private key
         self.answer_keys_map = {}
-        # Maps KEY: RewardId - VALUE: reward information i.e. another map or a Reward class
+        # Maps KEY: RewardId - VALUE: reward information i.e. another map or a CoinReward class
         self.rewards_map = {}
     
     def create_user_wallet(self, user_id):
+        """Create a new wallet and then assign it to the user
+
+        Args:
+            user_id (string): user id
+
+        Returns:
+            wallet_id: new wallet id
+        """
         # create new wallet
         new_wallet = hf_invoke(self.hf_token, "coin_contract", "createWallet", [""])
         # associate it to user
         self.wallet_map[user_id].append(new_wallet.id)
         return new_wallet.id
 
+    def retrieve_user_wallets(self, user_id):
+        """Retrieve all Wallet objectd associated to a user
+
+        Args:
+            user_id (string): user id
+
+        Returns:
+            wallets: list of Wallet objects
+        """
+        wallets = []
+        for wallet_id in sekf.wallet_map[user_id]:
+            wallets.append(hf_get(self.hf_token, "coin_contract", "retrieveWallet", [wallet_id]))
+        return wallets
+
     def subtract_coins(self, user_id, reward_id):
+        # retrieve all the user's wallets
+        wallets = self.retrieve_user_wallets(user_id)
+        
         return None
 
 
