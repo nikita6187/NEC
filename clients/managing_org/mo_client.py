@@ -1,7 +1,9 @@
+import collections as ct
 import flask
 from flask import request, jsonify
 import requests
 from multiprocessing.dummy import Pool
+import uuid
 
 
 # Flask config
@@ -120,20 +122,38 @@ args: tuple of args to pass to function
 def invoke_async_function(function, args):
     pool.apply_async(function, args)
 
+# Coin Reward class
+class CoinReward:
+    id_counter = 1
+    def __init__(self, cost, details):
+        id
+        self.id = uuid.uuid4()
 
 # Logic class
 class MoClientLogic(object):
 
     def __init__(self):
-        self.hf_token = "a"
+        self.hf_token = None
         # Maps KEY: UserId - VALUE: list of WalletId
-        self.wallet_map = {}
+        # defaultdict behaves lke a normal dict with extra protection agains errors esp. when adding missing keys
+        self.wallet_map = ct.defaultdict(list)
         # Maps KEY: QueryId - VALUE: list of participating UserId
         self.query_participants_map = {}
         # Maps KEY: QueryId - VALUE: private key
         self.answer_keys_map = {}
         # Maps KEY: RewardId - VALUE: reward information i.e. another map or a Reward class
         self.rewards_map = {}
+    
+    def create_user_wallet(self, user_id):
+        # create new wallet
+        new_wallet = hf_invoke(self.hf_token, "coin_contract", "createWallet", [""])
+        # associate it to user
+        self.wallet_map[user_id].append(new_wallet.id)
+        return new_wallet.id
+
+    def subtract_coins(self, user_id, reward_id):
+        return None
+
 
 
 # Logic instance
@@ -187,7 +207,8 @@ def receive_answer_pk():
 
 @app.route('/cashinCoins/<user_id>/<reward_id>')
 def cashin_coins(user_id, reward_id):
-
+    # check and subtract coins from user wallet
+    # send reward to user
 
 @app.errorhandler(500)
 def page_not_found(e):
