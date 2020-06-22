@@ -162,11 +162,15 @@ class QueryContract extends Contract {
     async setQueryStage(ctx, query_id, stage, fail_message){
 
         let newStage = parseInt(stage);
-        let no_stages = Object.getOwnPropertyNames(query_stages).length;
+        // Check if the new stage value can be converted to int
+        if (isNaN(newStage)){
+            throw new Error('New stage value is not a valid integer!')
+        }
 
+        let no_stages = Object.getOwnPropertyNames(query_stages).length;
         // Check newStage value is in the valid range
         if (newStage < 0 || newStage >= no_stages) {
-            throw new Error('Stage number invalid!');
+            throw new Error('New stage integer is not in the valid range!');
         }
 
         let cid = new ClientIdentity(ctx.stub);
