@@ -170,24 +170,41 @@ class MoClientLogic(object):
             wallets: list of Wallet objects
         """
         wallets = []
-        for wallet_id in sekf.wallet_map[user_id]:
+        for wallet_id in self.wallet_map[user_id]:
             wallets.append(hf_get(self.hf_token, "coin_contract", "retrieveWallet", [wallet_id]))
         return wallets
 
     def subtract_coins(self, user_id, reward_id):
+        """Subtract coins from aggregated wallets of a user
+        The amount subtracted is the cost for the reward specified by the reward id
+
+        Args:
+            user_id (string): user id
+            reward_id (string): reward id
+        """
         # retrieve all the user's wallets
         wallets = self.retrieve_user_wallets(user_id)
-        
-        return None
+        reward_cost = self.rewards_map[reward_id].cost
+        amount_needed = reward_cost
 
-
+        for idx, wallet in enumerate(wallets):
+            amount_needed -= wallet.amount
+            # the last wallet has more funds than necessary
+            # we subtract the necessary coins and keep that last wallet
+            if amount_needed <= 0:
+                transfer_sum = amount_needed + wallet.amount
+                # transfer
+                hf_invoke(self.hf_token, "coin_contract", "transfer", [transfer_sum, "toId", wallet.id])
+                break
+            else:
+                #transfer
+                hf_invoke(self.hf_token, "coin_contract", "transfer", [wallet.amount, "toId", wallet.id])
+                self.wallet_map[user_id].pop(idx)
 
 # Logic instance
 logic = MoClientLogic()
 
-
 # Endpoint management
-
 @app.route('/getQuery/<query_id>', methods=['GET'])
 def get_query(query_id):
     try:
@@ -235,6 +252,7 @@ def receive_answer_pk():
 def cashin_coins(user_id, reward_id):
     # check and subtract coins from user wallet
     # send reward to user
+    return None
 
 @app.errorhandler(500)
 def page_not_found(e):
