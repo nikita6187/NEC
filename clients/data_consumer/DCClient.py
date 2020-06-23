@@ -9,7 +9,7 @@ import json
 # Flask config
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
-local_port = 11900
+local_port = 11700
 
 # Other client URL config
 addr_oo = "http://localhost:11500"
