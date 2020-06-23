@@ -1,4 +1,5 @@
 import collections as ct
+import json
 import flask
 from flask import request, jsonify
 import requests
@@ -10,17 +11,16 @@ app = flask.Flask(__name__)
 app.config["DEBUG"] = True
 local_port = 11620
 
-# Other client URL config
-addr_oo = "localhost:11500"
-addr_mo_server = "localhost:11600"
-addr_mo_user_api = "localhost:11620"
-addr_dc = "localhost:11700"
-addr_user = "localhost:11800"
-addr_agg = "localhost:11900"
+addr_oo = "http://localhost:11500"
+addr_mo_server = "http://localhost:11600"
+addr_mo_user_api = "http://localhost:11620"
+addr_dc = "http://localhost:11700"
+addr_user = "http://localhost:11800"
+addr_agg = "http://localhost:11900"
 
 
 # HF connection config
-addr_hf_api = "localhost:4000"
+addr_hf_api = "http://localhost:4000"
 org_id = str(1)  # TODO: change this appropriatly
 
 # Helper code
@@ -139,14 +139,18 @@ class MoClientLogic(object):
         # defaultdict behaves lke a normal dict with extra protection agains errors esp. when adding missing keys
         self.wallet_map = ct.defaultdict(list)
         # Maps KEY: QueryId - VALUE: list of participating UserId
-        self.query_participants_map = {}
+        self.query_participants_map = ct.defaultdict(list)
         # Maps KEY: QueryId - VALUE: private key
         self.answer_keys_map = {}
         # Maps KEY: RewardId - VALUE: reward information i.e. another map or a CoinReward class
         self.rewards_map = {}
+        # Maps KEY: dc_id - VALUE: wallet associated to the dc
+        self.dc_wallet_map = {}
+        # List of all userIds in the system
+        self.users = []
     
     def create_user_wallet(self, user_id):
-        """Create a new wallet and then assign it to the user
+        """Create a new wallet and then assign it to the user-wallet map
 
         Args:
             user_id (string): user id
@@ -200,26 +204,51 @@ class MoClientLogic(object):
                 #transfer
                 hf_invoke(self.hf_token, "coin_contract", "transfer", [wallet.amount, "toId", wallet.id])
                 self.wallet_map[user_id].pop(idx)
+    
+    def notify_users_query(self, query_id, query_text):
+        """Notify all existing users of a new query
+
+        Args:
+            query_id (string): query id
+            query_text (string): description of query
+        """
+        url_mo = addr_user + "/notify"
+        json_data = {"query_id": query_id, "query_text": query_text}
+        r = requests.post(url_mo, data=json_data)
+        print(r.json())
+        r.close()
+
+    def create_coins(self, wallet_id, amount):
+        return None
+    
+    def remove_coins(self, wallet_id, amount):
+        return None
+
 
 # Logic instance
 logic = MoClientLogic()
 
 # Endpoint management
+
+#TESTED
 @app.route('/getQuery/<query_id>', methods=['GET'])
 def get_query(query_id):
     try:
         response = hf_get(logic.hf_token, "query_contract", "getQuery", [query_id])
-        return jsonify(response)
+        raw = response['result']['result']
+        return json.loads(raw)
     except Exception as e:
         return jsonify(erorr = str(e))
-
+#TESTED
 @app.route('/getAllQueries', methods=['GET'])
 def get_all_queries():
     try:
         response = hf_get(logic.hf_token, "query_contract", "getAllQueries", [" "])
-        return jsonify(response)
+        all_queries = [query_s['Record'] for query_s in json.loads(response['result']['result'])]
+        return jsonify(all_queries)
     except Exception as e:
             return jsonify(erorr = str(e))
+
 
 @app.route('/setQueryStage/<query_id>/<int:stage>', methods=['POST'])
 def set_query_stage(query_id, stage):
@@ -241,18 +270,25 @@ def get_query_answer(query_id):
     except Exception as e:
         return jsonify(erorr = str(e))
 
-@app.route('/receiveAggAnswer')
-def receive_answer_pk():
-    query_id = request.args.get("query_id")
-    pk = request.args.get("key")
+@app.route('/receiveAggAnswerKey/<query_id>/<key>', methods=['POST'])
+def receive_answer_pk(query_id, key):
     # Store pk
     logic.answer_keys_map[query_id] = pk
 
-@app.route('/cashinCoins/<user_id>/<reward_id>')
+@app.route('/cashinCoins/<user_id>/<reward_id>', methods=['POST'])
 def cashin_coins(user_id, reward_id):
     # check and subtract coins from user wallet
     # send reward to user
     return None
+
+@app.route('/acceptQuery/<user_id>/<query_id>', methods=['POST'])
+def accept_query(user_id, query_id):
+    # add new participant to query
+    logic.query_participants_map[query_id].append(user_id)
+    #create new wallet and return it to user
+    return logic.create_user_wallet(user_id)
+
+
 
 @app.errorhandler(500)
 def page_not_found(e):

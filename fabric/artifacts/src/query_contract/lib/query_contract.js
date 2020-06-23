@@ -96,7 +96,17 @@ class QueryContract extends Contract {
         await ctx.stub.putState('counter', Buffer.from((parseInt(rID) + 1).toString()));  // Increase counter for uniqueness
 
         let query_id = 'q' + rID;
-
+        
+        // Convert min_users and max_budget to int
+        let min_users_int = parseInt(min_users);
+        let max_budget_int = parseInt(max_budget);
+        // Check conversions
+        if (isNaN(min_users_int)){
+            throw new Error('When creating Query: MIN_USERS value could not be converted to INT!');
+        }
+        if (isNaN(max_budget_int)) {
+            throw new Error('When creating Query: MAX_BUDGET value could not be converted to INT!');
+        }
         const query = {
             query_id: query_id, 
             query_as_text: query_text,
