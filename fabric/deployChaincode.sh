@@ -277,6 +277,7 @@ approveForMyOrg3
 checkCommitReadyness
 commitChaincodeDefination
 queryCommitted
+sleep 5 # To make sure the CC is deployed before
 chaincodeInvokeInit
 sleep 5  # To make sure that the init is completed before
 chaincodeInvoke
