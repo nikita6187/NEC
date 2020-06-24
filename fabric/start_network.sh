@@ -45,7 +45,8 @@ init_and_test_api() {
 	fi
 	
 	pushd ./api-2.0
-	npm run start 4000 clean
+	npm run devstart 4000 clean
+	popd
 
 	# Step 8: run 3 demo queries
 	#python3 quicktest_api.py 4000 nikita20 2 req query_contract getAllQueries " "
