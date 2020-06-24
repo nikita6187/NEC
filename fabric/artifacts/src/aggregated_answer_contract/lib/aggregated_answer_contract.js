@@ -81,6 +81,7 @@ class AggAnswerContract extends Contract {
 
             // set served stage (nr 5) for query
             // TODO: check if works
+            // TO call setQueryStage currently you need the MO credentials, so this shouldn't work
             const args = ["setQueryStage", query_id, "5", ""];
             await ctx.stub.invokeChaincode(cc_query_name, args, channel_name);
 

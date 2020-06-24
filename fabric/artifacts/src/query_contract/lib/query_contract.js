@@ -112,10 +112,10 @@ class QueryContract extends Contract {
             query_as_text: query_text,
             num_approve: 0,
             num_disapprove: 0,
-            min_users: min_users,
+            min_users: min_users_int,
             stage: 1,
             num_majority: num_majority,
-            max_budget: max_budget,
+            max_budget: max_budget_int,
             wallet_id: wallet_id,
             fail_message: '',
         };
