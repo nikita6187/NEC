@@ -189,8 +189,8 @@ logic = AggregatorLogic()
 
 # Endpoint management
 
-@app.route('/putAggDataOnBlockchain/', methods=['GET'])
-def get_value():
+@app.route('/putAggDataOnBlockchain/', methods=['POST'])
+def put_data_on_blockchain():
     # TODO: add try and except
 
     query_id = request.args.get("query_id")
