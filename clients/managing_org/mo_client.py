@@ -188,17 +188,18 @@ class MoClientLogic(object):
         return new_wallet.id
 
     def retrieve_user_wallets(self, user_id):
-        """Retrieve all Wallet objectd associated to a user
+        """Retrieve all Wallets associated to a user
 
         Args:
             user_id (string): user id
 
         Returns:
-            wallets: list of Wallet objects
+            wallets: list of dictionaries (KEYS: id, orgMSP, amount) containing Wallet data
         """
         wallets = []
         for wallet_id in self.wallet_map[user_id]:
-            wallets.append(hf_get(self.hf_token, "coin_contract", "retrieveWallet", [wallet_id]))
+            response = hf_get(self.hf_token, "coin_contract", "retrieveWallet", [wallet_id])
+            wallets.append(json.loads(response['result']['result']))
         return wallets
 
     def subtract_coins(self, user_id, reward_id):
@@ -219,13 +220,13 @@ class MoClientLogic(object):
             if amount_needed <= 0:
                 # the last wallet has more funds than necessary or amount needed reached
                 # we subtract the necessary coins and keep that last wallet
-                transfer_sum = amount_needed + wallet.amount
+                transfer_sum = amount_needed + wallet["amount"]
                 # subtract coins
-                self.remove_coins(wallet.id, transfer_sum)
+                self.remove_coins(wallet["id"], transfer_sum)
                 break
             else:
                 # take all coins from current wallet and remove wallet reference
-                self.remove_coins(wallet.id, wallet.amount)
+                self.remove_coins(wallet["id"], wallet["amount"})
                 self.wallet_map[user_id].pop(idx)
 
     def create_coins(self, wallet_id, amount):
