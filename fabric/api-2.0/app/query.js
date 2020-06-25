@@ -12,8 +12,6 @@ const helper = require('./helper')
 
 const query = async (channelName, chaincodeName, args, fcn, username, org_name) => {
 
-    console.log("HERE 1");
-
     try {
         logger.debug(util.format('\n============ Query on channel %s for %s============\n', channelName, org_name));
         
@@ -62,10 +60,8 @@ const query = async (channelName, chaincodeName, args, fcn, username, org_name) 
 
         return response
     } catch (error) {
-        console.log("HERE 4");
         console.error(`Failed to evaluate transaction: ${error}`);
         return error.message
-
     }
 }
 

@@ -206,10 +206,61 @@ chaincodeInvoke() {
         --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ORG1_CA \
         --peerAddresses localhost:8051 --tlsRootCertFiles $PEER0_ORG2_CA \
         --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG3_CA \
+        --waitForEvent \
         -c "{\"function\":\"${CC_FUNCTION}\",\"Args\":${CC_ARGUMENTS}}"
 }
 
 # chaincodeInvoke
+
+chaincodeTestCoin(){
+    setGlobalsForPeer0Org1
+
+    # Query by id
+    # peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"Args":["retrieveWallet", "e6d0ce8da7a6adde9b157768054253d7906c7dc9c8a4bbe3973dc18fcc9cca49"]}'
+
+    # Create individual wallets
+    peer chaincode invoke -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com \
+        --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA -C $CHANNEL_NAME -n ${CC_NAME} \
+        --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ORG1_CA \
+        --peerAddresses localhost:8051 --tlsRootCertFiles $PEER0_ORG2_CA \
+        --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG3_CA \
+        --waitForEvent \
+        -c "{\"function\":\"createWallet\",\"Args\":[]}"
+
+    peer chaincode invoke -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com \
+        --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA -C $CHANNEL_NAME -n ${CC_NAME} \
+        --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ORG1_CA \
+        --peerAddresses localhost:8051 --tlsRootCertFiles $PEER0_ORG2_CA \
+        --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG3_CA \
+        --waitForEvent \
+        -c "{\"function\":\"createWallet\",\"Args\":[]}"
+
+    peer chaincode invoke -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com \
+        --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA -C $CHANNEL_NAME -n ${CC_NAME} \
+        --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ORG1_CA \
+        --peerAddresses localhost:8051 --tlsRootCertFiles $PEER0_ORG2_CA \
+        --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG3_CA \
+        --waitForEvent \
+        -c "{\"function\":\"createWallet\",\"Args\":[]}"
+
+    # Query all wallets
+    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"Args":["retrieveWallets", "", "99"]}'
+
+    # Transfer
+    peer chaincode invoke -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com \
+        --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA -C $CHANNEL_NAME -n ${CC_NAME} \
+        --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ORG1_CA \
+        --peerAddresses localhost:8051 --tlsRootCertFiles $PEER0_ORG2_CA \
+        --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG3_CA \
+        --waitForEvent \
+        -c "{\"function\":\"transfer\",\"Args\":[\"100\", \"WAL1\", \"WAL2\"]}"
+
+    # Query by id
+    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"Args":["retrieveWallet", "WAL1"]}'
+
+    # Query by id
+    peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"Args":["retrieveWallet", "WAL2"]}'
+}
 
 
 # Run this function if you add any new dependency in chaincode
@@ -226,10 +277,13 @@ approveForMyOrg3
 checkCommitReadyness
 commitChaincodeDefination
 queryCommitted
+sleep 5 # To make sure the CC is deployed before
 chaincodeInvokeInit
-sleep 10  # To make sure that the init is completed before
+sleep 5  # To make sure that the init is completed before
 chaincodeInvoke
 
+# Integration tests
+# chaincodeTestCoin
 
 # USAGE: bash ./deployChaincode.sh <PATH_TO_CC_SRC> <CC_NAME> <CC_VERSION> <INIT_FUNCTION> <INIT_FUNCTION_ARGS>
 

@@ -4,38 +4,21 @@ Initial hyperledger fabric setup for team NEC
 
 # Quick Usage
 
-To setup network first run. This generetates the cryptomaterial (genesis blocks, certificates), needs to only be run once:
-```
-bash ./setup_network.sh
-```
 
-To start network (create docker containers, join channels run):
+To start network and api (create docker containers, join channels run):
 ```
-./start_network.sh
+./start_network.sh api
 ```
-
-To deploy a contract run:
-```
-./deployChaincode.sh ./artifacts/src/github.com/fabcar/javascript fabcar 1 initLedger []
-```
-
-Where the first argument is the path to the chaincode, the second is the chaincode name, third is version. Finally the 4th and 5th are optinal and execute a function (literal name) with the following arguments (JSON array) 
+If you want to run the network and manually start the api follow the steps below.
 
 To shutdown the network:
 ```
 ./stop_network.sh
 ```
 
-# Api Set-up
+# Manual Api Set-up
 
-First make sure that `setup_network.sh` was run before. Then manage all certs with the following python scripts.
-```
-python3 generate_certificates.py 1
-python3 generate_certificates.py 2
-python3 generate_certificates.py 3
-```
-
-Assuming the network is running, execute the following command.
+Assuming the network is running using `bash start_network.sh`, execute the following command.
 ```
 cd fabric/api-2.0
 npm run start 4000 clean
@@ -68,6 +51,31 @@ Set script as executable in your file system
 ```
 chmod +x filename.sh
 ```
+
+# Manual setup
+
+See `start_network.sh` for the steps needed to start the full network.
+
+To setup network first run. This generetates the cryptomaterial (genesis blocks, certificates), needs to only be run once:
+```
+bash ./setup_network.sh
+```
+
+To deploy a contract run:
+```
+./deployChaincode.sh ./artifacts/src/github.com/fabcar/javascript fabcar 1 initLedger []
+```
+
+Where the first argument is the path to the chaincode, the second is the chaincode name, third is version. Finally the 4th and 5th are optinal and execute a function (literal name) with the following arguments (JSON array) 
+
+
+First make sure that `setup_network.sh` was run before. Then manage all certs with the following python scripts.
+```
+python3 generate_certificates.py 1
+python3 generate_certificates.py 2
+python3 generate_certificates.py 3
+```
+
 
 # Basic Manual Setup
 
