@@ -127,7 +127,7 @@ class DCClientLogic(object):
     def __init__(self):
         self.dc_id = 33  # id - id of DC
         self.hf_api_token = None  # str - String of HF API token
-        self.wallet_id = None  # id - wallet id of dc
+        self.wallet_id = "w134"  # TODO: change id - wallet id of dc
         self.query_id = None  # int - Query's id
         self.priv_key = None  # Private keys of aggregated data
         self.aggregated_unencrypted_data = None  # Aggregated unencrypted data
@@ -182,7 +182,7 @@ logic = DCClientLogic()
 
 
 # Endpoint management
-#NOTHING TESTED
+# Tested
 @app.route('/createQuery/', methods=['POST'])
 def createQuery():
     #just call the logic's createQuery function with the arguments passed to the endpoint
@@ -201,7 +201,7 @@ def createQuery():
     except Exception as e:
         return jsonify(error=str(e))
 
-
+# Not tested
 @app.route('/checkQueryStage/', methods=['GET'])
 def checkQueryStage():
     #just call the logic's checkQuery function
@@ -213,18 +213,21 @@ def checkQueryStage():
     return jsonify(stage=query_stage)
 
 
+# Not tested
 @app.route('/createWallet/', methods=['GET'])
 def createWallet():
     wallet_id = logic.createWallet()
     print(wallet_id)
 
 
+# Not tested
 @app.route('/sendWallet/', methods=['GET'])
 def sendWalletToMo():
     MO_endpoint = addr_mo_user_api + "/receiveDCWallet"
     fire_and_forget(False, MO_endpoint, [logic.dc_id, logic.wallet_id])
 
 
+# Not tested
 @app.route('/receiveAggAnswer/', methods=['POST'])
 def receiveKeyAndAnsId():
     #receive privateKey and answer id from the AggregatorClient; save them on the logic class

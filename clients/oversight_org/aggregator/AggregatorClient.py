@@ -219,10 +219,9 @@ def put_data_on_blockchain():
 @app.route('/receiveData/', methods=['POST'])
 def receive_data():
     try:
-        body = request.get_json(force=True)
-
-        data = body['data']
-        user_wallet_id = body['userWalletID']
+        body = request.get_json()
+        data = body['user_data']
+        user_wallet_id = body['user_wallet_id']
         query_id = body["query_id"]
         logic.add_user_data(data=data, user_wallet_id=user_wallet_id, query_id=query_id)
 
@@ -231,6 +230,7 @@ def receive_data():
 
         return jsonify(success=True)
     except Exception as e:
+        print(e)
         return jsonify(error=str(e))
 
 
