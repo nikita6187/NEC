@@ -145,6 +145,36 @@ class CoinContract extends Contract {
 
         return await wallet.save(ctx);
     }
+
+    /**
+     * @param {Stub} ctx
+     * @param {String} id the id of the wallet that should spend coins
+     * @param {Float} amount amount of coins to spend
+     */
+    async spendCoins(ctx, id, amount) {
+        let cid = new ClientIdentity(ctx.stub);
+        console.info(`Contract owner is: ${this.managingOrgMSP}`);
+        if(cid.getMSPID() != this.managingOrgMSP) {
+            throw new Error(`${cid.getMSPID()} does not nown contract and therefor can't spend coins!`);
+        }
+
+        amount = parseInt(amount);
+        if(amount <= 0) {
+            throw new Error(`amount(${amount}) must be > 0`);
+        }
+
+        const wallet = await Wallet.queryWalletByID(ctx, id);
+        if(!wallet) {
+            throw new Error(`Could not find wallet with id: ${id}!`);
+        }
+
+        if(wallet.amount < amount) {
+            throw new Error(`Not enough coins to spend in: ${id}!`);
+        }
+        wallet.addAmount(-amount);
+
+        return await wallet.save(ctx);
+    }
 }
 
 module.exports = CoinContract;
