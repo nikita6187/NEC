@@ -11,7 +11,7 @@ from flask import jsonify, request, make_response
 # Flask config
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
-local_port = 11620
+local_port = 11600
 
 addr_oo = "http://localhost:11500"
 addr_mo_server = "http://localhost:11600"
@@ -88,8 +88,10 @@ def hf_invoke(token, chaincode_name, function, args):
             "chaincodeName": chaincode_name,
             "channelName": "myChannel",
             "args": args}
+    print("BODY: " + str(body))
     headers = {"Authorization": "Bearer " + token}
     r = requests.post(url_post, data=body, headers=headers)
+
     return r.json()
 
 
@@ -139,6 +141,7 @@ class MoClientLogic(object):
         self.hf_token = None
          # List of all userIds in the system
         self.users = []
+        self.users.append("u1")
         # List of all dcIds in the system
         self.dc = []
 
@@ -181,11 +184,13 @@ class MoClientLogic(object):
             wallet_id: new wallet id
         """
         # create new wallet
-        response = hf_invoke(self.hf_token, "coin_contract", "createWallet", [""])
-        new_wallet = json.loads(response['result']['result'])
+        response = hf_invoke(self.hf_token, "coin_contract", "createWallet", [])
+        print("CREATE USER WALLET")
+        print(str(response))
+        new_wallet = response['result']['result']
         # associate it to user
         self.wallet_map[user_id].append(new_wallet['id'])
-        return new_wallet.id
+        return new_wallet['id']
 
     def retrieve_user_wallets(self, user_id):
         """Retrieve all Wallets associated to a user
@@ -226,7 +231,7 @@ class MoClientLogic(object):
                 break
             else:
                 # take all coins from current wallet and remove wallet reference
-                self.remove_coins(wallet["id"], wallet["amount"})
+                self.remove_coins(wallet["id"], wallet["amount"])
                 self.wallet_map[user_id].pop(idx)
 
     def create_coins(self, wallet_id, amount):
@@ -247,11 +252,22 @@ class MoClientLogic(object):
         # notify all users of the query
         # currently only one user -> using addr_user instead of each users's unique id
         for user in self.users:
-            url_mo = addr_user + "/notify"
+            url_mo = addr_user + "/notify/"
             # TODO: QUERY needs an extra field "query_details" with string information 
             # about the query content to be sent to users with the request
-            json_data = {"query_id": query_id, "query_text": query["Query info"]}
-            r = requests.post(url_mo, data=json_data)
+            json_data = {"query_id": query_id, "query_text": "Query info"}
+            r = requests.post(url_mo, json=json_data)
+            print(r.json())
+            r.close()
+
+    def send_data(self, query_id):
+        for user in self.users:
+            
+            # CREATE NEW WALLET
+            new_wallet = logic.create_user_wallet(user)
+            url_mo = addr_user + "/sendData/" + query_id + '/' + new_wallet + '/'
+            json_data = {"query_id": query_id, "wallet_id": new_wallet}
+            r = requests.post(url_mo, json=json_data)
             print(r.json())
             r.close()
         
@@ -282,9 +298,13 @@ def enroll_dc(dc_id):
     )
 
 #TESTED
-@app.route('/getQuery/<query_id>', methods=['GET'])
+@app.route('/getQuery/<query_id>', methods=['GET', 'POST'])
 def get_query(query_id):
-    return logic.get_full_query(query_id)
+
+    query = logic.get_full_query(query_id)
+    logic.ask_users_for_query(query["query_id"])
+    logic.send_data(query_id)
+    return query
 
 #TESTED
 @app.route('/getAllQueries', methods=['GET'])
@@ -340,21 +360,21 @@ def cashin_coins(user_id, reward_id):
     # send reward to user
     return logic.rewards_map[reward_id]
 
-# TODO: integration test 
-@app.route('/acceptQuery/<user_id>/<query_id>', methods=['GET'])
+#TESTED
+@app.route('/acceptQuery/<user_id>/<query_id>/', methods=['GET'])
 def accept_query(user_id, query_id):
+    print("parameters are: " + str(user_id), str(query_id))
     # TODO: add a counter for number of participants for each query. When counter reaches min user number
     # required by query, make a sendData request to all participating users to send data
 
     # add new participant to query
     logic.query_participants_map[query_id].append(user_id)
     #create new wallet and return it to user
-    new_wallet = logic.create_user_wallet(user_id)
-
+    new_wallet_id = logic.create_user_wallet(user_id)
     # test prints
     #print(jsonify(dict(logic.query_participants_map)), file=sys.stderr)
     #print(jsonify(dict(logic.wallet_map)), file=sys.stderr)
-    return new_wallet
+    return {"wallet_id": new_wallet_id}
 
 # TESTED
 @app.route('/receiveDCWallet/<dc_id>/<wallet_id>')

@@ -148,11 +148,11 @@ class UserClientLogic(object):
     def accept_query(self):
         #tell MO that the User accepts the query
 
-        MO_endpoint = addr_mo_server + "/accept"
-        json_data = {"query_id": self.query_id, "user_id": self.user_id}
-        response = requests.post(MO_endpoint, data=json_data)
+        MO_endpoint = addr_mo_server + "/acceptQuery/" + self.user_id + '/' + str(self.query_id) + '/'
+        #json_data = {"query_id": self.query_id, "user_id": self.user_id}
+        response = requests.get(MO_endpoint)
         self.wallet_id = response.json()["wallet_id"]
-
+        return self.wallet_id
 
     def preprocessData(self, data):
         #TODO: when we will have real data
@@ -164,33 +164,36 @@ logic = UserClientLogic()
 
 # Endpoint management
 #NOTHING TESTED
-@app.route('/sendData/', methods=['POST'])
-def send_data_to_Aggregator():
+@app.route('/sendData/<query_id>/<wallet_id>/', methods=['POST'])
+def send_data_to_Aggregator(query_id, wallet_id):
     #just call logic's function
-    print("Sending data to Aggregator")
+    print("Sending data to Aggregator, " + wallet_id)
     logic.send_data_to_Aggregator()
-    return jsonify(succes=True)
+    return jsonify(wallet_id)
 
-
-@app.route('/notify/', methods=['POST'])
+#TESTED
+@app.route('/notify/', methods=['GET', 'POST'])
 def get_notified_for_query():
     #get notified by the MO about the query, also get the query's ID and text
 
     try:
-        body = request.get_json(force=True)
+        body = request.get_json()
         logic.query_id = body['query_id']
         logic.query_text = body['query_text']
         
-        return jsonify(succes=True)
+        
+        return jsonify(body)
     except Exception as e:
+        print(str(e))
         return jsonify(erorr=str(e))
     
+#TESTED
 @app.route('/acceptQuery/', methods=['POST'])
 def accept_query():
     #just call logic's function
 
-    logic.accept_query()
-
+    return jsonify(logic.accept_query())
+    #return jsonify(succes=True)
 
 @app.route('/cashin/', methods=['POST'])
 def cashIn():
