@@ -303,7 +303,7 @@ def get_query(query_id):
 
     query = logic.get_full_query(query_id)
     logic.ask_users_for_query(query["query_id"])
-    logic.send_data(query_id)
+    logic.send_data()
     return query
 
 #TESTED
@@ -377,7 +377,7 @@ def accept_query(user_id, query_id):
     return {"wallet_id": new_wallet_id}
 
 # TESTED
-@app.route('/receiveDCWallet/<dc_id>/<wallet_id>')
+@app.route('/receiveDCWallet/<dc_id>/<wallet_id>/', methods=['POST'])
 def receive_dc_wallet(dc_id, wallet_id):
     # save wallet id to map
     logic.dc_wallet_map[dc_id] = wallet_id

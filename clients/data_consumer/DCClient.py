@@ -161,9 +161,15 @@ class DCClientLogic(object):
 
     def createWallet(self):
 
-        hf_res = hf_invoke(logic.hf_api_token, "coin_contract", "createWallet")
-        self.wallet_id = hf_res['result']['id']
+        hf_res = hf_invoke(logic.hf_api_token, "coin_contract", "createWallet", [])
+        self.wallet_id = hf_res['result']['result']]['id']
+        sendWalletToMO()
         return self.wallet_id
+
+    def sendWalletToMO(self):
+        MO_endpoint = addr_mo_server + '/receiveDCWallet/' + str(self.dc_id) + '/' + str(self.wallet_id) + '/'
+        requests.post(MO_endpoint)
+
 
     def getAggAnswerFromHF(self):
         #get agg answer from HF, then decrypt it and save it on the logic class
@@ -214,20 +220,6 @@ def checkQueryStage():
 
 
 # Not tested
-@app.route('/createWallet/', methods=['GET'])
-def createWallet():
-    wallet_id = logic.createWallet()
-    print(wallet_id)
-
-
-# Not tested
-@app.route('/sendWallet/', methods=['GET'])
-def sendWalletToMo():
-    MO_endpoint = addr_mo_user_api + "/receiveDCWallet"
-    fire_and_forget(False, MO_endpoint, [logic.dc_id, logic.wallet_id])
-
-
-# Not tested
 @app.route('/receiveAggAnswer/', methods=['POST'])
 def receiveKeyAndAnsId():
     #receive privateKey and answer id from the AggregatorClient; save them on the logic class
@@ -274,4 +266,5 @@ def page_not_found(e):
 if __name__ == '__main__':
     hf_token = register_hf_api_token()
     logic.hf_api_token = hf_token
+    logic.createWallet()
     app.run(port=local_port)
