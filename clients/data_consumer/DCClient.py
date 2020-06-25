@@ -162,8 +162,8 @@ class DCClientLogic(object):
     def createWallet(self):
 
         hf_res = hf_invoke(logic.hf_api_token, "coin_contract", "createWallet", [])
-        self.wallet_id = hf_res['result']['result']]['id']
-        sendWalletToMO()
+        self.wallet_id = hf_res['result']['result']['id']
+        self.sendWalletToMO()
         return self.wallet_id
 
     def sendWalletToMO(self):
@@ -266,5 +266,5 @@ def page_not_found(e):
 if __name__ == '__main__':
     hf_token = register_hf_api_token()
     logic.hf_api_token = hf_token
-    logic.createWallet()
+    #logic.createWallet()
     app.run(port=local_port)

@@ -168,15 +168,13 @@ class AggregatorLogic(object):
         return priv_key, encrypted_data
 
     def send_priv_key_to_mo_dc(self, priv_key, query_id, ans_id):
-        # TODO: this needs to be tested
-        """
         # First MO
-        url_mo = addr_mo_server + "/receiveAggAnswer/"
+        url_mo = addr_mo_server + "/receiveAggAnswerKey/"
         json_data = {"query_id": query_id, "key": priv_key}
-        r = requests.post(url_mo, data=json_data)
+        r = requests.post(url_mo, json=json_data)
         print(r.json())
         r.close()
-        """
+
         # Next DC
         url_dc = addr_dc + "/receiveAggAnswer/"
         json_data = {"query_id": query_id, "key": priv_key}
@@ -211,7 +209,7 @@ def put_data_on_blockchain():
     ans_id = hf_res['result']['message']
     # TODO: add checks for HF result
 
-    # TODO: send private keys to MO and DC
+    # send private keys to MO and DC
     logic.send_priv_key_to_mo_dc(priv_key=priv_key, query_id=query_id, ans_id=ans_id)
 
     print("Agg: aggregated answer, put on BC and sent priv keys. Ans id: " + str(ans_id))

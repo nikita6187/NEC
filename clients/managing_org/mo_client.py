@@ -343,9 +343,12 @@ def get_query_answer(query_id):
         return jsonify(erorr = str(e))
 
 # TESTED
-@app.route('/receiveAggAnswerKey/<query_id>/<key>', methods=['GET'])
-def receive_answer_pk(query_id, key):
+@app.route('/receiveAggAnswerKey/', methods=['POST'])
+def receive_answer_pk():
     # Store pk
+    body = request.get_json()
+    query_id = body['query_id']
+    key = body['key']
     logic.answer_keys_map[query_id] = key
     return jsonify(logic.answer_keys_map)
 
