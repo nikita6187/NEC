@@ -317,7 +317,7 @@ sleep 5  # To make sure that the init is completed before
 chaincodeInvoke
 
 # Integration tests
-chaincodeTestCoin
+#chaincodeTestCoin
 
 # USAGE: bash ./deployChaincode.sh <PATH_TO_CC_SRC> <CC_NAME> <CC_VERSION> <INIT_FUNCTION> <INIT_FUNCTION_ARGS>
 
