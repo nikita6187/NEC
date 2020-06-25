@@ -4,31 +4,31 @@ certificateAuthorities:
     httpOptions: {verify: false}
     tlsCACerts: {pem: '-----BEGIN CERTIFICATE-----
 
-        MIICWDCCAf6gAwIBAgIRANdnweDBK8sCO1t8iryfntgwCgYIKoZIzj0EAwIwdjEL
+        MIICVzCCAf6gAwIBAgIRAJ1qjYU+NkIx1JwAh3ykb3MwCgYIKoZIzj0EAwIwdjEL
 
         MAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBG
 
         cmFuY2lzY28xGTAXBgNVBAoTEG9yZzEuZXhhbXBsZS5jb20xHzAdBgNVBAMTFnRs
 
-        c2NhLm9yZzEuZXhhbXBsZS5jb20wHhcNMjAwNjE4MDgzOTAwWhcNMzAwNjE2MDgz
+        c2NhLm9yZzEuZXhhbXBsZS5jb20wHhcNMjAwNjI1MDkwMjAwWhcNMzAwNjIzMDkw
 
-        OTAwWjB2MQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UE
+        MjAwWjB2MQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UE
 
         BxMNU2FuIEZyYW5jaXNjbzEZMBcGA1UEChMQb3JnMS5leGFtcGxlLmNvbTEfMB0G
 
         A1UEAxMWdGxzY2Eub3JnMS5leGFtcGxlLmNvbTBZMBMGByqGSM49AgEGCCqGSM49
 
-        AwEHA0IABKj8hjNmyDJBQtiREpPtGaJKHfwgLHwWIfXykvmYLLRJwJyiLX1IM2wN
+        AwEHA0IABBKdjx3VszsYffKiYg2ZZj4KrMP6KaJMa9YE+TUr7gJzWzveipIS1Wca
 
-        x1oHE6Nlj/ceseZFthYF6+ELb7hKh6mjbTBrMA4GA1UdDwEB/wQEAwIBpjAdBgNV
+        pEk+24Z1RhHPUCw07TshpC/xo9MLgO6jbTBrMA4GA1UdDwEB/wQEAwIBpjAdBgNV
 
         HSUEFjAUBggrBgEFBQcDAgYIKwYBBQUHAwEwDwYDVR0TAQH/BAUwAwEB/zApBgNV
 
-        HQ4EIgQgow96dsQzy6cZZHjrStJ261snCTi0esD+g3f4byQ4UIYwCgYIKoZIzj0E
+        HQ4EIgQgDU4DJanHwwxMVwRHcf0xIcLhqzT1XkmxCVArdIkflyIwCgYIKoZIzj0E
 
-        AwIDSAAwRQIgTs2g+8kMQJyq3erhUGpAUmWr4SF+nSnZVVoIjxZdv1wCIQDFFQXm
+        AwIDRwAwRAIgTleVpWuRwjeeeZt+NHB8Vnn0yM6uCZjgbg4MzSiIgM0CIBXAiPrR
 
-        Sc3CUs/mwyQ1mNCN4uhgxEUUJqwsWHi0wWs+Xg==
+        1+tHKfHkZ7yKhai0Jv0XFet1V2QNZWuRVmmt
 
         -----END CERTIFICATE-----
 
@@ -50,31 +50,31 @@ peers:
     grpcOptions: {hostnameOverride: peer0.org1.example.com, ssl-target-name-override: peer0.org1.example.com}
     tlsCACerts: {pem: '-----BEGIN CERTIFICATE-----
 
-        MIICWDCCAf6gAwIBAgIRANdnweDBK8sCO1t8iryfntgwCgYIKoZIzj0EAwIwdjEL
+        MIICVzCCAf6gAwIBAgIRAJ1qjYU+NkIx1JwAh3ykb3MwCgYIKoZIzj0EAwIwdjEL
 
         MAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBG
 
         cmFuY2lzY28xGTAXBgNVBAoTEG9yZzEuZXhhbXBsZS5jb20xHzAdBgNVBAMTFnRs
 
-        c2NhLm9yZzEuZXhhbXBsZS5jb20wHhcNMjAwNjE4MDgzOTAwWhcNMzAwNjE2MDgz
+        c2NhLm9yZzEuZXhhbXBsZS5jb20wHhcNMjAwNjI1MDkwMjAwWhcNMzAwNjIzMDkw
 
-        OTAwWjB2MQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UE
+        MjAwWjB2MQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UE
 
         BxMNU2FuIEZyYW5jaXNjbzEZMBcGA1UEChMQb3JnMS5leGFtcGxlLmNvbTEfMB0G
 
         A1UEAxMWdGxzY2Eub3JnMS5leGFtcGxlLmNvbTBZMBMGByqGSM49AgEGCCqGSM49
 
-        AwEHA0IABKj8hjNmyDJBQtiREpPtGaJKHfwgLHwWIfXykvmYLLRJwJyiLX1IM2wN
+        AwEHA0IABBKdjx3VszsYffKiYg2ZZj4KrMP6KaJMa9YE+TUr7gJzWzveipIS1Wca
 
-        x1oHE6Nlj/ceseZFthYF6+ELb7hKh6mjbTBrMA4GA1UdDwEB/wQEAwIBpjAdBgNV
+        pEk+24Z1RhHPUCw07TshpC/xo9MLgO6jbTBrMA4GA1UdDwEB/wQEAwIBpjAdBgNV
 
         HSUEFjAUBggrBgEFBQcDAgYIKwYBBQUHAwEwDwYDVR0TAQH/BAUwAwEB/zApBgNV
 
-        HQ4EIgQgow96dsQzy6cZZHjrStJ261snCTi0esD+g3f4byQ4UIYwCgYIKoZIzj0E
+        HQ4EIgQgDU4DJanHwwxMVwRHcf0xIcLhqzT1XkmxCVArdIkflyIwCgYIKoZIzj0E
 
-        AwIDSAAwRQIgTs2g+8kMQJyq3erhUGpAUmWr4SF+nSnZVVoIjxZdv1wCIQDFFQXm
+        AwIDRwAwRAIgTleVpWuRwjeeeZt+NHB8Vnn0yM6uCZjgbg4MzSiIgM0CIBXAiPrR
 
-        Sc3CUs/mwyQ1mNCN4uhgxEUUJqwsWHi0wWs+Xg==
+        1+tHKfHkZ7yKhai0Jv0XFet1V2QNZWuRVmmt
 
         -----END CERTIFICATE-----
 
