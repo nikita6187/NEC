@@ -125,51 +125,57 @@ def invoke_async_function(function, args):
 class DCClientLogic(object):
 
     def __init__(self):
+        self.dc_id = 33  # id - id of DC
         self.hf_api_token = None  # str - String of HF API token
-        self.walletID = None # ?????
-        self.queryId = None # int - Query's id
-        self.answerId = None # int - Aggreagated data answer id
-        self.priv_key = None # Private keys of aggregated data
-        self.aggregatedUnencryptedData = None # Aggregated unencrypted data
+        self.wallet_id = None  # id - wallet id of dc
+        self.query_id = None  # int - Query's id
+        self.priv_key = None  # Private keys of aggregated data
+        self.aggregated_unencrypted_data = None  # Aggregated unencrypted data
 
-    def createQuery(self, queryText, minUsers, maxBudget):
+    def createQuery(self, query_text, min_users, max_budget):
         #create query and put it on HF, save the queryID as well. We need it later to check query's stage
 
-        hf_res = hf.invoke(logic.hf_api_token, "query_contract", "createQuery", [queryText,
-                                                                                minUsers,
-                                                                                maxBudget,
-                                                                                walletID])
+        hf_res = hf_invoke(logic.hf_api_token, "query_contract", "createQuery", [query_text,
+                                                                                 str(min_users),
+                                                                                 str(max_budget),
+                                                                                 str(self.wallet_id)])
 
-        self.queryId = hf_res['result']['message']
-        return queryId
+        self.query_id = hf_res['result']['message']
+        return self.query_id
 
     def checkQuery(self):
         #check the query's stage on the HF
 
-        query_stage = hf_get(self.hf_api_token, "query_contract", "getQuery", [queryId])['result']['result']['stage']
+        query_stage = hf_get(self.hf_api_token, "query_contract", "getQuery", [self.query_id])['result']['result']['stage']
 
         switcher = {
-            0: "FAILED"
-            1: "AWAITING_APPROVAL"
-            2: "APPROVED"
-            3: "CHECKING_USERS"
-            4: "SERVING_DATA"
+            0: "FAILED",
+            1: "AWAITING_APPROVAL",
+            2: "APPROVED",
+            3: "CHECKING_USERS",
+            4: "SERVING_DATA",
             5: "SERVED"
         }
 
         return switcher.get(query_stage, "Invalid query stage, ERROR!")
 
+    def createWallet(self):
+
+        hf_res = hf_invoke(logic.hf_api_token, "coin_contract", "createWallet")
+        self.wallet_id = hf_res['result']['id']
+        return self.wallet_id
+
     def getAggAnswerFromHF(self):
         #get agg answer from HF, then decrypt it and save it on the logic class
 
-        hf_res = hf_get(logic.hf_api_token, "aggregated_answer_contract", "getAnswer", [answerId])
+        hf_res = hf_get(logic.hf_api_token, "aggregated_answer_contract", "getAnswer", [self.query_id])
 
-        aggregatedEncryptedAnswer = hf_res['result']['result']
+        aggregated_encrypted_answer = hf_res['result']['result']
 
-        cipher_suite = Fernet(priv_key)
-        aggregatedUnencryptedData = cipher_suite.decrypt(encrypted_data)
+        cipher_suite = Fernet(self.priv_key)
+        self.aggregated_unencrypted_data = cipher_suite.decrypt(aggregated_encrypted_answer)
         
-        return aggregatedUnencryptedData
+        return self.aggregated_unencrypted_data
 
 # Logic instance
 logic = DCClientLogic()
@@ -182,17 +188,16 @@ def createQuery():
     #just call the logic's createQuery function with the arguments passed to the endpoint
 
     try:
-        body = body = request.get_json(force=True)
+        body = request.get_json(force=True)
 
-        queryText = body['query_text']
-        minUsers = body['min_users']
-        maxBudget = body['max_budget']
-        query_id = logic.createQuery(queryText, minUsers, maxBudget)
+        query_text = body['query_text']
+        min_users = body['min_users']
+        max_budget = body['max_budget']
+        query_id = logic.createQuery(query_text, min_users, max_budget)
 
-        print("Added query from: " + str(logic.walletID) + ", the created query has id: " + 
-            str(query_id))
+        print("Added query from: " + str(logic.wallet_id) + ", the created query has id: " + str(query_id))
 
-      return jsonify(success=True)
+        return jsonify(success=True)
     except Exception as e:
         return jsonify(error=str(e))
 
@@ -201,11 +206,23 @@ def createQuery():
 def checkQueryStage():
     #just call the logic's checkQuery function
 
-    queryStage = logic.checkQuery()
+    query_stage = logic.checkQuery()
 
-    print("Query stage is " + queryStage)
+    print("Query stage is " + query_stage)
 
-    return jsonify(stage=queryStage)
+    return jsonify(stage=query_stage)
+
+
+@app.route('/createWallet/', methods=['GET'])
+def createWallet():
+    wallet_id = logic.createWallet()
+    print(wallet_id)
+
+
+@app.route('/sendWallet/', methods=['GET'])
+def sendWalletToMo():
+    MO_endpoint = addr_mo_user_api + "/receiveDCWallet"
+    fire_and_forget(False, MO_endpoint, [logic.dc_id, logic.wallet_id])
 
 
 @app.route('/receiveAggAnswer/', methods=['POST'])
@@ -213,11 +230,11 @@ def receiveKeyAndAnsId():
     #receive privateKey and answer id from the AggregatorClient; save them on the logic class
 
     try:
-        body = body = request.get_json(force=True)
-        logic.answerId = body.get['answer_id']
+        body = request.get_json(force=True)
+        logic.query_id = body.get['query_id']
         logic.priv_key = body.get['key']
 
-        print("Answer Id received: " + str(logic.answerId) + ", Private key received: " + str(logic.priv_key))
+        print("Query Id received: " + str(logic.query_id + ", Private key received: " + str(logic.priv_key)))
 
         return jsonify(success=True)
     except Exception as e:
@@ -228,11 +245,11 @@ def receiveKeyAndAnsId():
 def getAggAnswerFromHF():
     #just call the logic's getAggAnswerFromHF function and return the decrypted data
 
-    unencryptedData = logic.getAggAnswerFromHF()
+    unencrypted_data = logic.getAggAnswerFromHF()
 
-    print("Aggregated unencrypted answer is: " + str(unencryptedData))
+    print("Aggregated unencrypted answer is: " + str(unencrypted_data))
 
-    return jsonify(data=unencryptedData)
+    return jsonify(data=unencrypted_data)
 
 
 @app.errorhandler(500)
