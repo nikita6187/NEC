@@ -164,21 +164,23 @@ class AggregatorLogic(object):
         # To decrypt, run: data = cipher_suite.decrypt(encrypted_data)
         self.query_private_keys[query_id] = priv_key
         self.query_encr_data[query_id] = encrypted_data
+        print("Private key: " + str(priv_key))
         return priv_key, encrypted_data
 
     def send_priv_key_to_mo_dc(self, priv_key, query_id, ans_id):
         # TODO: this needs to be tested
+        """
         # First MO
-        url_mo = addr_mo_server + "/receiveAggAnswer"
+        url_mo = addr_mo_server + "/receiveAggAnswer/"
         json_data = {"query_id": query_id, "key": priv_key}
         r = requests.post(url_mo, data=json_data)
         print(r.json())
         r.close()
-
+        """
         # Next DC
-        url_dc = addr_dc + "/receiveAggAnswer"
+        url_dc = addr_dc + "/receiveAggAnswer/"
         json_data = {"query_id": query_id, "key": priv_key}
-        r = requests.post(url_dc, data=json_data)
+        r = requests.post(url_dc, json=json_data)
         print(r.json())
         r.close()
 
@@ -193,7 +195,8 @@ logic = AggregatorLogic()
 def put_data_on_blockchain():
     # TODO: add try and except
 
-    query_id = request.args.get("query_id")
+    body = request.get_json()
+    query_id = body['query_id']
 
     # aggregate data
     agg_data, user_compensation = logic.aggregate_data(query_id)

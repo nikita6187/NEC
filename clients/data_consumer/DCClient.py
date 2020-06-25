@@ -233,14 +233,15 @@ def receiveKeyAndAnsId():
     #receive privateKey and answer id from the AggregatorClient; save them on the logic class
 
     try:
-        body = request.get_json(force=True)
-        logic.query_id = body.get['query_id']
-        logic.priv_key = body.get['key']
+        body = request.get_json()
+        logic.query_id = body['query_id']
+        logic.priv_key = body['key']
 
         print("Query Id received: " + str(logic.query_id + ", Private key received: " + str(logic.priv_key)))
 
         return jsonify(success=True)
     except Exception as e:
+        print(e)
         return jsonify(error=str(e))
 
 
