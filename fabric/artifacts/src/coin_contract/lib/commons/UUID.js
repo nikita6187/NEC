@@ -15,7 +15,7 @@ class UUID {
         );
     }
 
-    async incrementCounter(ctx) {        
+    async next(ctx) {        
         // Get current counter
         const counterAsBytes = await ctx.stub.getState(this.keyIdentifier);
         let counter = JSON.parse(counterAsBytes.toString());

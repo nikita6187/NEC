@@ -14,7 +14,7 @@ class Wallet {
         const dbDataAsBytes = await ctx.stub.getState(id);
         const wallet = JSON.parse(dbDataAsBytes.toString());
 
-        return wallet;
+        return Wallet.toClass(wallet);
     }
 
     static async queryWallets(ctx, startID, endID) {
@@ -73,10 +73,11 @@ class Wallet {
     }
 
     static toClass(json) {
+        console.info(json);
         if(!json.id) {
             throw Error(`id field is missing from wallet ${json}`);
         }
-        if(!json.amount) {
+        if(parseInt(json.amount) == NaN) {
             throw Error(`amount field is missing from wallet ${json}`);
         }
         if(!json.orgMSP) {

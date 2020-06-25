@@ -11,12 +11,19 @@ class CoinContract extends Contract {
      * 
      * @param {ctx} ctx 
      */
-    async initLedger(ctx) {
+    async initLedger(ctx, managingOrg) {
         console.info('============= START : Initialize Ledger ===========');
 
         this.uuid = new UUID(counterKey, 0)
         await this.uuid.init(ctx);
         console.info(`Counter initialized with ${0}`)
+
+        // Set managingOrg
+        if(!managingOrg) {
+            throw Error("Missing Managing Organisation MSP!");
+        }
+        this.managingOrgMSP = managingOrg;
+        console.info(`Contract is owned by ${managingOrg}`);
 
         console.info('============= END : Initialize Ledger ===========');
     }
@@ -25,11 +32,11 @@ class CoinContract extends Contract {
      * @param {ctx} context
      */
     async createWallet(ctx) {
-        const id = await this.uuid.incrementCounter(ctx);
+        const id = await this.uuid.next(ctx);
 
         let cid = new ClientIdentity(ctx.stub);
 
-        return new Wallet(id, cid.getMSPID(), 1000)
+        return new Wallet(id, cid.getMSPID(), 0)
              .save(ctx);
     }
 
@@ -68,7 +75,6 @@ class CoinContract extends Contract {
         let fromWallet;
         if (fromID) {
             fromWallet = await Wallet.queryWalletByID(ctx, fromID);
-            fromWallet = Wallet.toClass(fromWallet);
 
             if (!fromWallet) {
                 throw new Error(`${fromID} does not exist`);
@@ -80,7 +86,6 @@ class CoinContract extends Contract {
         let toWallet;
         if (toID) {
             toWallet = await Wallet.queryWalletByID(ctx, toID);
-            toWallet = Wallet.toClass(toWallet);
 
             if (!toWallet) {
                 throw new Error(`${toID} does not exist`);
@@ -112,6 +117,63 @@ class CoinContract extends Contract {
                 'to': to
             };
         });
+    }
+
+    /**
+     * @param {Stub} ctx
+     * @param {String} id the id of the wallet that should receive the coins
+     * @param {Float} amount amount of coins to create
+     */
+    async createCoins(ctx, id, amount) {
+        let cid = new ClientIdentity(ctx.stub);
+        console.info(`Contract owner is: ${this.managingOrgMSP}`);
+        if(cid.getMSPID() != this.managingOrgMSP) {
+            throw new Error(`${cid.getMSPID()} does not nown contract and therefor can't create coins!`);
+        }
+
+        amount = parseInt(amount);
+        if(amount <= 0) {
+            throw new Error(`amount(${amount}) must be > 0`);
+        }
+
+        const wallet = await Wallet.queryWalletByID(ctx, id);
+        if(!wallet) {
+            throw new Error(`Could not find wallet with id: ${id}!`);
+        }
+
+        wallet.addAmount(amount);
+
+        return await wallet.save(ctx);
+    }
+
+    /**
+     * @param {Stub} ctx
+     * @param {String} id the id of the wallet that should spend coins
+     * @param {Float} amount amount of coins to spend
+     */
+    async spendCoins(ctx, id, amount) {
+        let cid = new ClientIdentity(ctx.stub);
+        console.info(`Contract owner is: ${this.managingOrgMSP}`);
+        if(cid.getMSPID() != this.managingOrgMSP) {
+            throw new Error(`${cid.getMSPID()} does not nown contract and therefor can't spend coins!`);
+        }
+
+        amount = parseInt(amount);
+        if(amount <= 0) {
+            throw new Error(`amount(${amount}) must be > 0`);
+        }
+
+        const wallet = await Wallet.queryWalletByID(ctx, id);
+        if(!wallet) {
+            throw new Error(`Could not find wallet with id: ${id}!`);
+        }
+
+        if(wallet.amount < amount) {
+            throw new Error(`Not enough coins to spend in: ${id}!`);
+        }
+        wallet.addAmount(-amount);
+
+        return await wallet.save(ctx);
     }
 }
 
