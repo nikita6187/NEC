@@ -88,7 +88,6 @@ def hf_invoke(token, chaincode_name, function, args):
             "chaincodeName": chaincode_name,
             "channelName": "myChannel",
             "args": args}
-    print("BODY: " + str(body))
     headers = {"Authorization": "Bearer " + token}
     r = requests.post(url_post, data=body, headers=headers)
 

@@ -8,7 +8,7 @@ import json
 
 # Flask config
 app = flask.Flask(__name__)
-app.config["DEBUG"] = True
+app.config["DEBUG"] = False
 local_port = 11700
 
 # Other client URL config
@@ -121,7 +121,6 @@ def invoke_async_function(function, args):
 
 
 # Logic class
-#NOTHING TESTED
 class DCClientLogic(object):
 
     def __init__(self):
@@ -132,10 +131,11 @@ class DCClientLogic(object):
         self.priv_key = None  # Private keys of aggregated data
         self.aggregated_unencrypted_data = None  # Aggregated unencrypted data
 
+    # TESTED, WORKS CORRECTLY
     def createQuery(self, query_text, min_users, max_budget):
         #create query and put it on HF, save the queryID as well. We need it later to check query's stage
 
-        hf_res = hf_invoke(logic.hf_api_token, "query_contract", "createQuery", [query_text,
+        hf_res = hf_invoke(self.hf_api_token, "query_contract", "createQuery", [query_text,
                                                                                  str(min_users),
                                                                                  str(max_budget),
                                                                                  str(self.wallet_id)])
@@ -143,11 +143,12 @@ class DCClientLogic(object):
         self.query_id = hf_res['result']['message']
         return self.query_id
 
-    def checkQuery(self):
+
+    # TESTED, WORKS CORRECTLY
+    def checkQuery(self, q_id):
         #check the query's stage on the HF
 
-        query_stage = hf_get(self.hf_api_token, "query_contract", "getQuery", [self.query_id])['result']['result']['stage']
-
+        query_stage = json.loads(hf_get(self.hf_api_token, "query_contract", "getQuery", [q_id])['result']['result'])['stage']
         switcher = {
             0: "FAILED",
             1: "AWAITING_APPROVAL",
@@ -159,22 +160,30 @@ class DCClientLogic(object):
 
         return switcher.get(query_stage, "Invalid query stage, ERROR!")
 
+    # TESTED, WORKS CORRECTLY
     def createWallet(self):
-
-        hf_res = hf_invoke(logic.hf_api_token, "coin_contract", "createWallet", [])
+        #create wallet and send it to MO
+        
+        hf_res = hf_invoke(self.hf_api_token, "coin_contract", "createWallet", [])
         self.wallet_id = hf_res['result']['result']['id']
         self.sendWalletToMO()
         return self.wallet_id
 
+    # TESTED, WORKS CORRECTLY
     def sendWalletToMO(self):
-        MO_endpoint = addr_mo_server + '/receiveDCWallet/' + str(self.dc_id) + '/' + str(self.wallet_id) + '/'
-        requests.post(MO_endpoint)
+        #send wallet to MO
+        try:
+            MO_endpoint = addr_mo_server + '/receiveDCWallet/' + str(self.dc_id) + '/' + str(self.wallet_id) + '/'
+            requests.post(MO_endpoint)
+        except Exception as e:
+            err = "Wallet not created, MO server probably not running or connection error"
+            print(err)
 
-
-    def getAggAnswerFromHF(self):
+    # NOT TESTED, NEEDS AGGREGATED ANSWER CONTRACT TO BE FINISHED
+    def getAggAnswerFromHF(self, q_id):
         #get agg answer from HF, then decrypt it and save it on the logic class
 
-        hf_res = hf_get(logic.hf_api_token, "aggregated_answer_contract", "getAnswer", [self.query_id])
+        hf_res = hf_get(self.hf_api_token, "aggregated_answer_contract", "getAnswer", [q_id])
 
         aggregated_encrypted_answer = hf_res['result']['result']
 
@@ -188,7 +197,7 @@ logic = DCClientLogic()
 
 
 # Endpoint management
-# Tested
+# TESTED, WORKS CORRECTLY
 @app.route('/createQuery/', methods=['POST'])
 def createQuery():
     #just call the logic's createQuery function with the arguments passed to the endpoint
@@ -203,23 +212,23 @@ def createQuery():
 
         print("Added query from: " + str(logic.wallet_id) + ", the created query has id: " + str(query_id))
 
-        return jsonify(success=True)
+        return jsonify(query_id=query_id)
     except Exception as e:
         return jsonify(error=str(e))
 
-# Not tested
-@app.route('/checkQueryStage/', methods=['GET'])
-def checkQueryStage():
+# TESTED, WORKS CORRECTLY
+@app.route('/checkQueryStage/<query_id>/', methods=['GET'])
+def checkQueryStage(query_id):
     #just call the logic's checkQuery function
 
-    query_stage = logic.checkQuery()
+    query_stage = logic.checkQuery(query_id)
 
     print("Query stage is " + query_stage)
 
     return jsonify(stage=query_stage)
 
 
-# Not tested
+# TESTED, WORKS CORRECTLY
 @app.route('/receiveAggAnswer/', methods=['POST'])
 def receiveKeyAndAnsId():
     #receive privateKey and answer id from the AggregatorClient; save them on the logic class
@@ -237,11 +246,12 @@ def receiveKeyAndAnsId():
         return jsonify(error=str(e))
 
 
-@app.route('/getAnswerFromHF/')
-def getAggAnswerFromHF():
+# NOT TESTED, NEEDS AGGREGATED ANSWER CONTRACT TO BE FINISHED
+@app.route('/getAnswerFromHF/<query_id>/')
+def getAggAnswerFromHF(query_id):
     #just call the logic's getAggAnswerFromHF function and return the decrypted data
 
-    unencrypted_data = logic.getAggAnswerFromHF()
+    unencrypted_data = logic.getAggAnswerFromHF(query_id)
 
     print("Aggregated unencrypted answer is: " + str(unencrypted_data))
 
@@ -268,3 +278,4 @@ if __name__ == '__main__':
     logic.hf_api_token = hf_token
     #logic.createWallet()
     app.run(port=local_port)
+

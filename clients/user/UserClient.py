@@ -132,11 +132,12 @@ class UserClientLogic(object):
         self.query_id = "q1"  # id - Id of query
         self.query_text = "test_query_text"  # Str - Query text
 
-
+    # NOTHING TO TEST HERE
     def notifyUser(self):
         #TODO: for GUI
         pass
 
+    # TESTED, WORKS CORRECTLY
     def send_data_to_Aggregator(self):
         #send the dummy data to the aggregator
 
@@ -145,6 +146,7 @@ class UserClientLogic(object):
         fire_and_forget(False, aggregator_endpoint, data=json_data)
         #requests.post(aggregator_endpoint, json=json_data)
 
+    # TESTED, WORKS CORRECTLY
     def accept_query(self):
         #tell MO that the User accepts the query
 
@@ -154,6 +156,7 @@ class UserClientLogic(object):
         self.wallet_id = response.json()["wallet_id"]
         return self.wallet_id
 
+    # NOTHING TO TEST HERE
     def preprocessData(self, data):
         #TODO: when we will have real data
         return data
@@ -163,7 +166,7 @@ logic = UserClientLogic()
 
 
 # Endpoint management
-#NOTHING TESTED
+# TESTED, WORKS CORRECTLY
 @app.route('/sendData/<query_id>/<wallet_id>/', methods=['POST'])
 def send_data_to_Aggregator(query_id, wallet_id):
     #just call logic's function
@@ -171,7 +174,7 @@ def send_data_to_Aggregator(query_id, wallet_id):
     logic.send_data_to_Aggregator()
     return jsonify(wallet_id)
 
-#TESTED
+# TESTED, WORKS CORRECTLY
 @app.route('/notify/', methods=['GET', 'POST'])
 def get_notified_for_query():
     #get notified by the MO about the query, also get the query's ID and text
@@ -187,7 +190,7 @@ def get_notified_for_query():
         print(str(e))
         return jsonify(erorr=str(e))
     
-#TESTED
+# TESTED, WORKS CORRECTLY
 @app.route('/acceptQuery/', methods=['POST'])
 def accept_query():
     #just call logic's function
@@ -197,17 +200,16 @@ def accept_query():
 
 @app.route('/cashin/', methods=['POST'])
 def cashIn():
-    MO_endpoint = addr_mo_server + "/cashIn"
-
+    MO_endpoint = addr_mo_server + "/cashinCoins/" + logic.user_id + '/' + 2
+    # to change reward id
     try:
         body = request.get_json(force=True)
         amount = body['amount']
-        fire_and_forget(False, MO_endpoint, [logic.user_id, amount, 2])  # to change reward id
+        fire_and_forget(False, MO_endpoint)  
 
         return jsonify(succes=True)
     except Exception as e:
         return jsonify(erorr=str(e))
-
 
 
 @app.errorhandler(500)
