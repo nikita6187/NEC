@@ -237,7 +237,7 @@ class MoClientLogic(object):
         hf_invoke(self.hf_token, "coin_contract", "createCoins", [wallet_id, amount])
     
     def remove_coins(self, wallet_id, amount):
-        hf_invoke(self.hf_token, "coin_contract", "removeCoins", [wallet_id, amount])
+        hf_invoke(self.hf_token, "coin_contract", "spendCoins", [wallet_id, amount])
     
     def ask_users_for_query(self, query_id):
         """Notify all existing users of a new query
@@ -260,9 +260,14 @@ class MoClientLogic(object):
             r.close()
 
     def send_data(self, query_id):
+        """Notify all users to send query data to aggregator.
+            Should be called (automatically) when the minimum number of required users for a query has been reached
+            Currently can be called from endpoint for testing purposes
+
+        Args:
+            query_id (string): query id
+        """
         for user in self.users:
-            
-            # CREATE NEW WALLET
             new_wallet = logic.create_user_wallet(user)
             url_mo = addr_user + "/sendData/" + query_id + '/' + new_wallet + '/'
             json_data = {"query_id": query_id, "wallet_id": new_wallet}
@@ -278,7 +283,6 @@ logic = MoClientLogic()
 
 # Endpoint management
 
-#TESTED
 @app.route('/enrollUser/<user_id>', methods=['GET'])
 def enroll_user(user_id):
     logic.users.append(user_id)
@@ -287,7 +291,6 @@ def enroll_user(user_id):
         201
     )
 
-#TESTED
 @app.route('/enrollDc/<dc_id>', methods=['GET'])
 def enroll_dc(dc_id):
     logic.dc.append(dc_id)
@@ -296,7 +299,6 @@ def enroll_dc(dc_id):
         201
     )
 
-#TESTED
 @app.route('/getQuery/<query_id>', methods=['GET', 'POST'])
 def get_query(query_id):
 
@@ -305,7 +307,6 @@ def get_query(query_id):
     logic.send_data()
     return query
 
-#TESTED
 @app.route('/getAllQueries', methods=['GET'])
 def get_all_queries():
     try:
@@ -315,7 +316,6 @@ def get_all_queries():
     except Exception as e:
             return jsonify(erorr = str(e))
 
-# TESTED
 @app.route('/setQueryStage/<query_id>/<stage>')
 def set_query_stage(query_id, stage):
     try:
@@ -341,7 +341,6 @@ def get_query_answer(query_id):
     except Exception as e:
         return jsonify(erorr = str(e))
 
-# TESTED
 @app.route('/receiveAggAnswerKey/', methods=['POST'])
 def receive_answer_pk():
     # Store pk
@@ -362,7 +361,6 @@ def cashin_coins(user_id, reward_id):
     # send reward to user
     return logic.rewards_map[reward_id]
 
-#TESTED
 @app.route('/acceptQuery/<user_id>/<query_id>/', methods=['GET'])
 def accept_query(user_id, query_id):
     print("parameters are: " + str(user_id), str(query_id))
@@ -378,7 +376,6 @@ def accept_query(user_id, query_id):
     #print(jsonify(dict(logic.wallet_map)), file=sys.stderr)
     return {"wallet_id": new_wallet_id}
 
-# TESTED
 @app.route('/receiveDCWallet/<dc_id>/<wallet_id>/', methods=['POST'])
 def receive_dc_wallet(dc_id, wallet_id):
     # save wallet id to map
@@ -388,7 +385,13 @@ def receive_dc_wallet(dc_id, wallet_id):
     logic.create_coins(wallet_id, default_amount)
     return jsonify({"amount_added": default_amount})
 
-    
+@app.route('/sendData/<query_id>', methods=['POST'])
+def send_data(query_id):
+    logic.send_data(query_id)
+    return make_response(
+        'Users have been notified to send data to aggregator for query with id: ' + query_id + '.',
+        201
+    )
 
 @app.errorhandler(500)
 def page_not_found(e):
@@ -408,7 +411,6 @@ def about():
 
 
 if __name__ == '__main__':
-    token = register_hf_api_token()  # TODO: test
+    token = register_hf_api_token()
     logic.hf_token = token
-    print("NNNN ",token, " NNNNN")
     app.run(port=local_port)
