@@ -124,7 +124,7 @@ def invoke_async_function(function, args):
 class DCClientLogic(object):
 
     def __init__(self):
-        self.dc_id = 33  # id - id of DC
+        self.dc_id = "dc1"  # id - id of DC
         self.hf_api_token = None  # str - String of HF API token
         self.wallet_id = "w134"  # TODO: change id - wallet id of dc
         self.query_id = None  # int - Query's id

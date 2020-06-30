@@ -23,7 +23,7 @@ addr_agg = "http://localhost:11900"
 
 # HF connection config
 addr_hf_api = "http://localhost:4000"
-org_id = str(1)  # TODO: change this appropriatly
+org_id = str(1)
 
 # Helper code
 pool = Pool(10)
@@ -128,8 +128,8 @@ def invoke_async_function(function, args):
 class CoinReward:
     id_counter = 0
     def __init__(self, cost, details):
-        self.id_counter += 1
-        self.id = "r" + self.id_counter
+        # self.id_counter += 1
+        # self.id = "r" + self.id_counter
         self.cost = cost
         self.details = details
 
@@ -143,6 +143,7 @@ class MoClientLogic(object):
         self.users.append("u1")
         # List of all dcIds in the system
         self.dc = []
+        self.dc.append("dc1")
 
         # Maps KEY: UserId - VALUE: list of WalletId
         # defaultdict behaves lke a normal dict with extra protection agains errors esp. when adding missing keys
@@ -352,15 +353,19 @@ def receive_answer_pk():
     return jsonify(logic.answer_keys_map)
 
 # TODO: integration test 
-@app.route('/cashinCoins/<user_id>/<reward_id>', methods=['POST'])
+@app.route('/cashinCoins/<user_id>/<reward_id>/', methods=['POST'])
 def cashin_coins(user_id, reward_id):
     # subtract coins from user wallet
     try:
+        # adding reward test data
+        logic.rewards_map[reward_id] = CoinReward(10, "detail text")
         logic.subtract_coins(user_id, reward_id)
     except Exception as e:
         return jsonify(erorr = str(e))
     # send reward to user
-    return logic.rewards_map[reward_id]
+    
+    return jsonify(logic.rewards_map[reward_id].cost,
+                   logic.rewards_map[reward_id].details)
 
 #TESTED
 @app.route('/acceptQuery/<user_id>/<query_id>/', methods=['GET'])
