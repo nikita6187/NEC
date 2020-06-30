@@ -1,4 +1,4 @@
 Installed chaincodes on peer:
-Package ID: query_contract_1:eb1f15cd066aba315dfec2094a4ff873f0092a37547444b71d1d853224c67f6d, Label: query_contract_1
-Package ID: coin_contract_1:a96626989449e13ff9d514f783e30080fc445c671a7b90ebb2403fd0f360e1f8, Label: coin_contract_1
-Package ID: agg_answer_1:00d2ef2a460bf41bbf86b71943fefe4f4f6f481ebaa425584ab73ecc5c2e721d, Label: agg_answer_1
+Package ID: coin_contract_1:a19e7680c7aeaa85facbb4ad5fdc241cf84bd91e482c02a6d5f67a00ac699be7, Label: coin_contract_1
+Package ID: agg_answer_1:49c3be22317f3f1f293d6a14411b792befc5aa5f3356a00643c236119df024b0, Label: agg_answer_1
+Package ID: query_contract_1:200d429f860ad4437a3607c8a299b18bb7d3862294374a0eb1199344cb596428, Label: query_contract_1

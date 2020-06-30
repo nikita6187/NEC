@@ -11,7 +11,13 @@ class Wallet {
     }
 
     static async queryWalletByID(ctx, id) {
+
+        console.info(`Getting wallet with ID: ${id}`);
+
         const dbDataAsBytes = await ctx.stub.getState(id);
+
+        console.info(dbDataAsBytes.toString());
+
         const wallet = JSON.parse(dbDataAsBytes.toString());
 
         return Wallet.toClass(wallet);

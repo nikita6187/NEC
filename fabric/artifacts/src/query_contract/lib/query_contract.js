@@ -41,7 +41,7 @@ class QueryContract extends Contract {
                 stage: 1,
                 num_majority: 1,
                 max_budget: 10,
-                wallet_id: 'w1',
+                wallet_id: 'WAL1',
                 fail_message: '',
             },
         ];

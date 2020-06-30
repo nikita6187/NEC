@@ -154,7 +154,7 @@ class AggregatorLogic(object):
     def aggregate_data(self, query_id):
         # Here we can insert some proper aggregation
         # Currently, we assume 1 user, i.e. 1 result and one
-        return random.uniform(0.5, 1.5), [(self.query_wallet_dic[query_id][0], self.queries[query_id]['max_budget'])]
+        return random.uniform(0.5, 1.5), {self.query_wallet_dic[query_id][0]: self.queries[query_id]['max_budget']}
 
     def encrypt_data(self, raw_data, query_id):
         priv_key = Fernet.generate_key()
@@ -202,10 +202,12 @@ def put_data_on_blockchain():
     # encrypt data
     priv_key, encr_data = logic.encrypt_data(agg_data, query_id)
 
+    print(user_compensation)
+
     # put data on blockchain
     hf_res = hf_invoke(logic.hf_api_token, agg_answer_name, "createAnswer", [encr_data,
                                                                              logic.queries[query_id]['wallet_id'],
-                                                                             query_id, user_compensation])
+                                                                             query_id, json.dumps(user_compensation)])
     ans_id = hf_res['result']['message']
     # TODO: add checks for HF result
 
