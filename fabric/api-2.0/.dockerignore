@@ -1,0 +1,6 @@
+node_modules
+npm-debug.log
+quicktest_api.py
+config/connection-org1.yaml
+config/connection-org2.yaml
+config/connection-org3.yaml
