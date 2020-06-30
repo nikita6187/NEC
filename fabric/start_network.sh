@@ -46,7 +46,7 @@ fi
 docker-compose up -d
 popd
 
-# Step 7: init api
+# Step 8: init api
 API_ARG="$1"
 init_and_test_api() {
 	if [ -z "${API_ARG}" ]
