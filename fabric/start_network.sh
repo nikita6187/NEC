@@ -39,6 +39,10 @@ python3 generate_certificates.py 3
 # Step 7: make blockchain explorer work by copying crypto and composing the container
 python3 copy_crypto-config.py
 pushd ./blockchainExplorer
+if [ ! -f ".env" ]; then
+	touch .env
+	echo "COMPOSE_PROJECT_NAME=artifacts" >> .env 
+fi
 docker-compose up -d
 popd
 
