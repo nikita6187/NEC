@@ -351,7 +351,6 @@ def receive_answer_pk():
     logic.answer_keys_map[query_id] = key
     return jsonify(logic.answer_keys_map)
 
-# TODO: integration test 
 @app.route('/cashinCoins/<user_id>/<reward_id>/', methods=['POST'])
 def cashin_coins(user_id, reward_id):
     # subtract coins from user wallet
