@@ -36,6 +36,12 @@ python3 generate_certificates.py 1
 python3 generate_certificates.py 2
 python3 generate_certificates.py 3
 
+# Step 7: make blockchain explorer work by copying crypto and composing the container
+python3 copy_crypto-config.py
+pushd ./blockchainExplorer
+docker-compose up -d
+popd
+
 # Step 7: init api
 API_ARG="$1"
 init_and_test_api() {
