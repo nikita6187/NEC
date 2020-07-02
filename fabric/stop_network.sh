@@ -4,6 +4,11 @@
 pushd ./artifacts
 docker-compose down -v --remove-orphans
 popd
+pushd ./blockchainExplorer
+docker-compose down
+rm -rf crypto-config
+popd
+
 
 # Step 2: TODO Remove other files
 # TODO: update this
