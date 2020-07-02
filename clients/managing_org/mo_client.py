@@ -28,6 +28,13 @@ org_id = str(1)
 # Helper code
 pool = Pool(10)
 
+# logging
+@app.before_request
+def store_requests():
+    url = request.url
+    if "getRequestsHistory" not in url:
+        logic.requests_log.append(url)
+
 """
 Function to call a HTTP request async and only printing the result.
 to_get: Bool, True = GET, False = POST
@@ -111,7 +118,7 @@ def hf_get(token, chaincode_name, function, args):
     url_req = addr_hf_api + "/channels/mychannel/chaincodes/" + chaincode_name
     r = requests.get(url_req, headers=headers, params=params)
 
-    # Deal with exceptions for the requests i.e. possible exception from .json() and check for 
+    # Deal with exceptions for the requests i.e. possible exception from .json() and check for
     # a possible error response from the request w .raise_for_status()
     return r.json()
 
@@ -158,6 +165,8 @@ class MoClientLogic(object):
         # Maps KEY: dc_id - VALUE: wallet associated to the dc
         self.dc_wallet_map = {}
 
+        self.requests_log = []
+
     def get_full_query(self, query_id):
         """Get a dicitonary with full data of the query corresp. to the id
 
@@ -173,7 +182,7 @@ class MoClientLogic(object):
             return json.loads(raw)
         except Exception as e:
             return jsonify(erorr = str(e))
-    
+
     def create_user_wallet(self, user_id):
         """Create a new wallet and then assign it to the user-wallet map
 
@@ -236,10 +245,10 @@ class MoClientLogic(object):
 
     def create_coins(self, wallet_id, amount):
         hf_invoke(self.hf_token, "coin_contract", "createCoins", [wallet_id, amount])
-    
+
     def remove_coins(self, wallet_id, amount):
         hf_invoke(self.hf_token, "coin_contract", "spendCoins", [wallet_id, amount])
-    
+
     def ask_users_for_query(self, query_id):
         """Notify all existing users of a new query
 
@@ -253,7 +262,7 @@ class MoClientLogic(object):
         # currently only one user -> using addr_user instead of each users's unique id
         for user in self.users:
             url_mo = addr_user + "/notify/"
-            # TODO: QUERY needs an extra field "query_details" with string information 
+            # TODO: QUERY needs an extra field "query_details" with string information
             # about the query content to be sent to users with the request
             json_data = {"query_id": query_id, "query_text": "Query info"}
             r = requests.post(url_mo, json=json_data)
@@ -275,7 +284,7 @@ class MoClientLogic(object):
             r = requests.post(url_mo, json=json_data)
             print(r.json())
             r.close()
-        
+
 
 
 
@@ -359,7 +368,7 @@ def cashin_coins(user_id, reward_id):
     except Exception as e:
         return jsonify(erorr = str(e))
     # send reward to user
-    
+
     return jsonify(logic.rewards_map[reward_id].cost,
                    logic.rewards_map[reward_id].details)
 
@@ -394,6 +403,10 @@ def send_data(query_id):
         'Users have been notified to send data to aggregator for query with id: ' + query_id + '.',
         201
     )
+
+@app.route('/getRequestsHistory/', methods=['GET'])
+def get_requests_history():
+    return jsonify({"requests":logic.requests_log})
 
 @app.errorhandler(500)
 def page_not_found(e):
