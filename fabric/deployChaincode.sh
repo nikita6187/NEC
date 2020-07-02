@@ -215,9 +215,6 @@ chaincodeInvoke() {
 chaincodeTestCoin(){
     setGlobalsForPeer0Org1
 
-    # Query by id
-    # peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"Args":["retrieveWallet", "e6d0ce8da7a6adde9b157768054253d7906c7dc9c8a4bbe3973dc18fcc9cca49"]}'
-
     # Create individual wallets and fill them up
     peer chaincode invoke -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com \
         --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA -C $CHANNEL_NAME -n ${CC_NAME} \
@@ -297,6 +294,34 @@ chaincodeTestCoin(){
     peer chaincode query -C $CHANNEL_NAME -n ${CC_NAME} -c '{"Args":["retrieveWallet", "WAL3"]}'
 }
 
+chaincodeTestQuery() {
+    setGlobalsForPeer0Org1
+
+    peer chaincode invoke -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com \
+        --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA -C $CHANNEL_NAME -n ${CC_NAME} \
+        --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ORG1_CA \
+        --peerAddresses localhost:8051 --tlsRootCertFiles $PEER0_ORG2_CA \
+        --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG3_CA \
+        --waitForEvent \
+        -c "{\"function\":\"createQuery\",\"Args\":[\"ALL\",\"2\", \"50\", \"WAL1\"]}"
+
+    peer chaincode invoke -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com \
+        --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA -C $CHANNEL_NAME -n ${CC_NAME} \
+        --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ORG1_CA \
+        --peerAddresses localhost:8051 --tlsRootCertFiles $PEER0_ORG2_CA \
+        --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG3_CA \
+        --waitForEvent \
+        -c "{\"function\":\"createQuery\",\"Args\":[\"ALLIN\",\"3\", \"100\", \"WAL2\"]}"
+    
+    peer chaincode invoke -o localhost:7050 --ordererTLSHostnameOverride orderer.example.com \
+        --tls $CORE_PEER_TLS_ENABLED --cafile $ORDERER_CA -C $CHANNEL_NAME -n ${CC_NAME} \
+        --peerAddresses localhost:7051 --tlsRootCertFiles $PEER0_ORG1_CA \
+        --peerAddresses localhost:8051 --tlsRootCertFiles $PEER0_ORG2_CA \
+        --peerAddresses localhost:9051 --tlsRootCertFiles $PEER0_ORG3_CA \
+        --waitForEvent \
+        -c "{\"function\":\"createQuery\",\"Args\":[\"TRAIN_NUDES\",\"5\", \"150\", \"WAL3\"]}"
+}
+
 
 # Run this function if you add any new dependency in chaincode
 # presetup
@@ -318,7 +343,8 @@ sleep 5  # To make sure that the init is completed before
 chaincodeInvoke
 
 # Integration tests
-#chaincodeTestCoin
+# chaincodeTestCoin
+# chaincodeTestQuery
 
 # USAGE: bash ./deployChaincode.sh <PATH_TO_CC_SRC> <CC_NAME> <CC_VERSION> <INIT_FUNCTION> <INIT_FUNCTION_ARGS>
 

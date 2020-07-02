@@ -30,26 +30,26 @@ class QueryContract extends Contract {
 
     async initLedger(ctx) {
         console.info('============= START : Initialize Ledger ===========');
-        // demo
-        const queries = [
-            {
-                query_id: 'q1',
-                query_as_text: 'ALL',
-                num_approve: 0,
-                num_disapprove: 0,
-                min_users: 2,
-                stage: 1,
-                num_majority: 1,
-                max_budget: 10,
-                wallet_id: 'w1',
-                fail_message: '',
-            },
-        ];
+        // // demo
+        // const queries = [
+        //     {
+        //         query_id: 'q1',
+        //         query_as_text: 'ALL',
+        //         num_approve: 0,
+        //         num_disapprove: 0,
+        //         min_users: 2,
+        //         stage: 1,
+        //         num_majority: 1,
+        //         max_budget: 10,
+        //         wallet_id: 'w1',
+        //         fail_message: '',
+        //     },
+        // ];
 
-        await ctx.stub.putState('q1', Buffer.from(JSON.stringify(queries[0])));
+        // await ctx.stub.putState('q1', Buffer.from(JSON.stringify(queries[0])));
 
         // Counter for ids
-        let init = 2;
+        let init = 1;
         await ctx.stub.putState('counter', Buffer.from(init.toString()));  // Hacky solution
             
 

@@ -7,10 +7,15 @@ from cryptography.fernet import Fernet
 
 import flask
 from flask import jsonify, request, make_response
+from flask_cors import CORS, cross_origin
+
+import sys
 
 # Flask config
 app = flask.Flask(__name__)
+cors = CORS(app)
 app.config["DEBUG"] = True
+cors = CORS(app)
 local_port = 11600
 
 addr_oo = "http://localhost:11500"
@@ -312,6 +317,7 @@ def get_all_queries():
     try:
         response = hf_get(logic.hf_token, "query_contract", "getAllQueries", [" "])
         all_queries = [query_s['Record'] for query_s in json.loads(response['result']['result'])]
+        #print(all_queries, file=sys.stderr)
         return jsonify(all_queries)
     except Exception as e:
             return jsonify(erorr = str(e))
@@ -413,4 +419,4 @@ def about():
 if __name__ == '__main__':
     token = register_hf_api_token()
     logic.hf_token = token
-    app.run(port=local_port)
+    app.run(port=local_port, debug=True)
