@@ -150,6 +150,9 @@ app.post('/channels/:channelName/chaincodes/:chaincodeName', async function (req
         var channelName = req.params.channelName;
         var fcn = req.body.fcn;
         var args = req.body.args;
+        if (!args){
+            args = []
+        }
         logger.debug('channelName  : ' + channelName);
         logger.debug('chaincodeName : ' + chaincodeName);
         logger.debug('fcn  : ' + fcn);

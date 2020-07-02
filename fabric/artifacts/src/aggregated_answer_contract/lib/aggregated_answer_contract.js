@@ -8,8 +8,9 @@ const num_majority = 1;
 const mo_id = "org1";
 const dc_id = "org2";
 //const oo_id = "org3"; // TODO: COMMENT BACK OUT!!!!!!!!!!!!!!!!!!!!!!!!!!!
-const oo_id = "org1"; // UNCOMMENT FOR TESTING IF BUGS ARISE WITH ORG3
+const oo_id = "org3"; // UNCOMMENT FOR TESTING IF BUGS ARISE WITH ORG3
 const cc_query_name = "query_contract";
+const cc_coin_name = "coin_contract";
 const channel_name = "mychannel";
 
 
@@ -30,7 +31,7 @@ class AggAnswerContract extends Contract {
             },
         ];
 
-        await ctx.stub.putState('a1', Buffer.from(JSON.stringify(queries[0])));
+        await ctx.stub.putState('q1', Buffer.from(JSON.stringify(queries[0])));
 
         // Counter for ids
         let init = 2
@@ -77,14 +78,27 @@ class AggAnswerContract extends Contract {
 
             // TODO: automatically transfer funds via Coin contract
             // TODO: find out which CC to call
+            user_wallet_list = JSON.parse(user_wallet_list)
+            
+            for(var wallet_key of Object.keys(user_wallet_list)) {
+                console.info(`Performing for wallet pair: ${user_wallet_list[wallet_key]} ${wallet_key}`);
+                // TODO: error:  The first argument must be of type string or an instance of Buffer, ArrayBuffer, or Array or an Array-like Object. Received type number (10)
+                // transaction returned with failure: TypeError [ERR_INVALID_ARG_TYPE]:
+                let amount = user_wallet_list[wallet_key];
+                amount = amount.toString();
+                const args = ["transfer", amount, wallet_key, dc_wallet];
+                await ctx.stub.invokeChaincode(cc_coin_name, args, channel_name);
+            }
 
+            
 
             // set served stage (nr 5) for query
             // TODO: check if works
+            // TO call setQueryStage currently you need the MO credentials, so this shouldn't work
             const args = ["setQueryStage", query_id, "5", ""];
             await ctx.stub.invokeChaincode(cc_query_name, args, channel_name);
 
-            await ctx.stub.putState(answer_id, Buffer.from(JSON.stringify(answer)));
+            await ctx.stub.putState(query_id, Buffer.from(JSON.stringify(answer)));
             console.info('============= END : Create Answer ===========');
             return answer_id;
 
