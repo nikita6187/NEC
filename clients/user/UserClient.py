@@ -167,12 +167,12 @@ logic = UserClientLogic()
 
 # Endpoint management
 # TESTED, WORKS CORRECTLY
-@app.route('/sendData/<query_id>/<wallet_id>/', methods=['POST'])
-def send_data_to_Aggregator(query_id, wallet_id):
+@app.route('/sendData/', methods=['POST'])
+def send_data_to_Aggregator():
     #just call logic's function
-    print("Sending data to Aggregator, " + wallet_id)
+    print("Sending data to Aggregator, " + logic.wallet_id)
     logic.send_data_to_Aggregator()
-    return jsonify(wallet_id)
+    return jsonify(logic.wallet_id)
 
 # TESTED, WORKS CORRECTLY
 @app.route('/notify/', methods=['GET', 'POST'])

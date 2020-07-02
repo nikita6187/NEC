@@ -183,12 +183,10 @@ class DCClientLogic(object):
     def getAggAnswerFromHF(self, q_id):
         #get agg answer from HF, then decrypt it and save it on the logic class
 
-        hf_res = hf_get(self.hf_api_token, "aggregated_answer_contract", "getAnswer", [q_id])
-
-        aggregated_encrypted_answer = hf_res['result']['result']
-
+        hf_res = hf_get(self.hf_api_token, "agg_answer", "getAnswer", [q_id])
+        aggregated_encrypted_answer = json.loads(hf_res['result']['result'])['encr_answer_text']
         cipher_suite = Fernet(self.priv_key)
-        self.aggregated_unencrypted_data = cipher_suite.decrypt(aggregated_encrypted_answer)
+        self.aggregated_unencrypted_data = cipher_suite.decrypt(str.encode(aggregated_encrypted_answer)).decode('utf-8')
         
         return self.aggregated_unencrypted_data
 
@@ -236,9 +234,9 @@ def receiveKeyAndAnsId():
     try:
         body = request.get_json()
         logic.query_id = body['query_id']
-        logic.priv_key = body['key']
+        logic.priv_key = str.encode(body['key'])
 
-        print("Query Id received: " + str(logic.query_id + ", Private key received: " + str(logic.priv_key)))
+        print("Query Id received: " + str(logic.query_id) + ", Private key received: " + str(logic.priv_key))
 
         return jsonify(success=True)
     except Exception as e:
@@ -246,8 +244,8 @@ def receiveKeyAndAnsId():
         return jsonify(error=str(e))
 
 
-# NOT TESTED, NEEDS AGGREGATED ANSWER CONTRACT TO BE FINISHED
-@app.route('/getAnswerFromHF/<query_id>/')
+#TESTED, WORKS CORRECTLY
+@app.route('/getAnswerFromHF/<query_id>/', methods=['GET'])
 def getAggAnswerFromHF(query_id):
     #just call the logic's getAggAnswerFromHF function and return the decrypted data
 
@@ -276,6 +274,6 @@ def page_not_found(e):
 if __name__ == '__main__':
     hf_token = register_hf_api_token()
     logic.hf_api_token = hf_token
-    #logic.createWallet()
+    logic.createWallet()
     app.run(port=local_port)
 

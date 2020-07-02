@@ -8,7 +8,7 @@ const num_majority = 1;
 const mo_id = "org1";
 const dc_id = "org2";
 //const oo_id = "org3"; // TODO: COMMENT BACK OUT!!!!!!!!!!!!!!!!!!!!!!!!!!!
-const oo_id = "org1"; // UNCOMMENT FOR TESTING IF BUGS ARISE WITH ORG3
+const oo_id = "org3"; // UNCOMMENT FOR TESTING IF BUGS ARISE WITH ORG3
 const cc_query_name = "query_contract";
 const cc_coin_name = "coin_contract";
 const channel_name = "mychannel";
@@ -31,7 +31,7 @@ class AggAnswerContract extends Contract {
             },
         ];
 
-        await ctx.stub.putState('a1', Buffer.from(JSON.stringify(queries[0])));
+        await ctx.stub.putState('q1', Buffer.from(JSON.stringify(queries[0])));
 
         // Counter for ids
         let init = 2
@@ -98,7 +98,7 @@ class AggAnswerContract extends Contract {
             const args = ["setQueryStage", query_id, "5", ""];
             await ctx.stub.invokeChaincode(cc_query_name, args, channel_name);
 
-            await ctx.stub.putState(answer_id, Buffer.from(JSON.stringify(answer)));
+            await ctx.stub.putState(query_id, Buffer.from(JSON.stringify(answer)));
             console.info('============= END : Create Answer ===========');
             return answer_id;
 

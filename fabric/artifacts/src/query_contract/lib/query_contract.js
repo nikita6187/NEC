@@ -8,7 +8,7 @@ const num_majority = 1;
 const mo_id = "org1";
 const dc_id = "org2";
 //const oo_id = "org3";  // TODO: commend back in when org3 bug gone!
-const oo_id = "org1"; // UNCOMMENT FOR TESTING IF BUGS ARISE WITH ORG3
+const oo_id = "org3"; // UNCOMMENT FOR TESTING IF BUGS ARISE WITH ORG3
 
 // 1. Awaiting approval (directly once the query is created by DC)
 // 2. Approved (after a majority of approvals but before min user check by MO)
@@ -184,7 +184,8 @@ class QueryContract extends Contract {
 
         let cid = new ClientIdentity(ctx.stub);
 
-        if(cid.assertAttributeValue('hf.Affiliation', mo_id + '.department1')){
+        if(cid.assertAttributeValue('hf.Affiliation', mo_id + '.department1') || 
+        cid.assertAttributeValue('hf.Affiliation', oo_id + '.department1')){
             
             // Get query
             const queryAsBytes = await ctx.stub.getState(query_id); 

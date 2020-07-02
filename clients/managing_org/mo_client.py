@@ -305,7 +305,6 @@ def get_query(query_id):
 
     query = logic.get_full_query(query_id)
     logic.ask_users_for_query(query["query_id"])
-    logic.send_data()
     return query
 
 @app.route('/getAllQueries', methods=['GET'])
@@ -327,18 +326,17 @@ def set_query_stage(query_id, stage):
     # Return query
     return hf_get(logic.hf_token, "query_contract", "getQuery", [query_id])
 
-# TODO: NOT TESTED - need agg query contract refactoring in order to test
+
 @app.route('/getQueryAnswer/<query_id>', methods=['GET'])
 def get_query_answer(query_id):
     # get query answer for corresponding query_id
     try:
         # get encrypted query answer
-        response = hf_get(logic.hf_token, "aggregated_answer_contract", "getAnswer", [query_id])
-        # decrypt answer
-        pk = logic.answer_keys_map[query_id]
-        cipher_suite = Fernet(pk)
-        data = cipher_suite.decrypt(response['result']['result'])
-        return jsonify(data)
+        hf_res = hf_get(logic.hf_token, "agg_answer", "getAnswer", [query_id])        # decrypt answer
+        aggregated_encrypted_answer = json.loads(hf_res['result']['result'])['encr_answer_text']
+        cipher_suite = Fernet(str.encode(logic.answer_keys_map[query_id]))
+        data = cipher_suite.decrypt(str.encode(aggregated_encrypted_answer)).decode('utf-8')
+        return jsonify(data=data)
     except Exception as e:
         return jsonify(erorr = str(e))
 

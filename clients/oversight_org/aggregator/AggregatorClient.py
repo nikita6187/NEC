@@ -23,7 +23,7 @@ addr_agg = "http://localhost:11900"
 
 # HF connection config
 addr_hf_api = "http://localhost:4000"
-org_id = str(1)  # TODO: needs to be changed to 3
+org_id = str(3)  # TODO: needs to be changed to 3
 agg_answer_name = "agg_answer"
 
 # Helper code
@@ -160,11 +160,12 @@ class AggregatorLogic(object):
         priv_key = Fernet.generate_key()
         cipher_suite = Fernet(priv_key)
         encrypted_data = cipher_suite.encrypt(str.encode(str(raw_data)))
-        encrypted_data = str(encrypted_data)
+        encrypted_data = encrypted_data.decode('utf-8')
+        priv_key = priv_key.decode('utf-8')
         # To decrypt, run: data = cipher_suite.decrypt(encrypted_data)
         self.query_private_keys[query_id] = priv_key
         self.query_encr_data[query_id] = encrypted_data
-        print("Private key: " + str(priv_key))
+        print("Private key: " + priv_key)
         return priv_key, encrypted_data
 
     def send_priv_key_to_mo_dc(self, priv_key, query_id, ans_id):
