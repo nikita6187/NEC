@@ -28,10 +28,17 @@ addr_agg = "http://localhost:11900"
 
 # HF connection config
 addr_hf_api = "http://localhost:4000"
-org_id = str(1)  # TODO: change this appropriatly
+org_id = str(1)
 
 # Helper code
 pool = Pool(10)
+
+# logging
+@app.before_request
+def store_requests():
+    url = request.url
+    if "getRequestsHistory" not in url:
+        logic.requests_log.append(url)
 
 """
 Function to call a HTTP request async and only printing the result.
@@ -116,7 +123,7 @@ def hf_get(token, chaincode_name, function, args):
     url_req = addr_hf_api + "/channels/mychannel/chaincodes/" + chaincode_name
     r = requests.get(url_req, headers=headers, params=params)
 
-    # Deal with exceptions for the requests i.e. possible exception from .json() and check for 
+    # Deal with exceptions for the requests i.e. possible exception from .json() and check for
     # a possible error response from the request w .raise_for_status()
     return r.json()
 
@@ -133,8 +140,8 @@ def invoke_async_function(function, args):
 class CoinReward:
     id_counter = 0
     def __init__(self, cost, details):
-        self.id_counter += 1
-        self.id = "r" + self.id_counter
+        # self.id_counter += 1
+        # self.id = "r" + self.id_counter
         self.cost = cost
         self.details = details
 
@@ -148,6 +155,7 @@ class MoClientLogic(object):
         self.users.append("u1")
         # List of all dcIds in the system
         self.dc = []
+        self.dc.append("dc1")
 
         # Maps KEY: UserId - VALUE: list of WalletId
         # defaultdict behaves lke a normal dict with extra protection agains errors esp. when adding missing keys
@@ -161,6 +169,8 @@ class MoClientLogic(object):
         self.rewards_map = {}
         # Maps KEY: dc_id - VALUE: wallet associated to the dc
         self.dc_wallet_map = {}
+
+        self.requests_log = []
 
     def get_full_query(self, query_id):
         """Get a dicitonary with full data of the query corresp. to the id
@@ -177,7 +187,7 @@ class MoClientLogic(object):
             return json.loads(raw)
         except Exception as e:
             return jsonify(erorr = str(e))
-    
+
     def create_user_wallet(self, user_id):
         """Create a new wallet and then assign it to the user-wallet map
 
@@ -240,10 +250,10 @@ class MoClientLogic(object):
 
     def create_coins(self, wallet_id, amount):
         hf_invoke(self.hf_token, "coin_contract", "createCoins", [wallet_id, amount])
-    
+
     def remove_coins(self, wallet_id, amount):
         hf_invoke(self.hf_token, "coin_contract", "spendCoins", [wallet_id, amount])
-    
+
     def ask_users_for_query(self, query_id):
         """Notify all existing users of a new query
 
@@ -257,7 +267,7 @@ class MoClientLogic(object):
         # currently only one user -> using addr_user instead of each users's unique id
         for user in self.users:
             url_mo = addr_user + "/notify/"
-            # TODO: QUERY needs an extra field "query_details" with string information 
+            # TODO: QUERY needs an extra field "query_details" with string information
             # about the query content to be sent to users with the request
             json_data = {"query_id": query_id, "query_text": "Query info"}
             r = requests.post(url_mo, json=json_data)
@@ -279,7 +289,7 @@ class MoClientLogic(object):
             r = requests.post(url_mo, json=json_data)
             print(r.json())
             r.close()
-        
+
 
 
 
@@ -309,7 +319,6 @@ def get_query(query_id):
 
     query = logic.get_full_query(query_id)
     logic.ask_users_for_query(query["query_id"])
-    logic.send_data()
     return query
 
 @app.route('/getAllQueries', methods=['GET'])
@@ -332,18 +341,17 @@ def set_query_stage(query_id, stage):
     # Return query
     return hf_get(logic.hf_token, "query_contract", "getQuery", [query_id])
 
-# TODO: NOT TESTED - need agg query contract refactoring in order to test
+
 @app.route('/getQueryAnswer/<query_id>', methods=['GET'])
 def get_query_answer(query_id):
     # get query answer for corresponding query_id
     try:
         # get encrypted query answer
-        response = hf_get(logic.hf_token, "aggregated_answer_contract", "getAnswer", [query_id])
-        # decrypt answer
-        pk = logic.answer_keys_map[query_id]
-        cipher_suite = Fernet(pk)
-        data = cipher_suite.decrypt(response['result']['result'])
-        return jsonify(data)
+        hf_res = hf_get(logic.hf_token, "agg_answer", "getAnswer", [query_id])        # decrypt answer
+        aggregated_encrypted_answer = json.loads(hf_res['result']['result'])['encr_answer_text']
+        cipher_suite = Fernet(str.encode(logic.answer_keys_map[query_id]))
+        data = cipher_suite.decrypt(str.encode(aggregated_encrypted_answer)).decode('utf-8')
+        return jsonify(data=data)
     except Exception as e:
         return jsonify(erorr = str(e))
 
@@ -356,16 +364,19 @@ def receive_answer_pk():
     logic.answer_keys_map[query_id] = key
     return jsonify(logic.answer_keys_map)
 
-# TODO: integration test 
-@app.route('/cashinCoins/<user_id>/<reward_id>', methods=['POST'])
+@app.route('/cashinCoins/<user_id>/<reward_id>/', methods=['POST'])
 def cashin_coins(user_id, reward_id):
     # subtract coins from user wallet
     try:
+        # adding reward test data
+        logic.rewards_map[reward_id] = CoinReward(10, "detail text")
         logic.subtract_coins(user_id, reward_id)
     except Exception as e:
         return jsonify(erorr = str(e))
     # send reward to user
-    return logic.rewards_map[reward_id]
+
+    return jsonify(logic.rewards_map[reward_id].cost,
+                   logic.rewards_map[reward_id].details)
 
 @app.route('/acceptQuery/<user_id>/<query_id>/', methods=['GET'])
 def accept_query(user_id, query_id):
@@ -398,6 +409,10 @@ def send_data(query_id):
         'Users have been notified to send data to aggregator for query with id: ' + query_id + '.',
         201
     )
+
+@app.route('/getRequestsHistory/', methods=['GET'])
+def get_requests_history():
+    return jsonify({"requests":logic.requests_log})
 
 @app.errorhandler(500)
 def page_not_found(e):
