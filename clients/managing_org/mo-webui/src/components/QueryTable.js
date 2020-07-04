@@ -51,9 +51,55 @@ const StyledTableCell = withStyles((theme) => ({
 export default function QueryTable() {
   const classes = useStyles();
 
-  const [rows, setRows] = useState([]);
+  const [rows, setRows] = useState([
+            {
+                query_id: 'q1',
+                query_as_text: 'ALL',
+                num_approve: 0,
+                num_disapprove: 0,
+                min_users: 2,
+                stage: 1,
+                num_majority: 1,
+                max_budget: 10,
+                wallet_id: 'w1',
+                fail_message: '',
+            },{
+                query_id: 'q2',
+                query_as_text: 'ALLFGHJN',
+                num_approve: 0,
+                num_disapprove: 0,
+                min_users: 2,
+                stage: 1,
+                num_majority: 1,
+                max_budget: 10,
+                wallet_id: 'w1',
+                fail_message: '',
+            },{
+                query_id: 'q4',
+                query_as_text: 'TYYTFJF',
+                num_approve: 0,
+                num_disapprove: 0,
+                min_users: 2,
+                stage: 3,
+                num_majority: 1,
+                max_budget: 100,
+                wallet_id: 'w1',
+                fail_message: '',
+            },{
+                query_id: 'q4',
+                query_as_text: 'TYYTFJF',
+                num_approve: 0,
+                num_disapprove: 0,
+                min_users: 2,
+                stage: 3,
+                num_majority: 1,
+                max_budget: 100,
+                wallet_id: 'w1',
+                fail_message: '',
+            },
+        ]);
   const [page, setPage] = useState(0);
-  const [rowsPerPage, setRowsPerPage] = useState(10);
+  const [rowsPerPage, setRowsPerPage] = useState(3);
 
   useEffect(() => {
     handleTick();
@@ -113,7 +159,7 @@ export default function QueryTable() {
         </Table>
       </TableContainer>
       <TablePagination
-        rowsPerPageOptions={[10, 25, 100]}
+        rowsPerPageOptions={[3, 5, 10]}
         component="div"
         count={rows.length}
         rowsPerPage={rowsPerPage}

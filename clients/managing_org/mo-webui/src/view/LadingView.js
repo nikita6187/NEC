@@ -1,12 +1,14 @@
 import React, {useState} from "react";
 import { makeStyles } from '@material-ui/core/styles';
 
-import {AppBar, Toolbar, Button, IconButton, Typography} from "@material-ui/core";
+import {AppBar, Toolbar, Button, IconButton, Typography, TextField} from "@material-ui/core";
 import {Grid, Paper} from "@material-ui/core";
 import MenuIcon from '@material-ui/icons/Menu';
 import AccountBalanceIcon from '@material-ui/icons/AccountBalance';
 
 import QueryTable from "../components/QueryTable";
+import RequestsTable from "../components/RequestsTable";
+import {InputButtonForm} from "../components/InputButtonForm";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -55,15 +57,17 @@ export default function LandingView(props) {
             <Grid item xs={12}>
                 <QueryTable />
             </Grid>
-            <Grid item xs={12}>
-                <Paper className={classes.paper}>xs=6</Paper>
+            <Grid item xs={12} sm={6}>
+                <RequestsTable/>
             </Grid>
-            <Grid item xs={12}>
-                <Paper className={classes.paper}>xs=6</Paper>
+              <Grid container sm={6} spacing={3}>
+            <Grid item xs>
+                <InputButtonForm  buttonText="Ask users" fieldText="Query Id"/>
             </Grid>
-            <Grid item xs={12}>
-                <Paper className={classes.paper}>xs=6</Paper>
+            <Grid item xs>
+                <InputButtonForm  buttonText="Notify users" fieldText="Query Id"/>
             </Grid>
+              </Grid>
           </Grid>
         </div>
       );
