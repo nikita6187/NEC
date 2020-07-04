@@ -147,7 +147,8 @@ class MoClientLogic(object):
         self.hf_token = None
          # List of all userIds in the system
         self.users = []
-        self.users.append("u1")
+        for i in range(500):
+            self.users.append(str(i))
         # List of all dcIds in the system
         self.dc = []
         self.dc.append("dc1")
@@ -392,7 +393,7 @@ def receive_dc_wallet(dc_id, wallet_id):
     # save wallet id to map
     logic.dc_wallet_map[dc_id] = wallet_id
     # add default amount of funds to wallet
-    default_amount = 100
+    default_amount = 1000000
     logic.create_coins(wallet_id, default_amount)
     return jsonify({"amount_added": default_amount})
 

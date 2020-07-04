@@ -143,8 +143,8 @@ class UserClientLogic(object):
 
         aggregator_endpoint = addr_agg + "/receiveData/"
         json_data = {"user_data": self.data, "user_wallet_id": self.wallet_id, "query_id": self.query_id}
-        fire_and_forget(False, aggregator_endpoint, data=json_data)
-        #requests.post(aggregator_endpoint, json=json_data)
+        #fire_and_forget(False, aggregator_endpoint, data=json_data)
+        requests.post(aggregator_endpoint, json=json_data)
 
     # TESTED, WORKS CORRECTLY
     def accept_query(self):
@@ -183,6 +183,7 @@ def get_notified_for_query():
         body = request.get_json()
         logic.query_id = body['query_id']
         logic.query_text = body['query_text']
+        print("query id is " + logic.query_id)
         
         
         return jsonify(body)
