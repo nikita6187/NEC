@@ -112,7 +112,7 @@ export default function QueryTable() {
       .then(response => {
         setRows(response.data);
       });
-  }
+  };
 
   const handleChangePage = (event, newPage) => {
     setPage(newPage);
