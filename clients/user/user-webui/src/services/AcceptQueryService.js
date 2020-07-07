@@ -2,13 +2,13 @@ import {MO_SERVER_HOST, MO_SERVER_PORT} from "./ConfigService";
 
 const axios = require('axios').default;
 
-function getRequests() {
+function acceptQuery(userId, queryId) {
     try {
-        return axios.get(`http://${MO_SERVER_HOST}:${MO_SERVER_PORT}/getRequestsHistory/`);
+        return axios.get(`http://${MO_SERVER_HOST}:${MO_SERVER_PORT}/acceptQuery/` + userId + `/` + queryId + `/`);
     } catch(error) {
         console.error(error);
     }
 }
 export {
-    getRequests
+    acceptQuery
 }

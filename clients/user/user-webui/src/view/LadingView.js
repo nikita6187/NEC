@@ -3,11 +3,12 @@ import {makeStyles} from '@material-ui/core/styles';
 
 import {AppBar, Toolbar, Button, IconButton, Typography, TextField} from "@material-ui/core";
 import {Grid, Paper} from "@material-ui/core";
-import AccountBalanceIcon from '@material-ui/icons/AccountBalance';
-
+import GroupIcon from '@material-ui/icons/Group';
 
 import RequestsTable from "../components/RequestsTable";
-import {InputButtonForm} from "../components/InputButtonForm";
+import CardAcceptQuery from "../components/CardAcceptQuery";
+import {acceptQuery} from "../services/AcceptQueryService";
+import CardCashIn from "../components/CardCashIn";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -48,7 +49,7 @@ export default function LandingView(props) {
                     <Grid item>
                         <Toolbar>
                             <Grid item>
-                                <AccountBalanceIcon className={classes.icon}/>
+                                <GroupIcon className={classes.icon}/>
                             </Grid>
                             <Grid item>
                                 <Typography variant="h6" className={classes.title}>
@@ -66,10 +67,10 @@ export default function LandingView(props) {
                 </Grid>
                 <Grid container sm={6} spacing={3}>
                     <Grid item xs>
-                        <InputButtonForm buttonText="Ask users" fieldText="Query Id"/>
+                       <CardAcceptQuery buttonText="Accept query" funcToCall={acceptQuery}/>
                     </Grid>
                     <Grid item xs>
-                        <InputButtonForm buttonText="Notify users" fieldText="Query Id"/>
+                        <CardCashIn buttonText={"cashin reward"}/>
                     </Grid>
                 </Grid>
             </Grid>
