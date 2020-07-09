@@ -1,4 +1,6 @@
 import React, {useState} from "react";
+import {InputButtonAskUsersForm} from "../components/InputButtonAskUsersForm";
+import {InputButtonNotifyUsersForm} from "../components/InputButtonNotifyUsersForm";
 import {makeStyles} from '@material-ui/core/styles';
 
 import {AppBar, Toolbar, Button, IconButton, Typography, TextField} from "@material-ui/core";
@@ -8,7 +10,7 @@ import AccountBalanceIcon from '@material-ui/icons/AccountBalance';
 
 import QueryTable from "../components/QueryTable";
 import RequestsTable from "../components/RequestsTable";
-import {InputButtonForm} from "../components/InputButtonForm";
+
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -70,10 +72,10 @@ export default function LandingView(props) {
                 </Grid>
                 <Grid container sm={6} spacing={3}>
                     <Grid item xs>
-                        <InputButtonForm buttonText="Ask users" fieldText="Query Id"/>
+                        <InputButtonAskUsersForm buttonText="Ask users" fieldText="Query Id"/>
                     </Grid>
                     <Grid item xs>
-                        <InputButtonForm buttonText="Notify users" fieldText="Query Id"/>
+                        <InputButtonNotifyUsersForm buttonText="Notify users" fieldText="Query Id"/>
                     </Grid>
                 </Grid>
             </Grid>

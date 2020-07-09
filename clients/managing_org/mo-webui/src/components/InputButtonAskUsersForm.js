@@ -1,10 +1,11 @@
 import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import {Button, TextField} from "@material-ui/core";
-import {MO_SERVER_HOST, MO_SERVER_PORT} from "../services/ConfigService";
+import {MO_SERVER_HOST, MO_SERVER_PORT, USER_SERVER_HOST, USER_SERVER_PORT} from "../services/ConfigService";
+
 const axios = require('axios').default;
 
-export class InputButtonForm extends React.Component {
+export class InputButtonAskUsersForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {value: ''};
@@ -14,11 +15,11 @@ export class InputButtonForm extends React.Component {
 
   handleChange(event) {    this.setState({value: event.target.value});  }
   handleSubmit(event) {
-    alert('A name was submitted: ' + this.state.value + this.props.buttonText);
+    alert('All users are asked about query: ' + this.state.value);
     event.preventDefault();
 
     try {
-        return axios.get();
+        return axios.get(`http://${MO_SERVER_HOST}:${MO_SERVER_PORT}/getQuery/` + this.state.value);
     } catch(error) {
         console.error(error);
     }
