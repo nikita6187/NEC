@@ -27,6 +27,15 @@ org_id = str(1)
 # Helper code
 pool = Pool(10)
 
+
+# logging
+@app.before_request
+def store_requests():
+    url = request.url
+    if "getRequestsHistory" or "getQueryData" not in url:
+        logic.requests_log.append(url)
+
+
 """
 Function to call a HTTP request async and only printing the result.
 to_get: Bool, True = GET, False = POST
@@ -131,7 +140,9 @@ class UserClientLogic(object):
         self.wallet_id = "WAL2" # str - String containing wallet of the user
         self.query_id = "q1"  # id - Id of query
         self.query_text = "test_query_text"  # Str - Query text
-        self.logic.received_query = False
+        self.received_query = False
+
+        self.requests_log = []
 
     # NOTHING TO TEST HERE
     def notifyUser(self):
@@ -216,6 +227,10 @@ def get_query_data():
     if logic.received_query is True:
         return jsonify({"query_id": logic.query_id, "query_text": logic.query_text})
     return jsonify({"query_id": "", "query_text": ""})
+
+@app.route('/getRequestsHistory/', methods=['GET'])
+def get_requests_history():
+    return jsonify({"requests":logic.requests_log})
 
 @app.errorhandler(500)
 def page_not_found(e):

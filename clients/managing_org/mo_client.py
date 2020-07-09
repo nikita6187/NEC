@@ -37,7 +37,7 @@ pool = Pool(10)
 @app.before_request
 def store_requests():
     url = request.url
-    if "getRequestsHistory" not in url:
+    if "getRequestsHistory" or "getAllQueries" not in url:
         logic.requests_log.append(url)
 
 """
