@@ -3,10 +3,11 @@ from flask import request, jsonify
 import requests
 from multiprocessing.dummy import Pool
 import json
-
+from flask_cors import CORS, cross_origin
 
 # Flask config
 app = flask.Flask(__name__)
+cors = CORS(app)
 app.config["DEBUG"] = True
 local_port = 11800
 
@@ -32,8 +33,9 @@ pool = Pool(10)
 @app.before_request
 def store_requests():
     url = request.url
-    if "getRequestsHistory" or "getQueryData" not in url:
+    if "getRequestsHistory" not in url and "getQueryData" not in url:
         logic.requests_log.append(url)
+
 
 
 """

@@ -15,7 +15,6 @@ import sys
 app = flask.Flask(__name__)
 cors = CORS(app)
 app.config["DEBUG"] = True
-cors = CORS(app)
 local_port = 11600
 
 addr_oo = "http://localhost:11500"
@@ -37,7 +36,7 @@ pool = Pool(10)
 @app.before_request
 def store_requests():
     url = request.url
-    if "getRequestsHistory" or "getAllQueries" not in url:
+    if "getRequestsHistory" not in url and "getQueryData" not in url:
         logic.requests_log.append(url)
 
 """

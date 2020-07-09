@@ -4,13 +4,13 @@ certificateAuthorities:
     httpOptions: {verify: false}
     tlsCACerts: {pem: '-----BEGIN CERTIFICATE-----
 
-        MIICWDCCAf6gAwIBAgIRAJliZ6FFQtwEiJ8WOMzw81owCgYIKoZIzj0EAwIwdjEL
+        MIICWDCCAf6gAwIBAgIRAOoTY+sC2MB9VKeD6u8SvaowCgYIKoZIzj0EAwIwdjEL
 
         MAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBG
 
         cmFuY2lzY28xGTAXBgNVBAoTEG9yZzMuZXhhbXBsZS5jb20xHzAdBgNVBAMTFnRs
 
-        c2NhLm9yZzMuZXhhbXBsZS5jb20wHhcNMjAwNjMwMTQyNDAwWhcNMzAwNjI4MTQy
+        c2NhLm9yZzMuZXhhbXBsZS5jb20wHhcNMjAwNzA5MDg1NDAwWhcNMzAwNzA3MDg1
 
         NDAwWjB2MQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UE
 
@@ -18,17 +18,17 @@ certificateAuthorities:
 
         A1UEAxMWdGxzY2Eub3JnMy5leGFtcGxlLmNvbTBZMBMGByqGSM49AgEGCCqGSM49
 
-        AwEHA0IABC4VjF5Ao44uSKwotit05LzM57UCGg4ArGfRFDVH7Xp77SzDj/wXEeYX
+        AwEHA0IABAsfpaOebDffVvPs717lYmUKKSkx7HrAh2YsQe+eCBXKyTD1fJOgHSXr
 
-        IBUEFNwHkjq0Fmch4WXET8W6eBKh1vqjbTBrMA4GA1UdDwEB/wQEAwIBpjAdBgNV
+        FZjQbjifXDALkUkh7qg2/6W+mQmlVbqjbTBrMA4GA1UdDwEB/wQEAwIBpjAdBgNV
 
         HSUEFjAUBggrBgEFBQcDAgYIKwYBBQUHAwEwDwYDVR0TAQH/BAUwAwEB/zApBgNV
 
-        HQ4EIgQggF1/L4xcv1zfteQtMsQbxm9xdpiTLRNutvHYmfCxdqswCgYIKoZIzj0E
+        HQ4EIgQggmWsezTEi0jkFYcorGB2nf0wr5rxS/dIJ3difWNJW44wCgYIKoZIzj0E
 
-        AwIDSAAwRQIhAPLMm8pQzFgjTsDUFPoLgjLq17aMNC7oGLaNqiTTEAfnAiBqr5dk
+        AwIDSAAwRQIhANTrXmTT4iOSdxdmch65S/ZSfRQ/Njd8tUe2UmnszV8XAiAOcBxc
 
-        L//jAbK1BREdrhew72ZTKCTn6okXJeLriKHh8w==
+        L4zE5PQXlcc0MSKe3y9j36/fB3f96U8HgLt5UQ==
 
         -----END CERTIFICATE-----
 
@@ -50,13 +50,13 @@ peers:
     grpcOptions: {hostnameOverride: peer0.org3.example.com, ssl-target-name-override: peer0.org3.example.com}
     tlsCACerts: {pem: '-----BEGIN CERTIFICATE-----
 
-        MIICWDCCAf6gAwIBAgIRAJliZ6FFQtwEiJ8WOMzw81owCgYIKoZIzj0EAwIwdjEL
+        MIICWDCCAf6gAwIBAgIRAOoTY+sC2MB9VKeD6u8SvaowCgYIKoZIzj0EAwIwdjEL
 
         MAkGA1UEBhMCVVMxEzARBgNVBAgTCkNhbGlmb3JuaWExFjAUBgNVBAcTDVNhbiBG
 
         cmFuY2lzY28xGTAXBgNVBAoTEG9yZzMuZXhhbXBsZS5jb20xHzAdBgNVBAMTFnRs
 
-        c2NhLm9yZzMuZXhhbXBsZS5jb20wHhcNMjAwNjMwMTQyNDAwWhcNMzAwNjI4MTQy
+        c2NhLm9yZzMuZXhhbXBsZS5jb20wHhcNMjAwNzA5MDg1NDAwWhcNMzAwNzA3MDg1
 
         NDAwWjB2MQswCQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UE
 
@@ -64,17 +64,17 @@ peers:
 
         A1UEAxMWdGxzY2Eub3JnMy5leGFtcGxlLmNvbTBZMBMGByqGSM49AgEGCCqGSM49
 
-        AwEHA0IABC4VjF5Ao44uSKwotit05LzM57UCGg4ArGfRFDVH7Xp77SzDj/wXEeYX
+        AwEHA0IABAsfpaOebDffVvPs717lYmUKKSkx7HrAh2YsQe+eCBXKyTD1fJOgHSXr
 
-        IBUEFNwHkjq0Fmch4WXET8W6eBKh1vqjbTBrMA4GA1UdDwEB/wQEAwIBpjAdBgNV
+        FZjQbjifXDALkUkh7qg2/6W+mQmlVbqjbTBrMA4GA1UdDwEB/wQEAwIBpjAdBgNV
 
         HSUEFjAUBggrBgEFBQcDAgYIKwYBBQUHAwEwDwYDVR0TAQH/BAUwAwEB/zApBgNV
 
-        HQ4EIgQggF1/L4xcv1zfteQtMsQbxm9xdpiTLRNutvHYmfCxdqswCgYIKoZIzj0E
+        HQ4EIgQggmWsezTEi0jkFYcorGB2nf0wr5rxS/dIJ3difWNJW44wCgYIKoZIzj0E
 
-        AwIDSAAwRQIhAPLMm8pQzFgjTsDUFPoLgjLq17aMNC7oGLaNqiTTEAfnAiBqr5dk
+        AwIDSAAwRQIhANTrXmTT4iOSdxdmch65S/ZSfRQ/Njd8tUe2UmnszV8XAiAOcBxc
 
-        L//jAbK1BREdrhew72ZTKCTn6okXJeLriKHh8w==
+        L4zE5PQXlcc0MSKe3y9j36/fB3f96U8HgLt5UQ==
 
         -----END CERTIFICATE-----
 
