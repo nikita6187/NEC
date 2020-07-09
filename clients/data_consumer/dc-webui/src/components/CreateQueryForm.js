@@ -52,7 +52,7 @@ export class CreateQueryForm extends React.Component {
                 </Grid>
                 <Grid item>
                     <Button type="submit" variant="contained" color="primary" onClick={() =>
-                        createQuery(this.state.query, this.state.minUsers, this.maxBudget)}>
+                        createQuery(this.state.query, this.state.minUsers, this.state.maxBudget)}>
                         {"Create Query"}
                     </Button>
                 </Grid>

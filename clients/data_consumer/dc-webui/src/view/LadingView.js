@@ -74,6 +74,8 @@ export default function LandingView(props) {
                         <GetQueryAnswer/>
                     </Grid>
                 </Grid>
+                <Grid item xs={12}>
+                </Grid>
                 <Grid container spacing={3} className={classes.content}
                       direction="row"
                       justify="center"
