@@ -4,7 +4,7 @@ const axios = require('axios').default;
 
 function cashIn(userId, rId) {
     try {
-        return axios.get(`http://${MO_SERVER_HOST}:${MO_SERVER_PORT}/cashinCoins/` + userId + `/` + rId + `/`);
+        return axios.post(`http://${MO_SERVER_HOST}:${MO_SERVER_PORT}/cashinCoins/` + userId + `/` + rId + `/`);
     } catch(error) {
         console.error(error);
     }
