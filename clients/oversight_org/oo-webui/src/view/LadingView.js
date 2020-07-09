@@ -6,9 +6,8 @@ import {Grid, Paper} from "@material-ui/core";
 import GroupIcon from '@material-ui/icons/Group';
 
 import RequestsTable from "../components/RequestsTable";
-import CardAcceptQuery from "../components/CardAcceptQuery";
-import {acceptQuery} from "../services/AcceptQueryService";
-import CardCashIn from "../components/CardCashIn";
+import {InputButtonApproveQuery} from "../components/InputButtonApproveQuery";
+import RequestsQuery from "../components/RequestsQuery";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -53,7 +52,7 @@ export default function LandingView(props) {
                             </Grid>
                             <Grid item>
                                 <Typography variant="h6" className={classes.title}>
-                                    User Client
+                                    Oversight Organization Client
                                 </Typography>
                             </Grid>
                         </Toolbar>
@@ -61,16 +60,16 @@ export default function LandingView(props) {
                 </Grid>
             </AppBar>
 
-            <Grid container spacing={3} className={classes.content}>
+            <Grid container spacing={1} className={classes.content}>
                 <Grid item xs={12} sm={6}>
                     <RequestsTable/>
                 </Grid>
-                <Grid container sm={6} spacing={3}>
-                    <Grid item xs>
-
+                <Grid container sm={5} spacing={6}>
+                    <Grid item s>
+                        <InputButtonApproveQuery buttonText="Approve Query" fieldText="Query ID"/>
                     </Grid>
                     <Grid item xs>
-
+                            <RequestsQuery/>
                     </Grid>
                 </Grid>
             </Grid>

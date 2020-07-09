@@ -3,10 +3,12 @@ from flask import request, jsonify
 import requests
 from multiprocessing.dummy import Pool
 import json
+from flask_cors import CORS, cross_origin
 
 
 # Flask config
 app = flask.Flask(__name__)
+cors = CORS(app)
 app.config["DEBUG"] = True
 local_port = 11500
 
@@ -21,11 +23,19 @@ addr_agg = "http://localhost:11900"
 
 # HF connection config
 addr_hf_api = "http://localhost:4000"
-org_id = str(1)  # TODO: needs to be changed to 3
+org_id = str(3)
 
 
 # Helper code
 pool = Pool(10)
+
+# logging
+@app.before_request
+def store_requests():
+    url = request.url
+    if "getRequestsHistory" not in url and "getQueryData" not in url and "getAllQueries" not in url:
+        logic.requests_log.append(url)
+
 
 """
 Function to call a HTTP request async and only printing the result.
@@ -128,6 +138,7 @@ class OOClientLogic(object):
         self.query_ids_unprocessed = []  # [str] - query ids of queries that need to be approved/disapproved
         self.query_ids_approved = []  # [str] query ids of approved
         self.query_ids_disapproved = []  # [str] query ids of disapproved
+        self.requests_log = []
 
     def check_if_query_new(self, query_id):
         return query_id not in self.query_ids_approved and query_id not in self.query_ids_disapproved
@@ -172,18 +183,32 @@ def get_new_query():
         return jsonify(error=str(e))
 
 
+@app.route('/getAllQueries', methods=['GET'])
+def get_all_queries():
+    try:
+        response = hf_get(logic.hf_api_token, "query_contract", "getAllQueries", [" "])
+        all_queries = [query_s['Record'] for query_s in json.loads(response['result']['result'])]
+        #print(all_queries, file=sys.stderr)
+        return jsonify(all_queries)
+    except Exception as e:
+            return jsonify(erorr=str(e))
+
+
 @app.route('/processQuery/', methods=['POST'])
 def process_query():
     try:
         # If you need to do other HTTP calls, use fire_and_forget
         body = request.get_json(force=True)
         query_id = body['query_id']
-        response = bool(body['response'])
+        print(body['response'])
+        response = True if str(body['response']).lower() == 'true' else False
 
         print("OOClient: add for query: " + str(query_id) + " new response: " + str(response))
 
         # Invoke on blockchain
-        hf_res = hf_invoke(logic.hf_api_token, "query_contract", "approveQuery", [query_id, str(1 if response else 0)])
+        hf_res = hf_invoke(logic.hf_api_token, "query_contract", "approveQuery", [query_id, str('true' if response else 'false')])
+        # TODO: fix parsing bug for response
+        # TODO: fix parsing bug of smart contract
 
         if isinstance(hf_res['result'], str):
             # check that result is good
@@ -195,6 +220,11 @@ def process_query():
         return jsonify(success=True)
     except Exception as e:
         return jsonify(error=str(e))
+
+
+@app.route('/getRequestsHistory/', methods=['GET'])
+def get_requests_history():
+    return jsonify({"requests": list(reversed(logic.requests_log))})
 
 
 @app.errorhandler(500)

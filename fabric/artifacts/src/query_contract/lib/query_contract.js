@@ -147,7 +147,7 @@ class QueryContract extends Contract {
             // TODO: add conversion to boolean
 
             // We add vote
-            if(approved === true){
+            if(approved == "true"){
                 query.num_approve += 1;
             } else {
                 query.num_disapprove += 1;
