@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import {makeStyles} from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -12,21 +12,14 @@ import TableRow from '@material-ui/core/TableRow';
 import {getRequests} from "../services/RequestsTableService";
 
 const columns = [
-    { id: 'request', label: 'Requests', minWidth: 170 },
+    {id: 'request', label: 'Requests', minWidth: 170},
 ];
 
 function createData(request) {
-    return { request };
+    return {request};
 }
 
-const rows = [
-    createData("hdjyfjgjg"),
-    createData("45687yigjcfxdtre"),
-    createData("t4547687yuhkb/khjgfh"),
-    createData("23456789"),
-    createData("3457"),
-    createData("fghjhjghcf"),
-];
+const rows = [];
 
 const useStyles = makeStyles({
     root: {
@@ -47,9 +40,9 @@ export default function StickyHeadTable() {
     useEffect(() => {
         const interval = setInterval(() => handleTick(), 5000);
         return () => {
-          clearInterval(interval);
+            clearInterval(interval);
         };
-      }, []);
+    }, []);
 
     const handleTick = () => {
         getRequests()
@@ -77,7 +70,7 @@ export default function StickyHeadTable() {
                                 <TableCell
                                     key={column.id}
                                     align={column.align}
-                                    style={{ minWidth: column.minWidth }}
+                                    style={{minWidth: column.minWidth}}
                                 >
                                     {column.label}
                                 </TableCell>

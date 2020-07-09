@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import {makeStyles} from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
 import CardContent from '@material-ui/core/CardContent';
@@ -32,10 +32,11 @@ export default function CardAcceptQuery(props) {
     const bull = <span className={classes.bullet}>•</span>;
 
     useEffect(() => {
-        handleTick();
-        const timer = setInterval(handleTick, 5000);
-        return () => clearInterval(timer);
-    });
+        const interval = setInterval(() => handleTick(), 5000);
+        return () => {
+            clearInterval(interval);
+        };
+    }, []);
 
     const handleTick = () => {
         getQueryData()
@@ -56,15 +57,15 @@ export default function CardAcceptQuery(props) {
                 </Typography>
 
                 <Typography variant="body2" component="p">
-                    <br />
+                    <br/>
                     {query_text}
                 </Typography>
             </CardContent>
-                <CardActions >
+            <CardActions>
                 <Button type="submit" variant="contained" color="primary" onClick={() => acceptQuery("u1", id)}>
                     {props.buttonText}
                 </Button>
-                </CardActions>
+            </CardActions>
 
         </Card>
     );
