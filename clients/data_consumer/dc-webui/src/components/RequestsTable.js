@@ -9,7 +9,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 
-import {getRequests} from "../services/RequestsTableService";
+import {getRequests} from "../services/ApiService";
 
 const columns = [
     {id: 'request', label: 'Requests', minWidth: 170},

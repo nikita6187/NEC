@@ -6,6 +6,10 @@ import {Grid, Paper} from "@material-ui/core";
 import SettingsSystemDaydreamIcon from '@material-ui/icons/SettingsSystemDaydream';
 
 import RequestsTable from "../components/RequestsTable";
+import QueryStatusCard from "../components/QueryStatusCard";
+import {QueryStatusButtonForm} from "../components/QueryStatusButtonForm";
+import {GetQueryAnswer} from "../components/GetQueryAnswer";
+import {CreateQueryForm} from "../components/CreateQueryForm";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -64,11 +68,17 @@ export default function LandingView(props) {
                 </Grid>
                 <Grid container sm={6} spacing={3}>
                     <Grid item xs>
+                        <QueryStatusButtonForm/>
                     </Grid>
-
                     <Grid item xs>
-
+                        <GetQueryAnswer/>
                     </Grid>
+                </Grid>
+                <Grid container spacing={3} className={classes.content}
+                      direction="row"
+                      justify="center"
+                      alignItems="center">
+                    <CreateQueryForm/>
                 </Grid>
             </Grid>
         </div>
