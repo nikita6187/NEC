@@ -282,10 +282,10 @@ class MoClientLogic(object):
             query_id (string): query id
         """
         for user in self.users:
-            new_wallet = logic.create_user_wallet(user)
-            url_mo = addr_user + "/sendData/" + query_id + '/' + new_wallet + '/'
-            json_data = {"query_id": query_id, "wallet_id": new_wallet}
-            r = requests.post(url_mo, json=json_data)
+            #new_wallet = logic.create_user_wallet(user)
+            url_mo = addr_user + "/sendData/" #+ query_id + '/' + new_wallet + '/'
+            json_data = {"query_id": query_id} #, "wallet_id": new_wallet}
+            r = requests.post(url_mo) #, json=json_data)
             print(r.json())
             r.close()
 
@@ -411,7 +411,7 @@ def send_data(query_id):
 
 @app.route('/getRequestsHistory/', methods=['GET'])
 def get_requests_history():
-    return jsonify({"requests":logic.requests_log})
+    return jsonify({"requests": list(reversed(logic.requests_log))})
 
 @app.errorhandler(500)
 def page_not_found(e):
