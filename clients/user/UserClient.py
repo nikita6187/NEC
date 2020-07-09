@@ -131,6 +131,7 @@ class UserClientLogic(object):
         self.wallet_id = "WAL2" # str - String containing wallet of the user
         self.query_id = "q1"  # id - Id of query
         self.query_text = "test_query_text"  # Str - Query text
+        self.logic.received_query = False
 
     # NOTHING TO TEST HERE
     def notifyUser(self):
@@ -183,7 +184,7 @@ def get_notified_for_query():
         body = request.get_json()
         logic.query_id = body['query_id']
         logic.query_text = body['query_text']
-        
+        logic.received_query = True
         
         return jsonify(body)
     except Exception as e:
@@ -210,6 +211,11 @@ def cashIn():
     except Exception as e:
         return jsonify(erorr=str(e))
 
+@app.route('/getQueryData/', methods=['GET'])
+def get_query_data():
+    if logic.received_query is True:
+        return jsonify({"query_id": logic.query_id, "query_text": logic.query_text})
+    return jsonify({"query_id": "", "query_text": ""})
 
 @app.errorhandler(500)
 def page_not_found(e):
