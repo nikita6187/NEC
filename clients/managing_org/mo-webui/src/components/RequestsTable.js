@@ -43,11 +43,13 @@ export default function StickyHeadTable() {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(5);
 
+
     useEffect(() => {
-        handleTick();
-        const timer = setInterval(handleTick, 5000);
-        return () => clearInterval(timer);
-    });
+        const interval = setInterval(() => handleTick(), 5000);
+        return () => {
+          clearInterval(interval);
+        };
+      }, []);
 
     const handleTick = () => {
         getRequests()

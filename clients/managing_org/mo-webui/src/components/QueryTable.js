@@ -101,11 +101,14 @@ export default function QueryTable() {
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(3);
 
-  useEffect(() => {
-    handleTick();
-    const timer = setInterval(handleTick, 5000);
-    return () => clearInterval(timer);
-  });
+useEffect(() => {
+  const interval = setInterval(() => handleTick(), 5000);
+  return () => {
+    clearInterval(interval);
+  };
+}, []);
+
+
 
   const handleTick = () => {
     getQueries()
