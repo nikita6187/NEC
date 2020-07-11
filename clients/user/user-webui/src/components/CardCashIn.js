@@ -57,7 +57,7 @@ export default function CardAcceptQuery(props) {
                                         <AddCircleOutlineIcon />
                                     </ListItemIcon>
                                     <ListItemText
-                                        primary="r1. MVV Single Ticket"
+                                        primary="r1. RNV Single Ticket"
                                         secondary='20 coins'
                                     />
                                 </ListItem>
@@ -66,7 +66,7 @@ export default function CardAcceptQuery(props) {
                                         <AddCircleOutlineIcon />
                                     </ListItemIcon>
                                     <ListItemText
-                                        primary="r2. MVV Day Ticket"
+                                        primary="r2. RNV Day Ticket"
                                         secondary='55 coins'
                                     />
                                 </ListItem>
@@ -75,7 +75,7 @@ export default function CardAcceptQuery(props) {
                                         <AddCircleOutlineIcon />
                                     </ListItemIcon>
                                     <ListItemText
-                                        primary="r3. Pinakothek der Moderne - Entry Ticket"
+                                        primary="r3. Kurpfälzisches Museum - Entry Ticket"
                                         secondary='25 coins'
                                     />
                                 </ListItem>
