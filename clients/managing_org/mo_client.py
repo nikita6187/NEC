@@ -375,12 +375,12 @@ def cashin_coins(user_id, reward_id):
     # subtract coins from user wallet
     try:
         # adding reward test data
-        logic.rewards_map[reward_id] = CoinReward(10, "detail text")
+        if reward_id not in logic.rewards_map.keys():
+            logic.rewards_map[reward_id] = CoinReward(100, "Default reward text")
         logic.subtract_coins(user_id, reward_id)
     except Exception as e:
         return jsonify(erorr = str(e))
     # send reward to user
-
     return jsonify(logic.rewards_map[reward_id].cost,
                    logic.rewards_map[reward_id].details)
 
@@ -404,7 +404,7 @@ def receive_dc_wallet(dc_id, wallet_id):
     # save wallet id to map
     logic.dc_wallet_map[dc_id] = wallet_id
     # add default amount of funds to wallet
-    default_amount = 100
+    default_amount = 1000
     logic.create_coins(wallet_id, default_amount)
     return jsonify({"amount_added": default_amount})
 
