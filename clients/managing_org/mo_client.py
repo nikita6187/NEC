@@ -149,7 +149,7 @@ class MoClientLogic(object):
 
     def __init__(self):
         self.hf_token = None
-         # List of all userIds in the system
+        # List of all userIds in the system
         self.users = []
         self.users.append("u1")
         # List of all dcIds in the system
@@ -168,8 +168,15 @@ class MoClientLogic(object):
         self.rewards_map = {}
         # Maps KEY: dc_id - VALUE: wallet associated to the dc
         self.dc_wallet_map = {}
-
+        # List of all api requests
         self.requests_log = []
+
+        # Hardcorded some rewards for the DEMO
+        self.rewards_map["r1"] = CoinReward(20, "r1. MVV Single Ticket")
+        self.rewards_map["r2"] = CoinReward(55, "r2. MVV Day Ticket")
+        self.rewards_map["r3"] = CoinReward(25, "r3. Pinakothek der Moderne - Entry Ticket")
+
+
 
     def get_full_query(self, query_id):
         """Get a dicitonary with full data of the query corresp. to the id
@@ -268,7 +275,7 @@ class MoClientLogic(object):
             url_mo = addr_user + "/notify/"
             # TODO: QUERY needs an extra field "query_details" with string information
             # about the query content to be sent to users with the request
-            json_data = {"query_id": query_id, "query_text": "Query info"}
+            json_data = {"query_id": query_id, "query_text": "Requested by: Technische Universität München; Data usage: Analysis on student activity in campus."}
             r = requests.post(url_mo, json=json_data)
             print(r.json())
             r.close()
