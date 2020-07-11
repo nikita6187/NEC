@@ -343,6 +343,17 @@ def get_all_queries():
     except Exception as e:
             return jsonify(erorr = str(e))
 
+
+@app.route('/getAllWallets', methods=['GET'])
+def get_all_wallets():
+    try:
+        response = hf_get(logic.hf_token, "coin_contract", "retrieveWallets", ["1", "999"])
+        all_queries = [query_s['Record'] for query_s in json.loads(response['result']['result'])]
+        print(all_queries, file=sys.stderr)
+        return jsonify(all_queries)
+    except Exception as e:
+            return jsonify(erorr = str(e))
+
 @app.route('/setQueryStage/<query_id>/<stage>')
 def set_query_stage(query_id, stage):
     try:
