@@ -70,7 +70,9 @@ export default function LandingView(props) {
                 <Grid item xs={12} sm={6}>
                     <RequestsTable/>
                 </Grid>
-                <Grid container sm={6} spacing={3}>
+                <Grid container sm={6} spacing={1} direction="row"
+                      justify="center"
+                      alignItems="center">
                     <Grid item xs>
                         <InputButtonAskUsersForm buttonText="Ask users" fieldText="Query Id"/>
                     </Grid>
