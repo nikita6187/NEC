@@ -210,6 +210,7 @@ class MoClientLogic(object):
         new_wallet = response['result']['result']
         # associate it to user
         self.wallet_map[user_id].append(new_wallet['id'])
+        print(new_wallet['id'])
         return new_wallet['id']
 
     def retrieve_user_wallets(self, user_id):
@@ -240,8 +241,12 @@ class MoClientLogic(object):
         reward_cost = self.rewards_map[reward_id].cost
         amount_needed = reward_cost
 
+        print(wallets)
+        print(amount_needed)
+
         for idx, wallet in enumerate(wallets):
-            amount_needed -= wallet.amount
+            print(wallet)
+            amount_needed -= wallet["amount"]
             if amount_needed <= 0:
                 # the last wallet has more funds than necessary or amount needed reached
                 # we subtract the necessary coins and keep that last wallet
@@ -258,7 +263,8 @@ class MoClientLogic(object):
         hf_invoke(self.hf_token, "coin_contract", "createCoins", [wallet_id, amount])
 
     def remove_coins(self, wallet_id, amount):
-        hf_invoke(self.hf_token, "coin_contract", "spendCoins", [wallet_id, amount])
+        print("Remove coins: " + str(wallet_id) + " " + str(amount))
+        hf_invoke(self.hf_token, "coin_contract", "spendCoins", ["WAL" + str(wallet_id), amount])
 
     def ask_users_for_query(self, query_id):
         """Notify all existing users of a new query
@@ -373,13 +379,14 @@ def receive_answer_pk():
 @app.route('/cashinCoins/<user_id>/<reward_id>/', methods=['POST'])
 def cashin_coins(user_id, reward_id):
     # subtract coins from user wallet
-    try:
-        # adding reward test data
-        if reward_id not in logic.rewards_map.keys():
-            logic.rewards_map[reward_id] = CoinReward(100, "Default reward text")
-        logic.subtract_coins(user_id, reward_id)
-    except Exception as e:
-        return jsonify(erorr = str(e))
+    #try:
+    # adding reward test data
+    if reward_id not in logic.rewards_map.keys():
+        logic.rewards_map[reward_id] = CoinReward(100, "Default reward text")
+    print("Here1: " + str(user_id) + " " + str(reward_id))
+    logic.subtract_coins(user_id, reward_id)
+    #except Exception as e:
+    #    return jsonify(erorr = str(e))
     # send reward to user
     return jsonify(logic.rewards_map[reward_id].cost,
                    logic.rewards_map[reward_id].details)
