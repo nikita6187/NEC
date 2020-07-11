@@ -1,13 +1,7 @@
 #!/bin/bash
 
-# Usage to start network without api: 	 bash start_network.sh
-# Usage to start network with api:	 bash start_network.sh api 
-
-# Step 0: setup network
-# bash ./setup_network.sh
-
 # Step 1: Start docker compose in detached mode
-# NOTE: difference in versions
+pushd ./fabric
 pushd ./artifacts
 docker-compose up -d
 popd
@@ -27,9 +21,10 @@ docker exec -it peer0.org2.example.com sh -c "peer channel list"
 docker exec -it peer0.org3.example.com sh -c "peer channel list" 
 
 # Step 5: deploy chaincode
-# bash deployChaincode.sh artifacts/src/query_contract/ query_contract 1 initLedger []
-# bash deployChaincode.sh artifacts/src/coin_contract coin_contract 1 initLedger [\"Org1MSP\"]
-# bash deployChaincode.sh artifacts/src/aggregated_answer_contract/ agg_answer 1 initLedger []
+bash deployChaincode.sh artifacts/src/query_contract/ query_contract 1 initLedger []
+bash deployChaincode.sh artifacts/src/coin_contract coin_contract 1 initLedger [\"Org1MSP\"]
+bash deployChaincode.sh artifacts/src/aggregated_answer_contract/ agg_answer 1 initLedger []
+popd
 
 # Step 8: init api
 # API_ARG="$1"

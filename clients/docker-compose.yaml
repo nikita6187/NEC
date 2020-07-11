@@ -1,0 +1,18 @@
+version: "2"
+
+networks:
+    artifacts_test:
+        external: true
+
+services:
+  mo-api:
+    container_name: mo-api
+    build: ../fabric/api-2.0
+    volumes:
+        - ./config/connection-org1.yaml:/usr/src/app/config/connection-org1.yaml
+        - ./config/connection-org2.yaml:/usr/src/app/config/connection-org2.yaml
+        - ./config/connection-org3.yaml:/usr/src/app/config/connection-org3.yaml
+    ports:
+        - 4000:4000
+    networks:
+        - artifacts_test
