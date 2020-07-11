@@ -10,6 +10,7 @@ import AccountBalanceIcon from '@material-ui/icons/AccountBalance';
 
 import QueryTable from "../components/QueryTable";
 import RequestsTable from "../components/RequestsTable";
+import WalletTable from "../components/WalletTable";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -79,6 +80,9 @@ export default function LandingView(props) {
                     <Grid item xs>
                         <InputButtonNotifyUsersForm buttonText="Notify users" fieldText="Query Id"/>
                     </Grid>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                    <WalletTable/>
                 </Grid>
             </Grid>
         </div>
