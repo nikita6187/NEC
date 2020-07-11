@@ -7,8 +7,8 @@ const ClientIdentity = require('fabric-shim').ClientIdentity;
 const num_majority = 1;
 const mo_id = "org1";
 const dc_id = "org2";
-const oo_id = "org3"; 
-//const oo_id = "org1"; // UNCOMMENT FOR TESTING IF BUGS ARISE WITH ORG3
+//const oo_id = "org3";  // TODO: commend back in when org3 bug gone!
+const oo_id = "org3"; // UNCOMMENT FOR TESTING IF BUGS ARISE WITH ORG3
 
 // 1. Awaiting approval (directly once the query is created by DC)
 // 2. Approved (after a majority of approvals but before min user check by MO)
@@ -16,7 +16,7 @@ const oo_id = "org3";
 // 4. Serving data (users send data to aggregator) i.e. enough users
 // 5. Served (agg answer on the blockchain; considered archived)
 // 0. failed (various reasons for query failure - reason stored in "fail_message" field in Query)
-var query_stages = {
+let query_stages = {
     0: "FAILED",
     1: "AWAITING_APPROVAL",
     2: "APPROVED",
@@ -30,8 +30,7 @@ class QueryContract extends Contract {
 
     async initLedger(ctx) {
         console.info('============= START : Initialize Ledger ===========');
-        
-    // demo
+        // demo
         const queries = [
             {
                 query_id: 'q1',
@@ -42,7 +41,7 @@ class QueryContract extends Contract {
                 stage: 1,
                 num_majority: 1,
                 max_budget: 10,
-                wallet_id: 'w1',
+                wallet_id: 'WAL1',
                 fail_message: '',
             },
         ];
@@ -50,7 +49,7 @@ class QueryContract extends Contract {
         await ctx.stub.putState('q1', Buffer.from(JSON.stringify(queries[0])));
 
         // Counter for ids
-        let init = 2
+        let init = 2;
         await ctx.stub.putState('counter', Buffer.from(init.toString()));  // Hacky solution
             
 
@@ -97,16 +96,26 @@ class QueryContract extends Contract {
         await ctx.stub.putState('counter', Buffer.from((parseInt(rID) + 1).toString()));  // Increase counter for uniqueness
 
         let query_id = 'q' + rID;
-
+        
+        // Convert min_users and max_budget to int
+        let min_users_int = parseInt(min_users);
+        let max_budget_int = parseInt(max_budget);
+        // Check conversions
+        if (isNaN(min_users_int)){
+            throw new Error('When creating Query: MIN_USERS value could not be converted to INT!');
+        }
+        if (isNaN(max_budget_int)) {
+            throw new Error('When creating Query: MAX_BUDGET value could not be converted to INT!');
+        }
         const query = {
             query_id: query_id, 
             query_as_text: query_text,
             num_approve: 0,
             num_disapprove: 0,
-            min_users: min_users,
+            min_users: min_users_int,
             stage: 1,
             num_majority: num_majority,
-            max_budget: max_budget,
+            max_budget: max_budget_int,
             wallet_id: wallet_id,
             fail_message: '',
         };
@@ -138,14 +147,14 @@ class QueryContract extends Contract {
             // TODO: add conversion to boolean
 
             // We add vote
-            if(approved == true){
+            if(approved == "true"){
                 query.num_approve += 1;
             } else {
                 query.num_disapprove += 1;
             }
 
             // Automatically check query stage
-            if(query.num_approve >= query.num_majority && query.stage == 1){
+            if(query.num_approve >= query.num_majority && query.stage === 1){
                 query.stage = 2;  // TODO: maybe use setQueryStage? check if HF ok with this
             }
             
@@ -162,16 +171,21 @@ class QueryContract extends Contract {
     async setQueryStage(ctx, query_id, stage, fail_message){
 
         let newStage = parseInt(stage);
-        let no_stages = Object.getOwnPropertyNames(query_stages).length;
+        // Check if the new stage value can be converted to int
+        if (isNaN(newStage)){
+            throw new Error('New stage value is not a valid integer!')
+        }
 
+        let no_stages = Object.getOwnPropertyNames(query_stages).length;
         // Check newStage value is in the valid range
         if (newStage < 0 || newStage >= no_stages) {
-            throw new Error('Stage number invalid!');
+            throw new Error('New stage integer is not in the valid range!');
         }
 
         let cid = new ClientIdentity(ctx.stub);
 
-        if(cid.assertAttributeValue('hf.Affiliation', mo_id + '.department1')){
+        if(cid.assertAttributeValue('hf.Affiliation', mo_id + '.department1') || 
+        cid.assertAttributeValue('hf.Affiliation', oo_id + '.department1')){
             
             // Get query
             const queryAsBytes = await ctx.stub.getState(query_id); 
@@ -184,12 +198,12 @@ class QueryContract extends Contract {
             // Checks that verify if the change of the query state is valid
 
             // If the query doesn't have approval majority, throw error if trying to change state to "approved"
-            if(query_stages[newStage] == "APPROVED" && query.num_approve < query.num_majority){
+            if(query_stages[newStage] === "APPROVED" && query.num_approve < query.num_majority){
                 throw new Error('Not enough approvals in order to change Query stage to APPROVED!');
             }
 
             // For FAILED state, add fail_message to the query
-            if (query_stages[newStage] == "FAILED") {
+            if (query_stages[newStage] === "FAILED") {
                 query.fail_message = fail_message;
             }
 

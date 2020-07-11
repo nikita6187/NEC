@@ -16,6 +16,12 @@ To shutdown the network:
 ./stop_network.sh
 ```
 
+# View Blockchain explorer
+Navigate to the following address in your browser:
+```
+localhost:8080
+```
+
 # Manual Api Set-up
 
 Assuming the network is running using `bash start_network.sh`, execute the following command.

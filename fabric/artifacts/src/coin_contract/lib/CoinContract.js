@@ -95,9 +95,9 @@ class CoinContract extends Contract {
         }
 
         let cid = new ClientIdentity(ctx.stub);
-        if (!fromWallet.txOrgHasPermission(cid.getMSPID())) {
-            throw new Error(`${cid.getMSPID()} does not own ${fromID}`);
-        }
+        // if (!fromWallet.txOrgHasPermission(cid.getMSPID())) {
+        //     throw new Error(`${cid.getMSPID()} does not own ${fromID}`);
+        // }
 
         if (!fromWallet.canSpendAmount(amount)) {
             throw new Error(`${fromID} does not have enough amount. Required: ${amount}, Available:${fromWallet.amount}`);
