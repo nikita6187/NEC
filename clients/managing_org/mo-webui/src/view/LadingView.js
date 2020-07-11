@@ -71,6 +71,11 @@ export default function LandingView(props) {
                 <Grid item xs={12} sm={6}>
                     <RequestsTable/>
                 </Grid>
+                <Grid item xs={12} sm={6}>
+                    <WalletTable/>
+                </Grid>
+                <Grid item xs={12}>
+                </Grid>
                 <Grid container sm={6} spacing={1} direction="row"
                       justify="center"
                       alignItems="center">
@@ -81,9 +86,7 @@ export default function LandingView(props) {
                         <InputButtonNotifyUsersForm buttonText="Notify users" fieldText="Query Id"/>
                     </Grid>
                 </Grid>
-                <Grid item xs={12} sm={6}>
-                    <WalletTable/>
-                </Grid>
+
             </Grid>
         </div>
     );
