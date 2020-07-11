@@ -7,9 +7,13 @@ from cryptography.fernet import Fernet
 
 import flask
 from flask import jsonify, request, make_response
+from flask_cors import CORS, cross_origin
+
+import sys
 
 # Flask config
 app = flask.Flask(__name__)
+cors = CORS(app)
 app.config["DEBUG"] = True
 local_port = 11600
 
@@ -32,7 +36,7 @@ pool = Pool(10)
 @app.before_request
 def store_requests():
     url = request.url
-    if "getRequestsHistory" not in url:
+    if "getRequestsHistory" not in url and "getQueryData" not in url and "getAllQueries" not in url:
         logic.requests_log.append(url)
 
 """
@@ -145,7 +149,7 @@ class MoClientLogic(object):
 
     def __init__(self):
         self.hf_token = None
-         # List of all userIds in the system
+        # List of all userIds in the system
         self.users = []
         self.users.append("u1")
         # List of all dcIds in the system
@@ -164,8 +168,15 @@ class MoClientLogic(object):
         self.rewards_map = {}
         # Maps KEY: dc_id - VALUE: wallet associated to the dc
         self.dc_wallet_map = {}
-
+        # List of all api requests
         self.requests_log = []
+
+        # Hardcorded some rewards for the DEMO
+        self.rewards_map["r1"] = CoinReward(20, "r1. MVV Single Ticket")
+        self.rewards_map["r2"] = CoinReward(55, "r2. MVV Day Ticket")
+        self.rewards_map["r3"] = CoinReward(25, "r3. Pinakothek der Moderne - Entry Ticket")
+
+
 
     def get_full_query(self, query_id):
         """Get a dicitonary with full data of the query corresp. to the id
@@ -264,7 +275,7 @@ class MoClientLogic(object):
             url_mo = addr_user + "/notify/"
             # TODO: QUERY needs an extra field "query_details" with string information
             # about the query content to be sent to users with the request
-            json_data = {"query_id": query_id, "query_text": "Query info"}
+            json_data = {"query_id": query_id, "query_text": "Requested by: Technische Universität München; Data usage: Analysis on student activity in campus."}
             r = requests.post(url_mo, json=json_data)
             print(r.json())
             r.close()
@@ -278,10 +289,10 @@ class MoClientLogic(object):
             query_id (string): query id
         """
         for user in self.users:
-            new_wallet = logic.create_user_wallet(user)
-            url_mo = addr_user + "/sendData/" + query_id + '/' + new_wallet + '/'
-            json_data = {"query_id": query_id, "wallet_id": new_wallet}
-            r = requests.post(url_mo, json=json_data)
+            #new_wallet = logic.create_user_wallet(user)
+            url_mo = addr_user + "/sendData/" #+ query_id + '/' + new_wallet + '/'
+            json_data = {"query_id": query_id} #, "wallet_id": new_wallet}
+            r = requests.post(url_mo) #, json=json_data)
             print(r.json())
             r.close()
 
@@ -321,6 +332,7 @@ def get_all_queries():
     try:
         response = hf_get(logic.hf_token, "query_contract", "getAllQueries", [" "])
         all_queries = [query_s['Record'] for query_s in json.loads(response['result']['result'])]
+        #print(all_queries, file=sys.stderr)
         return jsonify(all_queries)
     except Exception as e:
             return jsonify(erorr = str(e))
@@ -363,12 +375,12 @@ def cashin_coins(user_id, reward_id):
     # subtract coins from user wallet
     try:
         # adding reward test data
-        logic.rewards_map[reward_id] = CoinReward(10, "detail text")
+        if reward_id not in logic.rewards_map.keys():
+            logic.rewards_map[reward_id] = CoinReward(100, "Default reward text")
         logic.subtract_coins(user_id, reward_id)
     except Exception as e:
         return jsonify(erorr = str(e))
     # send reward to user
-
     return jsonify(logic.rewards_map[reward_id].cost,
                    logic.rewards_map[reward_id].details)
 
@@ -392,7 +404,7 @@ def receive_dc_wallet(dc_id, wallet_id):
     # save wallet id to map
     logic.dc_wallet_map[dc_id] = wallet_id
     # add default amount of funds to wallet
-    default_amount = 100
+    default_amount = 1000
     logic.create_coins(wallet_id, default_amount)
     return jsonify({"amount_added": default_amount})
 
@@ -406,7 +418,7 @@ def send_data(query_id):
 
 @app.route('/getRequestsHistory/', methods=['GET'])
 def get_requests_history():
-    return jsonify({"requests":logic.requests_log})
+    return jsonify({"requests": list(reversed(logic.requests_log))})
 
 @app.errorhandler(500)
 def page_not_found(e):
@@ -428,4 +440,4 @@ def about():
 if __name__ == '__main__':
     token = register_hf_api_token()
     logic.hf_token = token
-    app.run(port=local_port)
+    app.run(port=local_port, debug=True)

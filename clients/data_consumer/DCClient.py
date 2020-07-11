@@ -4,12 +4,14 @@ import requests
 from multiprocessing.dummy import Pool
 from cryptography.fernet import Fernet
 import json
+from flask_cors import CORS, cross_origin
 
 
 # Flask config
 app = flask.Flask(__name__)
 app.config["DEBUG"] = False
 local_port = 11700
+cors = CORS(app)
 
 # Other client URL config
 addr_oo = "http://localhost:11500"
@@ -26,6 +28,13 @@ org_id = str(2)  # TODO: needs to be changed to ??????????????????????
 
 # Helper code
 pool = Pool(10)
+
+# logging
+@app.before_request
+def store_requests():
+    url = request.url
+    if "getRequestsHistory" not in url and "getQueryData" not in url and "getAllQueries" not in url:
+        logic.requests_log.append(url)
 
 """
 Function to call a HTTP request async and only printing the result.
@@ -130,6 +139,8 @@ class DCClientLogic(object):
         self.query_id = None  # int - Query's id
         self.priv_key = None  # Private keys of aggregated data
         self.aggregated_unencrypted_data = None  # Aggregated unencrypted data
+
+        self.requests_log = []
 
     # TESTED, WORKS CORRECTLY
     def createQuery(self, query_text, min_users, max_budget):
@@ -254,6 +265,11 @@ def getAggAnswerFromHF(query_id):
     print("Aggregated unencrypted answer is: " + str(unencrypted_data))
 
     return jsonify(data=unencrypted_data)
+
+@app.route('/getRequestsHistory/', methods=['GET'])
+def get_requests_history():
+    return jsonify({"requests":logic.requests_log})
+
 
 
 @app.errorhandler(500)

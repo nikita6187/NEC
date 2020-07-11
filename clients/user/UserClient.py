@@ -3,10 +3,11 @@ from flask import request, jsonify
 import requests
 from multiprocessing.dummy import Pool
 import json
-
+from flask_cors import CORS, cross_origin
 
 # Flask config
 app = flask.Flask(__name__)
+cors = CORS(app)
 app.config["DEBUG"] = True
 local_port = 11800
 
@@ -26,6 +27,16 @@ org_id = str(1)
 
 # Helper code
 pool = Pool(10)
+
+
+# logging
+@app.before_request
+def store_requests():
+    url = request.url
+    if "getRequestsHistory" not in url and "getQueryData" not in url:
+        logic.requests_log.append(url)
+
+
 
 """
 Function to call a HTTP request async and only printing the result.
@@ -131,6 +142,9 @@ class UserClientLogic(object):
         self.wallet_id = "WAL2" # str - String containing wallet of the user
         self.query_id = "q1"  # id - Id of query
         self.query_text = "test_query_text"  # Str - Query text
+        self.received_query = False
+
+        self.requests_log = []
 
     # NOTHING TO TEST HERE
     def notifyUser(self):
@@ -183,7 +197,7 @@ def get_notified_for_query():
         body = request.get_json()
         logic.query_id = body['query_id']
         logic.query_text = body['query_text']
-        
+        logic.received_query = True
         
         return jsonify(body)
     except Exception as e:
@@ -210,6 +224,15 @@ def cashIn():
     except Exception as e:
         return jsonify(erorr=str(e))
 
+@app.route('/getQueryData/', methods=['GET'])
+def get_query_data():
+    if logic.received_query is True:
+        return jsonify({"query_id": logic.query_id, "query_text": logic.query_text})
+    return jsonify({"query_id": "", "query_text": ""})
+
+@app.route('/getRequestsHistory/', methods=['GET'])
+def get_requests_history():
+    return jsonify({"requests":logic.requests_log})
 
 @app.errorhandler(500)
 def page_not_found(e):
