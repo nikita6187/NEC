@@ -2,20 +2,6 @@
 Fork of https://github.com/adhavpavan/BasicNetwork-2.0
 Initial hyperledger fabric setup for team NEC
 
-# Quick Usage
-
-
-To start network and api (create docker containers, join channels run):
-```
-./start_network.sh api
-```
-If you want to run the network and manually start the api follow the steps below.
-
-To shutdown the network:
-```
-./stop_network.sh
-```
-
 # View Blockchain explorer
 Navigate to the following address in your browser:
 ```
@@ -62,7 +48,7 @@ chmod +x filename.sh
 
 See `start_network.sh` for the steps needed to start the full network.
 
-To setup network first run. This generetates the cryptomaterial (genesis blocks, certificates), needs to only be run once:
+To setup network first run. This generetates the cryptomaterial (genesis blocks, certificates):
 ```
 bash ./setup_network.sh
 ```
