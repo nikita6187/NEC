@@ -1,5 +1,5 @@
 # NEC
-Our blockchain practical for the NEC challenge
+Our blockchain practical repository for the NEC challenge
 
 
 ## Prerequisites
