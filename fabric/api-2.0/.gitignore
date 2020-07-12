@@ -1,0 +1,8 @@
+# Crypto-Config
+config/*
+
+# Wallets
+wallet*
+
+# Node
+package-lock.json
