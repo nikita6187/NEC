@@ -33,7 +33,7 @@ NOTE: sometimes HF Fabric gives various non-deterministic errors, please restart
 
 The full demo is here: https://www.youtube.com/watch?v=lyzwGfcaPJI
 
-A more raw demo can be seen here: https://youtu.be/10BqdfQ9dQU​
+A more raw demo can be seen here: https://www.youtube.com/watch?v=10BqdfQ9dQU
 
 Note, for the aggregator to perform the aggregation you need to make a HTTP POST to `http://127.0.0.1:11900/putAggDataOnBlockchain/`, with a JSON data load containing for example: `{"query_id": "q2"}`
 All other operations are done via the UIs.
@@ -67,4 +67,5 @@ Various documentation is located in `docs_fabric_api` that was used previously f
 ## Logs and Errors
 The logs of the python clients can be found in the `nohup.out` files located next to the python files. For node apps, all logs can be viewed via `pm2 logs`, e.g. `pm2 logs API`.
 To view the logs of the HF containers, first find using `docker ps -a` the interesting container, and then use `docker logs <id>`.
+
 
