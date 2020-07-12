@@ -1,0 +1,23 @@
+certificateAuthorities:
+  ca.org3.example.com:
+    caName: ca.org3.example.com
+    httpOptions: {verify: false}
+    tlsCACerts: {pem: '---INSERT-CERTIFICATE-HERE---'}
+    url: https://localhost:9054
+client:
+  connection:
+    timeout:
+      peer: {endorser: '300'}
+  organization: Org3
+name: first-network-org3
+organizations:
+  Org3:
+    certificateAuthorities: [ca.org3.example.com]
+    mspid: Org3MSP
+    peers: [peer0.org3.example.com]
+peers:
+  peer0.org3.example.com:
+    grpcOptions: {hostnameOverride: peer0.org3.example.com, ssl-target-name-override: peer0.org3.example.com}
+    tlsCACerts: {pem: '---INSERT-CERTIFICATE-HERE---'}
+    url: grpcs://localhost:9051
+version: 1.0.0

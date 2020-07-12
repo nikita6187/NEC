@@ -13,12 +13,9 @@ if [ ! -f ".env" ]; then
 	echo "COMPOSE_PROJECT_NAME=artifacts" >> .env 
 fi
 popd
-popd
 
 # Step 3: Apply certs to api
-pushd ./clients
 python3 generate_certificates.py 1
 python3 generate_certificates.py 2
 python3 generate_certificates.py 3
 popd
-

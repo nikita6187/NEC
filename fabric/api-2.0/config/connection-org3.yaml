@@ -2,7 +2,37 @@ certificateAuthorities:
   ca.org3.example.com:
     caName: ca.org3.example.com
     httpOptions: {verify: false}
-    tlsCACerts: {pem: '---INSERT-CERTIFICATE-HERE---'}
+    tlsCACerts: {pem: '-----BEGIN CERTIFICATE-----
+
+        MIICVzCCAf2gAwIBAgIQCxNmgp+u7PKVVbKanuGTmTAKBggqhkjOPQQDAjB2MQsw
+
+        CQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNU2FuIEZy
+
+        YW5jaXNjbzEZMBcGA1UEChMQb3JnMy5leGFtcGxlLmNvbTEfMB0GA1UEAxMWdGxz
+
+        Y2Eub3JnMy5leGFtcGxlLmNvbTAeFw0yMDA3MTExNTU4MDBaFw0zMDA3MDkxNTU4
+
+        MDBaMHYxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQH
+
+        Ew1TYW4gRnJhbmNpc2NvMRkwFwYDVQQKExBvcmczLmV4YW1wbGUuY29tMR8wHQYD
+
+        VQQDExZ0bHNjYS5vcmczLmV4YW1wbGUuY29tMFkwEwYHKoZIzj0CAQYIKoZIzj0D
+
+        AQcDQgAEFzIWi12+RTU6/XOekpr9gOzeQ5D4mm3tB7e3QLz/BBUU0q8WhKIU6XK0
+
+        yxAIo92ZKDrT7zEgYutW/dTTVHobLaNtMGswDgYDVR0PAQH/BAQDAgGmMB0GA1Ud
+
+        JQQWMBQGCCsGAQUFBwMCBggrBgEFBQcDATAPBgNVHRMBAf8EBTADAQH/MCkGA1Ud
+
+        DgQiBCCn5EYrsj1wVZBbcGflXiL+N6PWoroYn1G5Akf5qyZKBTAKBggqhkjOPQQD
+
+        AgNIADBFAiEA7B/RClglJLN1qPCPMK5udx8LGuQPJ3gqNECqyKWx7gICIE0dUwmw
+
+        mPjeuquD3LJ5z+u7fsDqMt4WD+SxBF0RH0YS
+
+        -----END CERTIFICATE-----
+
+        '}
     url: https://localhost:9054
 client:
   connection:
@@ -18,6 +48,36 @@ organizations:
 peers:
   peer0.org3.example.com:
     grpcOptions: {hostnameOverride: peer0.org3.example.com, ssl-target-name-override: peer0.org3.example.com}
-    tlsCACerts: {pem: '---INSERT-CERTIFICATE-HERE---'}
+    tlsCACerts: {pem: '-----BEGIN CERTIFICATE-----
+
+        MIICVzCCAf2gAwIBAgIQCxNmgp+u7PKVVbKanuGTmTAKBggqhkjOPQQDAjB2MQsw
+
+        CQYDVQQGEwJVUzETMBEGA1UECBMKQ2FsaWZvcm5pYTEWMBQGA1UEBxMNU2FuIEZy
+
+        YW5jaXNjbzEZMBcGA1UEChMQb3JnMy5leGFtcGxlLmNvbTEfMB0GA1UEAxMWdGxz
+
+        Y2Eub3JnMy5leGFtcGxlLmNvbTAeFw0yMDA3MTExNTU4MDBaFw0zMDA3MDkxNTU4
+
+        MDBaMHYxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpDYWxpZm9ybmlhMRYwFAYDVQQH
+
+        Ew1TYW4gRnJhbmNpc2NvMRkwFwYDVQQKExBvcmczLmV4YW1wbGUuY29tMR8wHQYD
+
+        VQQDExZ0bHNjYS5vcmczLmV4YW1wbGUuY29tMFkwEwYHKoZIzj0CAQYIKoZIzj0D
+
+        AQcDQgAEFzIWi12+RTU6/XOekpr9gOzeQ5D4mm3tB7e3QLz/BBUU0q8WhKIU6XK0
+
+        yxAIo92ZKDrT7zEgYutW/dTTVHobLaNtMGswDgYDVR0PAQH/BAQDAgGmMB0GA1Ud
+
+        JQQWMBQGCCsGAQUFBwMCBggrBgEFBQcDATAPBgNVHRMBAf8EBTADAQH/MCkGA1Ud
+
+        DgQiBCCn5EYrsj1wVZBbcGflXiL+N6PWoroYn1G5Akf5qyZKBTAKBggqhkjOPQQD
+
+        AgNIADBFAiEA7B/RClglJLN1qPCPMK5udx8LGuQPJ3gqNECqyKWx7gICIE0dUwmw
+
+        mPjeuquD3LJ5z+u7fsDqMt4WD+SxBF0RH0YS
+
+        -----END CERTIFICATE-----
+
+        '}
     url: grpcs://localhost:9051
 version: 1.0.0

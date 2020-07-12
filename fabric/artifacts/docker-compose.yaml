@@ -19,8 +19,8 @@ services:
     command: sh -c 'fabric-ca-server start -b admin:adminpw -d'
     volumes:
       - ./channel/crypto-config/peerOrganizations/org1.example.com/ca/:/etc/hyperledger/fabric-ca-server-config
-      - ./fabric-ca-server-config.yaml:/etc/hyperledger/fabric-ca-server/fabric-ca-server-config.yaml
       - ./channel/crypto-config/peerOrganizations/org1.example.com/tlsca/:/etc/hyperledger/fabric-ca-server-tls
+      # - ./fabric-ca-server-config.yaml:/etc/hyperledger/fabric-ca-server/fabric-ca-server-config.yaml
     container_name: ca.org1.example.com
     networks:
       - test
@@ -262,3 +262,15 @@ services:
       - ./channel/:/etc/hyperledger/channel/
     networks:
       - test
+
+  # central-api:
+  #   container_name: central-api
+  #   build: ../api-2.0
+  #   volumes:
+  #     - ../api-2.0/config/connection-org1.yaml:/usr/src/app/config/connection-org1.yaml
+  #     - ../api-2.0/config/connection-org2.yaml:/usr/src/app/config/connection-org2.yaml
+  #     - ../api-2.0/config/connection-org3.yaml:/usr/src/app/config/connection-org3.yaml
+  #   ports:
+  #     - 4000:4000
+  #   networks:
+  #     - test

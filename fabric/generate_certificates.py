@@ -9,13 +9,13 @@ def gen_cert(org):
     assert org in ['1', '2', '3'], "Org param not '1', '2', '3'!"
 
     # Copy the files over
-    path_to_connection_template = os.path.join('../', 'fabric','api-2.0', 'config', 'connection-org' + org + '.yaml')
-    path_to_destination = os.path.join('./', 'config', 'connection-org' + org + '.yaml')
+    path_to_connection_template = os.path.join('./','artifacts', 'channel', 'config', 'connection-org' + org + '.yaml')
+    path_to_destination = os.path.join('./', 'api-2.0', 'config', 'connection-org' + org + '.yaml')
 
     shutil.copy(path_to_connection_template, path_to_destination)
 
-    path_to_yaml_config = os.path.join('./', 'config', 'connection-org' + org + '.yaml')
-    path_to_cert = os.path.join('../', 'fabric', 'artifacts', 'channel', 'crypto-config', 'peerOrganizations',
+    path_to_yaml_config = path_to_destination
+    path_to_cert = os.path.join('./', 'artifacts', 'channel', 'crypto-config', 'peerOrganizations',
                                 'org' + org + '.example.com', 'tlsca', 'tlsca.org' + org + '.example.com-cert.pem')
     with open(path_to_yaml_config, 'r') as stream:
         try:
