@@ -56,4 +56,16 @@ Various documentation is located in `docs_fabric_api` that was used previously f
 - JS for smart contracts
 - Coin smart contract, Query smart contract & Aggregated Answer smart contract
 
+## API to HF network
+- Readme examples in `/fabric_api/`
+- Node server for API
+- Located in `/fabric/api-2.0`
+- `HTTP GET` applies a query on the blockchain
+- `HTTP POST` applied an invoke on the blockchain
+- Example to run and interact with QueryContract in `/docs_fabric_api/query`
+
+## Logs and Errors
+The logs of the python clients can be found in the `nohup.out` files located next to the python files. For node apps, all logs can be viewed via `pm2 logs`, e.g. `pm2 logs API`.
+To view the logs of the HF containers, first find using `docker ps -a` the interesting container, and then use `docker logs <id>`.
+
 

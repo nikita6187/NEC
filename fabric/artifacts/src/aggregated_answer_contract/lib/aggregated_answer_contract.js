@@ -59,6 +59,15 @@ class AggAnswerContract extends Contract {
 
         if(cid.assertAttributeValue('hf.Affiliation', oo_id + '.department1')){
 
+            // First check that the query has been approved, i.e. stage >= 2
+            const argsq = ["getQuery", query_id];
+            let qu = await ctx.stub.invokeChaincode(cc_query_name, argsq, channel_name);
+            qu = JSON.parse(qu.payload.toString());
+            console.log(qu);
+            if(qu.stage == 1){
+                throw new Error('Query not approved!');
+            }
+
             // convert use_wallet_list appropriatly
            // user_wallet_list = JSON.parse(user_wallet_list);  // TODO: check if appropriate
             console.log(user_wallet_list);
@@ -76,14 +85,17 @@ class AggAnswerContract extends Contract {
                 user_wallet_list: user_wallet_list,
             };
 
-            // TODO: automatically transfer funds via Coin contract
-            // TODO: find out which CC to call
+            // automatically transfer funds via Coin contract
             user_wallet_list = JSON.parse(user_wallet_list)
+
+            // check for min users
+            if(qu.min_users > Object.keys(user_wallet_list).length){
+                throw new Error('Not enough users!');
+            }
             
+            // Auto transfer funds from the DC wallet over to the users' wallets
             for(var wallet_key of Object.keys(user_wallet_list)) {
                 console.info(`Performing for wallet pair: ${user_wallet_list[wallet_key]} ${wallet_key}`);
-                // TODO: error:  The first argument must be of type string or an instance of Buffer, ArrayBuffer, or Array or an Array-like Object. Received type number (10)
-                // transaction returned with failure: TypeError [ERR_INVALID_ARG_TYPE]:
                 let amount = user_wallet_list[wallet_key];
                 amount = amount.toString();
                 const args = ["transfer", amount, wallet_key, dc_wallet];
