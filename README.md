@@ -27,11 +27,16 @@ To setup the network please run `bash setup_network.sh`. The script will:
 - setup all apis and clients
 The network can be started via `bash start_network.sh`, which will start the hyperledger network and all apis and clients.
 The network can be stopped via `bash stop_network.sh`, which will stop the network and shutdown all containers.
-
+NOTE: sometimes HF Fabric gives various non-deterministic errors, please restart the network in that case. 
 
 ## How to Run Demo
-TODO
 
+The full demo is here: https://www.youtube.com/watch?v=lyzwGfcaPJI
+
+A more raw demo can be seen here: https://youtu.be/10BqdfQ9dQU​
+
+Note, for the aggregator to perform the aggregation you need to make a HTTP POST to `http://127.0.0.1:11900/putAggDataOnBlockchain/`, with a JSON data load containing for example: `{"query_id": "q2"}`
+All other operations are done via the UIs.
 
 
 ## Manual Network Setup
