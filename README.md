@@ -56,10 +56,4 @@ Various documentation is located in `docs_fabric_api` that was used previously f
 - JS for smart contracts
 - Coin smart contract, Query smart contract & Aggregated Answer smart contract
 
-## API to HF network
-- Readme examples in `/fabric_api/`
-- Node server for API
-- Located in `/fabric/api-2.0`
-- `HTTP GET` applies a query on the blockchain
-- `HTTP POST` applied an invoke on the blockchain
-- Example to run and interact with QueryContract in `/docs_fabric_api/query`
+
