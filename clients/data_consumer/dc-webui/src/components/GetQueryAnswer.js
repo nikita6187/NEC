@@ -51,7 +51,7 @@ export class GetQueryAnswer extends React.Component {
                                            value={this.state.value} onChange={this.handleChange}/>
                             </Grid>
                             <Grid item xs={6}>
-                                <Button type="submit" variant="contained" color="primary"
+                                <Button type="submit" variant="contained" color="secondary"
                                         onClick={() => getQueryAnswer(this.state.value)
                                             .then(response => {
                                                 this.setState({qAnswer: response.data.data});

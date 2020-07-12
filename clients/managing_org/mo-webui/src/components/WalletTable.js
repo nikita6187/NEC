@@ -9,18 +9,11 @@ import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 
-import {getQueries} from "../services/QueryTableService";
+import {getQueries} from "../services/WalletTableService";
 
 const columns = [
-    {id: 'query_id', label: 'Query Id', minWidth: 100},
-    {id: 'stage', label: 'Stage', minWidth: 100},
-    {id: 'wallet_id', label: 'Wallet Id', minWidth: 100},
-    {id: 'max_budget', label: 'Max Budget', minWidth: 100},
-    {id: 'min_users', label: 'Min Users', minWidth: 100},
-    {id: 'num_approve', label: 'Approvals', minWidth: 100,},
-    {id: 'num_disapprove', label: 'Disapprovals', minWidth: 100,},
-    {id: 'num_majority', label: 'Majority', minWidth: 100,},
-    {id: 'query_as_text', label: 'Query as Text', minWidth: 100},
+    {id: 'id', label: 'Wallet Id', minWidth: 100},
+    {id: 'amount', label: 'Balance', minWidth: 100},
 ];
 
 const useStyles = makeStyles({
@@ -33,10 +26,6 @@ const useStyles = makeStyles({
 });
 
 const StyledTableCell = withStyles((theme) => ({
-    head: {
-        backgroundColor: `#5C6BC0`,
-        color: theme.palette.common.white,
-    },
     body: {
         fontSize: 14,
     },
@@ -48,7 +37,7 @@ const StyledTableCell = withStyles((theme) => ({
 //   return { query_id, code, population, size, density };
 // }
 
-export default function QueryTable() {
+export default function WalletTable() {
     const classes = useStyles();
 
     const [rows, setRows] = useState([]);

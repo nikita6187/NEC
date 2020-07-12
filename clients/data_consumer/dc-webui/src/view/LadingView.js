@@ -63,10 +63,12 @@ export default function LandingView(props) {
             </AppBar>
 
             <Grid container spacing={3} className={classes.content}>
-                <Grid item xs={12} sm={6}>
+                <Grid item xs={12}>
+                </Grid>
+                <Grid item xs={6} sm={12}>
                     <RequestsTable/>
                 </Grid>
-                <Grid container sm={6} spacing={3}>
+                <Grid container xs={6} sm={6} spacing={3}>
                     <Grid item xs>
                         <QueryStatusButtonForm/>
                     </Grid>
@@ -74,9 +76,8 @@ export default function LandingView(props) {
                         <GetQueryAnswer/>
                     </Grid>
                 </Grid>
-                <Grid item xs={12}>
-                </Grid>
-                <Grid container spacing={3} className={classes.content}
+
+                <Grid container sm={6} spacing={3} className={classes.content}
                       direction="row"
                       justify="center"
                       alignItems="center">

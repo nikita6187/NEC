@@ -2,6 +2,7 @@ import React from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import {Button, TextField} from "@material-ui/core";
 import {OO_SERVER_HOST, OO_SERVER_PORT} from "../services/ConfigService";
+import Grid from "@material-ui/core/Grid";
 
 const axios = require('axios').default;
 
@@ -34,12 +35,22 @@ export class InputButtonApproveQuery extends React.Component {
   render() {
     return (
       <form onSubmit={this.handleSubmit}>
-
-        <TextField id="outlined-basic" name="query_id" label={this.props.fieldText} variant="outlined" onChange={this.handleChange}/>
+          <Grid container direction="row"
+                justify="center"
+                alignItems="center"
+                spacing={2}>
+              <Grid item xs={4}>
+                <TextField id="outlined-basic" name="query_id" label={this.props.fieldText} variant="outlined" onChange={this.handleChange}/>
+              </Grid>
+              <Grid item xs={4}>
         <TextField id="outlined-basic-2" name="answer" label="Answer" variant="outlined" onChange={this.handleChange}/>
-        <Button type="submit" variant="contained" color="primary">
+              </Grid>
+              <Grid item xs={4}>
+        <Button type="submit" variant="contained" color="secondary">
            {this.props.buttonText}
         </Button>
+              </Grid>
+          </Grid>
       </form>
     );
   }

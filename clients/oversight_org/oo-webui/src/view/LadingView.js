@@ -8,6 +8,7 @@ import GroupIcon from '@material-ui/icons/Group';
 import RequestsTable from "../components/RequestsTable";
 import {InputButtonApproveQuery} from "../components/InputButtonApproveQuery";
 import RequestsQuery from "../components/RequestsQuery";
+import GavelIcon from '@material-ui/icons/Gavel';
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -48,11 +49,11 @@ export default function LandingView(props) {
                     <Grid item>
                         <Toolbar>
                             <Grid item>
-                                <GroupIcon className={classes.icon}/>
+                                <GavelIcon className={classes.icon}/>
                             </Grid>
                             <Grid item>
                                 <Typography variant="h6" className={classes.title}>
-                                    Oversight Organization Client
+                                    Oversight Organization
                                 </Typography>
                             </Grid>
                         </Toolbar>
@@ -60,17 +61,22 @@ export default function LandingView(props) {
                 </Grid>
             </AppBar>
 
-            <Grid container spacing={1} className={classes.content}>
+            <Grid container spacing={3} className={classes.content}>
+                <Grid item xs={12}>
+                </Grid>
                 <Grid item xs={12} sm={6}>
                     <RequestsTable/>
                 </Grid>
-                <Grid container sm={5} spacing={6}>
+                <Grid container sm={6} spacing={3}
+                      direction="row"
+                      justify="center"
+                      alignItems="center">
                     <Grid item s>
                         <InputButtonApproveQuery buttonText="Approve Query" fieldText="Query ID"/>
                     </Grid>
-                    <Grid item xs>
-                            <RequestsQuery/>
-                    </Grid>
+                </Grid>
+                <Grid item xs={12}>
+                    <RequestsQuery/>
                 </Grid>
             </Grid>
         </div>
