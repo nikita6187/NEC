@@ -8,9 +8,11 @@ import lime from "@material-ui/core/colors/lime";
 
 const theme = createMuiTheme({
     palette: {
-        primary: lime,
+        primary: {
+            main: `#8BC34A`,
+        } ,
         secondary: {
-            main: '#ff6e40',
+            main: '#689F38',
         },
     }
 });
